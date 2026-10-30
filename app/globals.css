@@ -241,6 +241,13 @@ body {
   color: var(--text);
 }
 
+/* A leading <strong> in a callout is its heading, so it gets its own line.
+   A <strong> used mid-sentence stays inline. */
+.callout > strong:first-child {
+  display: block;
+  margin-bottom: 3px;
+}
+
 .callout ul,
 .callout ol {
   margin: 8px 0 0;
@@ -1192,6 +1199,31 @@ details.more li {
   border: 1px solid var(--border-strong);
   border-radius: 9px;
   cursor: pointer;
+}
+
+/* Shows all three text tokens at once, so a custom text colour can be judged
+   on the faint caption rather than only on the heading. */
+.colour-sample {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 13px 15px;
+  margin: 12px 0 14px;
+  color: var(--text);
+}
+
+.colour-sample .sample-dim {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+}
+
+.colour-sample .sample-faint {
+  color: var(--text-faint);
+  font-size: 0.8rem;
 }
 
 /* ---------- settings ---------- */

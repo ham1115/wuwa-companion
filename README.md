@@ -101,7 +101,7 @@ All content is plain TypeScript data — no CMS, no fetching at runtime.
 
 ## Theming
 
-**Settings → Colours** offers five presets and a custom accent picker, stored per browser. Under that: colours are CSS custom properties at the top of `app/globals.css`. Light mode (`:root`) is pastel pink with lemon accents; dark mode (`:root[data-theme="dark"]`) keeps the same hues on a dark plum base. Element pill colours are defined under `.el[data-el="…"]`; rarity, cost and piece-count pills read `--r5-*` / `--r4-*` / `--r3-*` and `--c4-*` / `--c3-*` / `--c1-*`, each defined once per theme. Presets in `data/palettes.ts` override a subset of those tokens as inline styles on `:root`, layered over whichever base theme is active.
+**Settings → Colours** offers five presets plus custom accent and text colour pickers, stored per browser. Under that: colours are CSS custom properties at the top of `app/globals.css`. Light mode (`:root`) is pastel pink with lemon accents; dark mode (`:root[data-theme="dark"]`) keeps the same hues on a dark plum base. Element pill colours are defined under `.el[data-el="…"]`; rarity, cost and piece-count pills read `--r5-*` / `--r4-*` / `--r3-*` and `--c4-*` / `--c3-*` / `--c1-*`, each defined once per theme. Presets in `data/palettes.ts` override a subset of those tokens as inline styles on `:root`, layered over whichever base theme is active. A custom accent or text colour is expanded into its three tokens in `lib/theme.ts`; the text ramp is clamped on measured WCAG luminance, not on HSL lightness, because lightness is not brightness — yellow and blue at the same `l` are nowhere near the same contrast.
 
 ## Sources and accuracy
 

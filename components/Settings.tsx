@@ -13,6 +13,16 @@ import {
   type StorageGroup,
 } from "@/lib/storage";
 
+/** What the pickers show before a custom colour is set: the theme's own. */
+const ACCENT_FALLBACK: Record<"light" | "dark", string> = {
+  light: "#c43f7a",
+  dark: "#ff9ac6",
+};
+const INK_FALLBACK: Record<"light" | "dark", string> = {
+  light: "#3f2733",
+  dark: "#fbeaf2",
+};
+
 const GROUP_LABELS: { id: StorageGroup; label: string; detail: string }[] = [
   { id: "characters", label: "Characters", detail: "Built marks, per-character notes, and your owned list" },
   { id: "plan", label: "My plan", detail: "The queue, its checklists and notes" },
@@ -106,8 +116,9 @@ export default function Settings() {
 
       <h2 className="section">Colours</h2>
       <p className="panel-intro">
-        Presets change the accent and the background tint; light and dark keep
-        their own readable text and borders either way.
+        A preset changes the accent and the background tint. Underneath it you
+        can set the accent and the text colour yourself, and each one layers
+        over whichever preset is picked.
       </p>
 
       <div className="palette-grid">
@@ -129,26 +140,68 @@ export default function Settings() {
 
       <div className="mine-row">
         <label className="mine-field">
-          <span className="target-label">Or pick your own accent</span>
+          <span className="target-label">Accent</span>
           <input
             type="color"
             className="colour-input"
-            value={theme.accent || "#c43f7a"}
+            value={theme.accent || ACCENT_FALLBACK[theme.mode]}
             onChange={(e) => theme.setAccent(e.target.value)}
             aria-label="Custom accent colour"
           />
+          <span className="check-detail">
+            Headings, badges, the selected tab. The tint behind it and the
+            shade for text on that tint come from the hue.
+          </span>
+        </label>
+
+        <label className="mine-field">
+          <span className="target-label">Text</span>
+          <input
+            type="color"
+            className="colour-input"
+            value={theme.ink || INK_FALLBACK[theme.mode]}
+            onChange={(e) => theme.setInk(e.target.value)}
+            aria-label="Custom text colour"
+          />
+          <span className="check-detail">
+            Body text, plus the dimmer labels and faint captions worked out
+            from it. The hue carries into both modes; how light it ends up is
+            chosen per mode so it always reads.
+          </span>
         </label>
       </div>
-      <p className="check-detail">
-        A custom accent overrides the preset&apos;s. The tint behind it and the
-        darker shade for text on that tint are worked out from the hue, so any
-        colour stays readable in both modes.
-      </p>
+
+      {theme.inkAdjusted && (
+        <div className="callout" data-tone="warn">
+          <strong>That text colour was pulled back</strong>
+          Its hue is yours, but it was {theme.mode === "light"
+            ? "darkened"
+            : "lightened"}{" "}
+          and desaturated so body text still reads against the{" "}
+          {theme.mode} background. Pick something{" "}
+          {theme.mode === "light" ? "darker" : "lighter"} to see the exact
+          colour you chose.
+        </div>
+      )}
+
+      <div className="colour-sample" aria-hidden="true">
+        <strong>Sample</strong>
+        <span className="sample-dim">A dimmer label, as used on cards</span>
+        <span className="sample-faint">And the faintest caption line</span>
+        <span className="badge" data-status="active">
+          Accent badge
+        </span>
+      </div>
 
       <div className="chips">
         {theme.accent && (
           <button className="chip" onClick={() => theme.setAccent("")}>
             Drop the custom accent
+          </button>
+        )}
+        {theme.ink && (
+          <button className="chip" onClick={() => theme.setInk("")}>
+            Drop the custom text colour
           </button>
         )}
         {theme.customised && (

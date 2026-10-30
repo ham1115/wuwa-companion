@@ -11,7 +11,7 @@ export const STORAGE_GROUPS = {
   glossary: ["learned", "revealed", "notes"],
   story: ["acts", "priority-now"],
   routine: ["routine", "routine-day"],
-  display: ["tab", "theme", "palette", "accent"],
+  display: ["tab", "theme", "palette", "accent", "ink"],
 } as const;
 
 export type StorageGroup = keyof typeof STORAGE_GROUPS;

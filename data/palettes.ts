@@ -9,13 +9,21 @@
  * to fix every future colour bug.
  */
 
-/** The tokens a preset is allowed to set. */
+/**
+ * The tokens a preset is allowed to set. The three text tokens are here so a
+ * custom text colour can reach them and so switching preset clears them
+ * again; the presets themselves leave text alone, because the base light and
+ * dark themes already pick text that reads on their own backgrounds.
+ */
 export type PaletteToken =
   | "bg"
   | "bg-raised"
   | "bg-sunken"
   | "border"
   | "border-strong"
+  | "text"
+  | "text-dim"
+  | "text-faint"
   | "accent"
   | "accent-soft"
   | "accent-ink"
