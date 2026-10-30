@@ -23,10 +23,7 @@ export default function RootLayout({
     <html lang="en">
       {/* Current Clerk SDKs want the provider inside <body>, not around <html>. */}
       <body>
-        {/* Relative on purpose: resolved against the current origin, so the
-            same value works on localhost, previews and production. Pairs with
-            `frontendApiProxy` in middleware.ts. */}
-        <ClerkProvider proxyUrl="/__clerk">{children}</ClerkProvider>
+        <ClerkProvider>{children}</ClerkProvider>
       </body>
     </html>
   );
