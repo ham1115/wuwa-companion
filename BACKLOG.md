@@ -1,6 +1,7 @@
 # Backlog
 
-Captured 30 October 2026. Items 1–11 are done; only cross-device sync is left, and it is blocked on you; the rest are estimates assuming one focused sitting each.
+Captured 30 October 2026. Items 1–12 are done, sync included. Item 13 — moving Clerk onto a real
+domain — is the only thing in flight, and most of its steps need your accounts rather than code.
 
 ---
 
@@ -160,23 +161,23 @@ Production, Preview and Development, so the deployed app runs a Clerk developmen
 
 **What promoting needs**
 
-1. A domain we own with DNS control. `vercel domains ls` reports **0 domains**, and a
-   `*.vercel.app` address cannot take the CNAME the Frontend API needs, so this is the real
-   blocker — roughly £10/year, not a Clerk cost.
-2. Clerk Dashboard → Create production instance (cloning development settings or starting fresh).
-3. Add the DNS records the Dashboard's Domains page lists, then Deploy certificates. Propagation
-   can take up to 48 hours, and CAA records that block Let's Encrypt or Google Trust Services will
-   stall issuance.
-4. Our own Google OAuth credentials: SSO connections do not copy to production.
-5. Put `pk_live_` / `sk_live_` into Vercel. Note the existing vars are type **`Config`**, managed
-   by the Marketplace integration rather than plain values, so they need overriding or the
-   integration reconfiguring — not just an edit.
-6. Redeploy.
+Decided 30 October 2026: the domain is coming free for a year from the **GitHub Student Developer
+Pack**, so this is no longer blocked. Take the Name.com offer and a `.dev` or `.app` — year one is
+free either way, and those two are the cheapest to renew (~$12-15/year, against ~$50-70 for
+`.tech`).
 
-Clerk's free Hobby plan covers production at 50,000 monthly retained users, so the plan is not the
-obstacle; the domain is. **Recommendation: leave it on development for now.** Nothing about sharing
-this with a handful of friends needs a production instance, and the only genuine risk is sign-in
-persistence on iOS — test that first, and buy a domain if it fails or if this ever goes wider.
+The full sequence, what only you can do, and the failure modes are written up in
+[docs/custom-domain.md](docs/custom-domain.md). The short version: claim the domain, host its DNS
+at Vercel, `clerk login` so the Marketplace-created app can be linked, `clerk deploy --domain` to
+create the production instance, import its zone file with `vercel dns import`, then swap the
+`Config`-typed Clerk env vars for the `pk_live_` / `sk_live_` pair and redeploy.
+
+**No application code changes.** Clerk reads its keys from the environment and nothing in `app/`,
+`lib/` or `middleware.ts` has the current URL baked in.
+
+The prize is step 7 of that document: a CNAME putting the Frontend API on `clerk.<domain>`,
+same-site with the app, which moves sessions off the querystring token and onto a normal
+`HttpOnly` cookie — and so fixes the iOS risk rather than merely testing for it.
 
 ---
 
@@ -188,3 +189,4 @@ persistence on iOS — test that first, and buy a domain if it fails or if this 
 4. ~~Items 7, 8, 9, 10~~ — done
 5. ~~Item 12 (sync)~~ — done
 6. ~~Item 6 (materials)~~ — done
+7. Item 13 (Clerk on a real domain) — in flight, see [docs/custom-domain.md](docs/custom-domain.md)

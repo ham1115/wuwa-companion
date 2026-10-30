@@ -117,6 +117,13 @@ Auth is Clerk (`middleware.ts` protects nothing — sign-in is optional), data i
 (`db/schema.sql`, one row per user and key). `app/api/state` is the whole sync surface and refuses
 anonymous callers. `tab` is deliberately not synced.
 
+Clerk currently runs a **development** instance, because the Vercel Marketplace provisioned one key
+pair and the app has no domain of its own yet. Sign-in works, but the session lives in a querystring
+token rather than a cookie, since the app and `clerk.accounts.dev` are cross-site — so a browser
+that blocks third-party state, iOS Safari especially, may not keep you signed in.
+[docs/custom-domain.md](docs/custom-domain.md) is the runbook for fixing that properly by putting
+the Frontend API on a subdomain of our own.
+
 Scripts: `node --env-file=.env.local scripts/migrate.mjs` applies the schema,
 `scripts/test-merge.mjs` exercises the upsert against the real database, `scripts/inspect.mjs`
 prints what the table holds.
