@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { CHARACTERS } from "@/data/characters";
 import { PALETTES } from "@/data/palettes";
+import { Show, SignInButton, SignOutButton } from "@clerk/nextjs";
 import { useOwned } from "@/lib/owned";
 import { useTheme } from "@/lib/theme";
+import { useSync } from "@/lib/sync";
 import {
   exportAll,
   importAll,
@@ -48,6 +50,7 @@ const GROUP_LABELS: { id: StorageGroup; label: string; detail: string }[] = [
 export default function Settings() {
   const owned = useOwned();
   const theme = useTheme();
+  const sync = useSync();
   const [confirming, setConfirming] = useState<string | null>(null);
   const [payload, setPayload] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -355,9 +358,88 @@ export default function Settings() {
         )}
       </div>
 
+      <h2 className="section">Sync across devices</h2>
+
+      <Show when="signed-out">
+        <p className="panel-intro">
+          Everything above is stored in this browser only. Signing in copies it
+          to your account so the same progress shows up on your phone and your
+          desktop. It is entirely optional — the app works exactly as it does
+          now without it, and anyone you share the URL with still gets a blank
+          slate.
+        </p>
+        <div className="chips">
+          <SignInButton mode="modal">
+            <button className="chip" data-on>
+              Sign in to sync
+            </button>
+          </SignInButton>
+        </div>
+        <p className="check-detail">
+          Your progress is not uploaded until you sign in, and signing out
+          leaves this browser&apos;s copy in place.
+        </p>
+      </Show>
+
+      <Show when="signed-in">
+        <div className="card">
+          <div className="build-head">
+            <h3>Sync</h3>
+            <span
+              className="badge"
+              data-status={
+                sync.state === "error"
+                  ? "blocked"
+                  : sync.state === "synced"
+                    ? "done"
+                    : "active"
+              }
+            >
+              {sync.state === "syncing" && "Syncing…"}
+              {sync.state === "synced" && "Up to date"}
+              {sync.state === "error" && "Not synced"}
+              {sync.state === "off" && "Off"}
+            </span>
+          </div>
+          <p className="build-role">
+            Changes are saved in this browser first and sent a moment later, so
+            nothing waits on the network. Each part of the app syncs on its own
+            and the most recent change wins.
+          </p>
+          {sync.error && (
+            <p className="check-detail">
+              Last attempt failed: {sync.error}. It will try again on your next
+              change, or use the button.
+            </p>
+          )}
+          {sync.lastSyncedAt && (
+            <p className="check-detail">
+              Last synced{" "}
+              {new Date(sync.lastSyncedAt).toLocaleTimeString(undefined, {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+              .
+            </p>
+          )}
+          <div className="queue-controls">
+            <button className="mini" onClick={() => void sync.syncNow()}>
+              Sync now
+            </button>
+            <SignOutButton>
+              <button className="mini">Sign out</button>
+            </SignOutButton>
+          </div>
+        </div>
+        <p className="check-detail">
+          Signing out stops syncing and leaves this browser&apos;s copy exactly
+          as it is. Your account keeps its copy for the next sign-in.
+        </p>
+      </Show>
+
       <h2 className="section">Back up or move your progress</h2>
       <p className="panel-intro">
-        This is how you get your progress onto another device — export here,
+        Works signed out, and gives you a copy you hold yourself — export here,
         paste it there.
       </p>
       <div className="chips">

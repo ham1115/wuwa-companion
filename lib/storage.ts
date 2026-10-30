@@ -1,29 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  PREFIX,
+  STORAGE_GROUPS,
+  isSyncedKey,
+  type StorageGroup,
+} from "./keys";
 
-export const PREFIX = "wuwa-companion:";
+export { PREFIX, STORAGE_GROUPS };
+export type { StorageGroup };
 
-/** Every storage key this app owns, grouped so they can be reset per section. */
-export const STORAGE_GROUPS = {
-  characters: ["built", "char-notes", "owned", "loadout"],
-  plan: ["plan", "build-steps", "plan-notes"],
-  glossary: ["learned", "revealed", "notes"],
-  story: ["acts", "priority-now"],
-  routine: ["routine", "routine-day"],
-  display: [
-    "tab",
-    "theme",
-    "palette",
-    "accent",
-    "ink",
-    "bg",
-    "lemon",
-    "my-palettes",
-  ],
-} as const;
-
-export type StorageGroup = keyof typeof STORAGE_GROUPS;
 
 /** Wipes one group. Returns how many keys were actually removed. */
 export function resetGroup(group: StorageGroup): number {
@@ -137,7 +124,61 @@ function subscribe(key: string, fn: (value: unknown) => void) {
   };
 }
 
-function write<T>(key: string, value: T) {
+/**
+ * When each key was last changed in THIS browser, by key. Kept in its own
+ * localStorage entry so a tab that has never rendered a given key still knows
+ * how old its copy is, which is what the sync merge compares against.
+ */
+const META_KEY = "__updated";
+
+type Meta = Record<string, number>;
+
+function readMeta(): Meta {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(PREFIX + META_KEY);
+    return raw ? (JSON.parse(raw) as Meta) : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeMeta(meta: Meta) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(PREFIX + META_KEY, JSON.stringify(meta));
+  } catch {
+    // Same as any other write: the app keeps working without persistence.
+  }
+}
+
+/**
+ * The stored value for a key, or null when there is none — for sync, which
+ * needs to read a key's current contents without holding a hook for it.
+ */
+export function readRaw(key: string): unknown {
+  return read<unknown>(key, null);
+}
+
+/** When this browser last changed `key`, or 0 if it never has. */
+export function localUpdatedAt(key: string): number {
+  return readMeta()[key] ?? 0;
+}
+
+export function setLocalUpdatedAt(key: string, at: number) {
+  const meta = readMeta();
+  meta[key] = at;
+  writeMeta(meta);
+}
+
+/** Notified whenever a local edit happens, so sync can queue a push. */
+let onLocalChange: ((key: string) => void) | null = null;
+
+export function setLocalChangeHandler(fn: ((key: string) => void) | null) {
+  onLocalChange = fn;
+}
+
+function store<T>(key: string, value: T) {
   if (typeof window !== "undefined") {
     try {
       window.localStorage.setItem(PREFIX + key, JSON.stringify(value));
@@ -147,6 +188,25 @@ function write<T>(key: string, value: T) {
   }
   const set = listeners.get(key);
   if (set) for (const fn of set) fn(value);
+}
+
+function write<T>(key: string, value: T) {
+  store(key, value);
+  // A local edit: stamp it and let sync know there is something to send.
+  setLocalUpdatedAt(key, Date.now());
+  if (onLocalChange && isSyncedKey(key)) onLocalChange(key);
+}
+
+/**
+ * Apply a value that came from the server.
+ *
+ * Separate from `write` on purpose: this must not re-stamp the key with the
+ * current time, or every pull would look like a fresh local edit and bounce
+ * straight back up as a push.
+ */
+export function applyRemote<T>(key: string, value: T, updatedAt: number) {
+  store(key, value);
+  setLocalUpdatedAt(key, updatedAt);
 }
 
 /**

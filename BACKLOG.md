@@ -90,7 +90,7 @@ A preset only overrides the tokens that give it its character (backgrounds, bord
 
 ## In flight
 
-### 12. Cross-device sync — unblocked, not started
+### 12. Cross-device sync — built, untested signed in
 Optional sign-in that syncs progress across devices; anonymous visitors keep browser-only storage.
 
 - **Decided:** Clerk for auth, Neon Postgres for data, login optional not required.
@@ -107,9 +107,27 @@ need a browser consent step, so `vercel integration open <name>` is the reliable
 
 Both sit inside free tiers at this scale. Only people who actually register count toward Clerk's user limit.
 
-The remaining work is all code: Clerk proxy, provider and sign-in pages, a Postgres schema, API
-routes, and rewriting `lib/storage.ts` — which every tab depends on — to be local-first with server
-sync, plus a merge on first sign-in. **Several hours. Biggest item here, and the only one left.**
+**Built** (30 October 2026): `middleware.ts`, `ClerkProvider` in the layout, `/sign-in` and
+`/sign-up`, the `user_state` table (`db/schema.sql`), `app/api/state` and `lib/sync.tsx`.
+`lib/storage.ts` is local-first: every edit writes to localStorage first and a debounced push
+follows, so nothing in the UI waits on the network.
+
+The merge is per key and newest wins — the server's copy if it is newer, this browser's if it is,
+and whichever side has it when only one does. So a first sign-in pushes a full browser up, a fresh
+device pulls it all down, and two devices editing different parts never collide. `scripts/test-merge.mjs`
+exercises the upsert against the real database: 9 checks, including that an older push does **not**
+overwrite a newer row and that a replayed push is a no-op.
+
+Two devices editing the *same* key while apart is the one lossy case: the later edit wins that whole
+key. Per-key rows keep it to the one key rather than the whole save. Noted rather than solved; the
+fix would be set-union semantics for the id-set keys.
+
+**Still to verify:** the signed-in round trip. Signed-out behaviour is confirmed (app fully usable,
+`/api/state` returns 401) and the Clerk modal renders, but nobody has signed in yet.
+
+**Before relying on it in production:** the Clerk instance is in development mode. The Marketplace
+set one key pair across all three Vercel environments, so production is running dev keys with dev
+limits. Claiming the app and running `clerk deploy` is an account-level step for the owner.
 
 ---
 

@@ -1143,6 +1143,27 @@ details.more li {
   color: var(--danger);
 }
 
+/* The theme toggle and the auth control sit together at the top right. */
+.masthead-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+/* Clerk's own components render here; keep them from inheriting odd sizing. */
+.masthead-controls .cl-userButtonAvatarBox {
+  width: 30px;
+  height: 30px;
+}
+
+/* The standalone sign-in and sign-up routes. */
+.auth-shell {
+  display: flex;
+  justify-content: center;
+  padding-top: 48px;
+}
+
 /* ---------- settings: colour presets ---------- */
 .palette-grid {
   display: grid;

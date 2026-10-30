@@ -10,8 +10,10 @@ import Quests from "@/components/Quests";
 import Routine from "@/components/Routine";
 import Settings from "@/components/Settings";
 import BackToTop from "@/components/BackToTop";
+import { Show, SignInButton, UserButton } from "@clerk/nextjs";
 import { usePersistentState } from "@/lib/storage";
 import { useTheme } from "@/lib/theme";
+import { SyncProvider } from "@/lib/sync";
 
 /**
  * Eight flat tabs mixed reference data with personal tracking. Grouping them
@@ -55,6 +57,14 @@ const GROUP_OF = new Map<string, string>(
 );
 
 export default function Page() {
+  return (
+    <SyncProvider>
+      <Codex />
+    </SyncProvider>
+  );
+}
+
+function Codex() {
   const [tab, setTab] = usePersistentState<TabId>("tab", "characters");
   const theme = useTheme();
 
@@ -78,13 +88,24 @@ export default function Page() {
             routine.
           </p>
         </div>
-        <button
-          className="theme-toggle"
-          onClick={theme.toggleMode}
-          aria-label="Toggle colour theme"
-        >
-          {theme.mode === "dark" ? "Light" : "Dark"}
-        </button>
+        <div className="masthead-controls">
+          <button
+            className="theme-toggle"
+            onClick={theme.toggleMode}
+            aria-label="Toggle colour theme"
+          >
+            {theme.mode === "dark" ? "Light" : "Dark"}
+          </button>
+          {/* Signing in is optional: it only turns on sync across devices. */}
+          <Show when="signed-out">
+            <SignInButton mode="modal">
+              <button className="theme-toggle">Sign in</button>
+            </SignInButton>
+          </Show>
+          <Show when="signed-in">
+            <UserButton />
+          </Show>
+        </div>
       </header>
 
       <nav className="nav" aria-label="Sections">
