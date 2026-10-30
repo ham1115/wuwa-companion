@@ -14,6 +14,11 @@ export type Term = {
   definition: string;
   /** True when the term reveals content past Chapter 1. Blurred until tapped. */
   spoiler?: boolean;
+  /**
+   * The act id in data/progress.ts that makes this common knowledge. Ticking
+   * that act in the Story tab un-blurs the term automatically.
+   */
+  revealedBy?: string;
   related?: string[];
 };
 
@@ -74,24 +79,40 @@ export const TERMS: Term[] = [
     term: "Rinascita",
     category: "world",
     definition:
-      "Region two, Italian-inspired, added in version 2.0. Unlocks flight and most 2.x character materials. Reached via the Chapter 2 storyline.",
+      "Region two, Italian-inspired, added in version 2.0. Unlocks flight and most 2.x character materials. Reached through Chapter II, All Silent Souls Can Sing.",
     spoiler: true,
+    revealedBy: "ch2-pro",
     related: ["flight", "solaris-3"],
   },
   {
-    id: "lahalloo",
-    term: "Lahalloo",
+    id: "lahai-roi",
+    term: "Lahai-Roi",
     category: "world",
-    definition: "A later region with its own Threnodian. Well past your current progress.",
+    definition:
+      "Region three, added in version 3.0 and reached through Chapter III, To the Stars Yet to Shine. Sits beneath the Roya Frostlands and holds the Spacetrek Collective's Startorch Academy. Tied to the Void Storm.",
     spoiler: true,
-    related: ["threnodian"],
+    revealedBy: "ch3-pro",
+    related: ["roya-frostlands", "threnodian", "solaris-3"],
   },
   {
     id: "mengzhou",
     term: "Mengzhou",
     category: "world",
-    definition: "A 3.x region. Far beyond Chapter 1.",
+    definition:
+      "The region of Chapter IV, Rebirth From the Depths, running across versions 3.5 to 3.7. Far beyond Chapter I.",
     spoiler: true,
+    revealedBy: "ch4a1",
+    related: ["solaris-3"],
+  },
+  {
+    id: "roya-frostlands",
+    term: "Roya Frostlands",
+    category: "world",
+    definition:
+      "The frozen surface above Lahai-Roi, and the setting of Chapter III. Added in version 3.0.",
+    spoiler: true,
+    revealedBy: "ch3-pro",
+    related: ["lahai-roi"],
   },
 
   // ---------- SOUND TECH ----------
@@ -485,6 +506,7 @@ export const TERMS: Term[] = [
     definition:
       "Limited aerial traversal added in 2.0, unlocked through the early Rinascita storyline. Needs height to start: gain elevation, open the Tool Wheel, select Flight, press Tool.",
     spoiler: true,
+    revealedBy: "ch2a1",
     related: ["rinascita", "tool-wheel"],
   },
 

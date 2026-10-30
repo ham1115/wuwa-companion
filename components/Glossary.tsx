@@ -13,6 +13,8 @@ export default function Glossary() {
 
   const learned = useIdSet("learned");
   const revealed = useIdSet("revealed");
+  // Story progress un-blurs the terms that progress has already shown you.
+  const acts = useIdSet("acts");
   const notes = useNotes("notes");
 
   const results = useMemo(() => {
@@ -86,7 +88,9 @@ export default function Glossary() {
           </h2>
           {grouped.get(cat.id)!.map((t) => {
             const isLearned = learned.has(t.id);
-            const isHidden = Boolean(t.spoiler) && !revealed.has(t.id);
+            const byStory = Boolean(t.revealedBy) && acts.has(t.revealedBy!);
+            const isHidden =
+              Boolean(t.spoiler) && !revealed.has(t.id) && !byStory;
             const noteText = notes.get(t.id);
 
             return (
@@ -94,7 +98,10 @@ export default function Glossary() {
                 <div className="term-head">
                   <h3 className="term-name">{t.term}</h3>
                   <span className="term-cat">{cat.label}</span>
-                  {t.spoiler && <span className="spoiler-tag">spoiler</span>}
+                  {t.spoiler && !byStory && (
+                    <span className="spoiler-tag">spoiler</span>
+                  )}
+                  {byStory && <span className="side-pill">you&apos;ve been here</span>}
                 </div>
 
                 <div className="spoiler-body" data-hidden={isHidden}>

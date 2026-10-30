@@ -51,10 +51,12 @@ Under the same block: one field per target, with the published figure beside it.
 
 The floor is the first number in the published value, so "60-75%+" passes at 60 and "220%-230%" at 220. The top of a range is a stretch goal, not a pass mark.
 
-### 9. Story progress reveals matching glossary spoilers
-Ticking a chapter should auto-unblur the glossary terms belonging to it.
+### 9. Story progress reveals matching glossary spoilers ✅
+A term can now name the act that makes it common knowledge (`revealedBy`). Tick that act in Story and the term un-blurs on its own, swapping its "spoiler" tag for "you've been here". Manual tap-to-reveal still works for everything else.
 
-**Needs work on the data model:** glossary terms carry a boolean `spoiler` today, not a chapter. Tagging every term by chapter is partly guesswork beyond Chapter 1 — may need the tags to be editable rather than fixed. **~1–2 hours.**
+The backlog worried this would need guesswork. It did not: each spoiler term names its own chapter, so all four story-gated terms could be tied to a specific act. Whimpering Wastes stays manual — it is an endgame mode, not story content, so no act unlocks it.
+
+Fixed along the way: the region was recorded as "Lahalloo", which is not its name. It is **Lahai-Roi**, released in 3.0, sitting beneath the Roya Frostlands. Added a Roya Frostlands entry too, since the Story tab now names it.
 
 ### 10. Theme customization
 Let people pick their own colours, or choose from preset palettes. The groundwork is already there — every colour is a CSS custom property on `:root` in `app/globals.css`, so a picker writing to those variables would work without touching components.
@@ -94,6 +96,6 @@ After provisioning, the real work is rewriting `lib/storage.ts` — which every 
 1. ~~Items 1–4 (quick wins)~~ — done
 2. ~~Item 5 (stat targets)~~ — done
 3. ~~Item 11 (UI/UX)~~ — done
-4. ~~Items 7, 8~~ — done; items 9, 10 next
+4. ~~Items 7, 8, 9~~ — done; item 10 next
 5. Item 12 (sync) when you want it
 6. Item 6 (materials) last — least certain payoff for the research cost
