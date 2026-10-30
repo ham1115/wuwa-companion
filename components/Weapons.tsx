@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { CHARACTERS, WEAPON_TYPES, type WeaponType } from "@/data/characters";
 import { WEAPONS, baseWeaponName, type Weapon } from "@/data/weapons";
+import Filters from "./Filters";
 import { useOwned } from "@/lib/owned";
 
 /** weapon name -> characters that list it, in the order they rank it. */
@@ -85,16 +86,18 @@ export default function Weapons() {
         ))}
       </div>
 
-      <div className="chips">
-        <button className="chip" data-on={type === "all"} onClick={() => setType("all")}>
-          All types
-        </button>
-        {WEAPON_TYPES.map((t) => (
-          <button key={t} className="chip" data-on={type === t} onClick={() => setType(t)}>
-            {t}
+      <Filters active={type !== "all" ? 1 : 0} onClear={() => setType("all")}>
+        <div className="chips">
+          <button className="chip" data-on={type === "all"} onClick={() => setType("all")}>
+            All types
           </button>
-        ))}
-      </div>
+          {WEAPON_TYPES.map((t) => (
+            <button key={t} className="chip" data-on={type === t} onClick={() => setType(t)}>
+              {t}
+            </button>
+          ))}
+        </div>
+      </Filters>
 
       {results.length === 0 && <p className="empty">Nothing matches those filters.</p>}
 

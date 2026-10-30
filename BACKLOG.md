@@ -61,13 +61,12 @@ Ticking a chapter should auto-unblur the glossary terms belonging to it.
 Let people pick their own colours, or choose from preset palettes. The groundwork is already there — every colour is a CSS custom property on `:root` in `app/globals.css`, so a picker writing to those variables would work without touching components.
 **~1–2 hours.**
 
-### 11. UI/UX pass
-Current design is fine; the problems are structural.
-
-- **Tabs have no grouping.** Eight flat tabs mixing reference data with personal tracking. Natural split: *Database* (Characters, Weapons, Echoes) / *Mine* (My plan, Story, Routine) / *Settings*.
-- **Everything is scroll.** Filters scroll away; long lists have no jump-to; expanded cards push content far down. Candidates: sticky filter bar, letter or element jump links, collapse-others-on-expand, maybe a two-column layout on wide screens.
-
-**~2–3 hours, and worth sketching before building.**
+### 11. UI/UX pass ✅
+- **Tabs are grouped.** Eight flat tabs became three groups — *Reference* (Characters, Weapons, Echoes, Glossary), *Mine* (My plan, Story, Routine) and *Setup* (Settings) — so at most four tabs are on screen and it is clear which half of the app you are in. The open group follows the open tab, so a restored tab restores its group.
+- **The nav sticks to the top**, so switching section never means scrolling back up first.
+- **Secondary filters fold away.** Characters opened with three rows of chips above the list; element and role now sit behind a `Filters` button that shows how many are active, with a Clear beside it. Same for the weapon type filter. Search and the highest-value toggles stay visible.
+- **Back-to-top button** appears past 900px of scroll.
+- **Phone rows no longer wrap.** Under 430px the row's class label is hidden, since it was pushing the chevron onto its own line and is repeated in the expanded body anyway.
 
 ---
 
@@ -95,7 +94,7 @@ After provisioning, the real work is rewriting `lib/storage.ts` — which every 
 
 1. ~~Items 1–4 (quick wins)~~ — done
 2. ~~Item 5 (stat targets)~~ — done
-3. Item 11 (UI/UX — affects everything added after)
+3. ~~Item 11 (UI/UX)~~ — done
 4. Items 7, 8, 9, 10
 5. Item 12 (sync) when you want it
 6. Item 6 (materials) last — least certain payoff for the research cost

@@ -4,6 +4,8 @@ A Wuthering Waves companion app. Pastel pink and yellow, light by default, with 
 
 ## Tabs
 
+Grouped three ways: **Reference** is game data that is the same for everyone, **Mine** is your own progress, **Setup** is the owned list, backup and reset. The nav stays pinned to the top as you scroll.
+
 - **Characters** — all 61 Resonators. Search by name, weapon, echo or set. Filter by element, role, rarity, or "mine only". Expand any character for ranked weapons, Sonata sets, main Echo options, main stats per cost slot, substat priority and ascension materials. Each also carries **target stats at Lv.90** — what a finished build should read on the in-game stat screen. **Queue** adds them to My plan; also mark as built and add notes.
 - **Weapons** — 114 weapons, 3★ and up. Search name, stat or effect; filter by type, rarity, or "for my characters". Each entry opens to base ATK, substat, effect text, and **Wanted by** — every character that ranks it, with their ranking position, owned characters highlighted. Weapons nothing wants are labelled as fodder.
 - **Echoes** — two views. **Sonata sets** (37) shows each set's piece requirement, 2-piece and full bonuses, every character that runs it, and every Echo that can roll it grouped by cost. **Echoes** (187) lists the whole roster; searching a Sonata name returns every Echo that rolls it. Cost-4 entries carry their Echo Skill text.

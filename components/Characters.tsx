@@ -11,6 +11,7 @@ import {
 } from "@/data/characters";
 import { DEFAULT_PLAN } from "@/data/plan";
 import { useOwned } from "@/lib/owned";
+import Filters from "./Filters";
 import StatLine from "./StatLine";
 import Targets from "./Targets";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
@@ -86,27 +87,35 @@ export default function Characters() {
         </button>
       </div>
 
-      <div className="chips">
-        <button className="chip" data-on={el === "all"} onClick={() => setEl("all")}>
-          All elements
-        </button>
-        {ELEMENTS.map((e) => (
-          <button key={e} className="chip" data-on={el === e} onClick={() => setEl(e)}>
-            {e}
+      <Filters
+        active={(el !== "all" ? 1 : 0) + (role !== "all" ? 1 : 0)}
+        onClear={() => {
+          setEl("all");
+          setRole("all");
+        }}
+      >
+        <div className="chips">
+          <button className="chip" data-on={el === "all"} onClick={() => setEl("all")}>
+            All elements
           </button>
-        ))}
-      </div>
+          {ELEMENTS.map((e) => (
+            <button key={e} className="chip" data-on={el === e} onClick={() => setEl(e)}>
+              {e}
+            </button>
+          ))}
+        </div>
 
-      <div className="chips">
-        <button className="chip" data-on={role === "all"} onClick={() => setRole("all")}>
-          All roles
-        </button>
-        {ROLES.map((r) => (
-          <button key={r} className="chip" data-on={role === r} onClick={() => setRole(r)}>
-            {r}
+        <div className="chips">
+          <button className="chip" data-on={role === "all"} onClick={() => setRole("all")}>
+            All roles
           </button>
-        ))}
-      </div>
+          {ROLES.map((r) => (
+            <button key={r} className="chip" data-on={role === r} onClick={() => setRole(r)}>
+              {r}
+            </button>
+          ))}
+        </div>
+      </Filters>
 
       {results.length === 0 && <p className="empty">Nothing matches those filters.</p>}
 

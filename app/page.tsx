@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Glossary from "@/components/Glossary";
 import Plan from "@/components/Plan";
 import Characters from "@/components/Characters";
@@ -9,20 +9,49 @@ import Echoes from "@/components/Echoes";
 import Quests from "@/components/Quests";
 import Routine from "@/components/Routine";
 import Settings from "@/components/Settings";
+import BackToTop from "@/components/BackToTop";
 import { usePersistentState } from "@/lib/storage";
 
-const TABS = [
-  { id: "characters", label: "Characters" },
-  { id: "weapons", label: "Weapons" },
-  { id: "echoes", label: "Echoes" },
-  { id: "builds", label: "My plan" },
-  { id: "glossary", label: "Glossary" },
-  { id: "quests", label: "Story" },
-  { id: "routine", label: "Routine" },
-  { id: "settings", label: "Settings" },
+/**
+ * Eight flat tabs mixed reference data with personal tracking. Grouping them
+ * means at most four tabs are on screen at once, and it is obvious which half
+ * of the app you are in.
+ */
+const GROUPS = [
+  {
+    id: "reference",
+    label: "Reference",
+    hint: "Game data — the same for everyone",
+    tabs: [
+      { id: "characters", label: "Characters" },
+      { id: "weapons", label: "Weapons" },
+      { id: "echoes", label: "Echoes" },
+      { id: "glossary", label: "Glossary" },
+    ],
+  },
+  {
+    id: "mine",
+    label: "Mine",
+    hint: "Your progress, stored in this browser",
+    tabs: [
+      { id: "builds", label: "My plan" },
+      { id: "quests", label: "Story" },
+      { id: "routine", label: "Routine" },
+    ],
+  },
+  {
+    id: "setup",
+    label: "Setup",
+    hint: "Owned list, backup, reset",
+    tabs: [{ id: "settings", label: "Settings" }],
+  },
 ] as const;
 
-type TabId = (typeof TABS)[number]["id"];
+type TabId = (typeof GROUPS)[number]["tabs"][number]["id"];
+
+const GROUP_OF = new Map<string, string>(
+  GROUPS.flatMap((g) => g.tabs.map((t) => [t.id, g.id] as [string, string]))
+);
 
 export default function Page() {
   const [tab, setTab] = usePersistentState<TabId>("tab", "characters");
@@ -38,6 +67,12 @@ export default function Page() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
+
+  // The open group follows the open tab, so a restored tab restores its group.
+  const group = useMemo(
+    () => GROUPS.find((g) => g.id === GROUP_OF.get(tab)) ?? GROUPS[0],
+    [tab]
+  );
 
   return (
     <main className="shell">
@@ -58,19 +93,38 @@ export default function Page() {
         </button>
       </header>
 
-      <div className="tabs" role="tablist" aria-label="Sections">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            className="tab"
-            role="tab"
-            aria-selected={mounted && tab === t.id}
-            onClick={() => setTab(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <nav className="nav" aria-label="Sections">
+        <div className="groups" role="tablist" aria-label="Section groups">
+          {GROUPS.map((g) => (
+            <button
+              key={g.id}
+              className="group"
+              role="tab"
+              aria-selected={mounted && group.id === g.id}
+              title={g.hint}
+              onClick={() => setTab(g.tabs[0].id)}
+            >
+              {g.label}
+            </button>
+          ))}
+        </div>
+
+        {group.tabs.length > 1 && (
+          <div className="tabs" role="tablist" aria-label={group.label}>
+            {group.tabs.map((t) => (
+              <button
+                key={t.id}
+                className="tab"
+                role="tab"
+                aria-selected={mounted && tab === t.id}
+                onClick={() => setTab(t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </nav>
 
       {!mounted ? (
         <p className="empty">Loading your saved progress…</p>
@@ -93,6 +147,8 @@ export default function Page() {
         public guides and may lag behind the current patch — the in-game screens
         win any disagreement.
       </p>
+
+      <BackToTop />
     </main>
   );
 }
