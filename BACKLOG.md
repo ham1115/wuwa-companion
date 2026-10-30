@@ -1,7 +1,8 @@
 # Backlog
 
 Captured 30 October 2026. Items 1–12 are done, sync included. Item 13 — moving Clerk onto a real
-domain — is the only thing in flight, and most of its steps need your accounts rather than code.
+domain — is the only thing in flight: decided on 31 October 2026 and waiting on the claim, since
+most of its steps need your accounts rather than code.
 
 ---
 
@@ -189,8 +190,15 @@ the failure mode is sign-in breaking silently later. Written up in full in
 needed, which is a better argument for the domain than the iOS risk was.
 
 The prize is step 7 of that document: a CNAME putting the Frontend API on `clerk.<domain>`,
-same-site with the app, which moves sessions off the querystring token and onto a normal
-`HttpOnly` cookie — and so fixes the iOS risk rather than merely testing for it.
+same-site with the app, which removes the cross-site handshake redirect entirely and leaves the
+session as a normal `HttpOnly` cookie rather than a script-written one capped at seven days by
+Safari — and so fixes the iOS risk rather than merely testing for it.
+
+**Going ahead, 31 October 2026.** The proxy result settled it: the domain is not just insurance
+against the iOS risk, it is the only supported code path. `resonancecodex.app` is the chosen name —
+free as of the RDAP check that day, and free of the game's trademark, which matters because sign-in
+will depend on the domain resolving. Steps 0 and 1 of the runbook are yours (calendar reminder,
+then claim); the toolchain for steps 2 and 4 is confirmed ready.
 
 ---
 

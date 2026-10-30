@@ -28,6 +28,13 @@ reminder on day one or do not start.
 If the phone test does fail, a domain is not the only fix — see the next section, which is the
 result of actually trying the alternative.
 
+**Decided on 31 October 2026: do it anyway, before the phone test.** The reasoning is in the next
+section rather than here — the proxy alternative works but holds together only on undocumented
+props, so the domain is not just the fix for the iOS risk, it is the only supported code path.
+Year one is free and the renewal is ~$12–15, which is a small price for not depending on
+`__internal_`-prefixed API. The phone test is still worth running, but as a measurement of whether
+the problem was real, not as a gate on starting.
+
 ## The Frontend API proxy: tried, works, not shipped
 
 Tried 30 October 2026 on `@clerk/nextjs` 7.9.22. It works. It is still not the recommended route,
@@ -103,14 +110,46 @@ here, because Vercel and Clerk both serve HTTPS anyway.
 One Name.com quirk from their own offer text: make sure the account has a unique address, or the
 system may read the request as a duplicate.
 
+### Names, checked free on 31 October 2026
+
+Checked by RDAP (`https://rdap.org/domain/<name>`, where 404 means unregistered and 200 means
+taken — verified against `google.dev`, `web.dev` and `clerk.app`, all 200). All seven were free:
+
+```
+resonancecodex.app     resonancecodex.dev     resonance-codex.dev
+rescodex.app           rescodex.dev
+wuwacodex.app          wuwacodex.dev
+```
+
+**`resonancecodex.app` is the pick.** It matches the app's own name, and it deliberately avoids
+"wuwa" — "Wuthering Waves" is Kuro Games' trademark, and the abbreviation is close enough to it
+that a complaint is conceivable. Normally that would not matter much, but here sign-in depends on
+the domain resolving, so a domain that could be disputed is a domain that could take auth down
+with it. The repository name can stay `wuwa-companion`; nothing requires the two to match.
+
+Availability can change between the check and the claim. If the name has gone, re-run the RDAP
+check on the next candidate rather than guessing.
+
 ## The sequence
 
 Steps marked **you** need an account only you can sign into. The rest can run from here.
 
+Prerequisites confirmed on this machine, 31 October 2026: Node 24.22.1, Vercel CLI 65.7.0, logged
+in as `ham1115`, and `.vercel/project.json` present — so steps 2 and 4 are ready to run the moment
+the domain exists. Step 5 still needs your `clerk login` first.
+
+### 0. Set the renewal reminder — you
+
+Do this *before* claiming, while the consequence is fresh: a calendar entry for roughly eleven
+months out, titled so that future-you understands the stakes — "renew the domain or app sign-in
+breaks". The domain is free for a year, which is exactly what makes it easy to lose. This step
+costs thirty seconds and is the only one that protects everything below it.
+
 ### 1. Claim the domain — you
 
-[education.github.com/pack](https://education.github.com/pack) → the Name.com offer → claim, and
-pick the name. Nothing below works until this exists.
+[education.github.com/pack](https://education.github.com/pack) → the Name.com offer → claim
+`resonancecodex.app` (see **Which domain** above for why that name, and for the fallbacks).
+Nothing below works until this exists.
 
 ### 2. Create the DNS zone on Vercel
 
