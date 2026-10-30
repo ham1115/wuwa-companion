@@ -13,6 +13,7 @@ import { SYNCED_KEYS, isSyncedKey } from "./keys";
 import {
   PREFIX,
   applyRemote,
+  backfillMeta,
   localUpdatedAt,
   readRaw,
   setLocalChangeHandler,
@@ -113,6 +114,10 @@ function useSyncEngine() {
     busy.current = true;
     setState("syncing");
     try {
+      // Progress made before sync existed has no timestamp; without this it
+      // would be invisible to the comparison below and never leave the device.
+      backfillMeta(SYNCED_KEYS);
+
       const remote = await fetchRemote();
       const toPush: string[] = [];
 

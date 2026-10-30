@@ -171,6 +171,39 @@ export function setLocalUpdatedAt(key: string, at: number) {
   writeMeta(meta);
 }
 
+/**
+ * Give data that predates sync a timestamp.
+ *
+ * Anything stored before this release has no entry in the meta map, so a
+ * first sign-in would read `localUpdatedAt` as 0 for every key and push none
+ * of it — sync would report itself up to date having uploaded nothing, and a
+ * browser full of progress would look empty to the account.
+ *
+ * These keys get a timestamp of 1: old enough to lose to any value the server
+ * actually holds (which came from a device that really did sync), new enough
+ * to count as worth pushing when the server holds nothing at all. That makes
+ * a first sign-in upload the lot, and a second device still defer to it.
+ *
+ * Returns how many keys were backfilled.
+ */
+export function backfillMeta(keys: readonly string[]): number {
+  if (typeof window === "undefined") return 0;
+  const meta = readMeta();
+  let n = 0;
+  for (const key of keys) {
+    if (meta[key] !== undefined) continue;
+    try {
+      if (window.localStorage.getItem(PREFIX + key) === null) continue;
+    } catch {
+      continue;
+    }
+    meta[key] = 1;
+    n++;
+  }
+  if (n > 0) writeMeta(meta);
+  return n;
+}
+
 /** Notified whenever a local edit happens, so sync can queue a push. */
 let onLocalChange: ((key: string) => void) | null = null;
 
