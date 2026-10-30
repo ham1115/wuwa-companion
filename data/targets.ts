@@ -780,5 +780,18 @@ export const LOW_DAMAGE_SUPPORTS = new Set([
 export const LOW_DAMAGE_NOTE =
   "Deals very low personal damage even when optimised, so investing in its damage stats is skippable. Energy Regen is by far the most important number here.";
 
+/**
+ * The number a target is "met" at: the first figure in the published value.
+ * "60-75%+" floors at 60, "220%-230%" at 220, "15000+" at 15000. Deliberately
+ * the low end — the top of a range is a stretch goal, not a pass mark.
+ */
+export function targetFloor(
+  value: string
+): { min: number; percent: boolean } | null {
+  const match = value.replace(/,/g, "").match(/\d+(?:\.\d+)?/);
+  if (!match) return null;
+  return { min: parseFloat(match[0]), percent: value.includes("%") };
+}
+
 export const TARGETS_DISCLAIMER =
   "A good endgame build to aim for, not a pass mark. Ranges reflect different teams and Resonance Chains — 5-stars are quoted at S0, 4-stars and free characters at S6.";

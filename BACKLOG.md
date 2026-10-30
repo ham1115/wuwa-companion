@@ -43,14 +43,13 @@ For each ascension material: which boss / Tacet Field / region drops it, and the
 
 ## Features
 
-### 7. Record what each character is actually using
-Set the real Echo set and weapon per character, picked from the existing databases, stored per character. Pairs naturally with #8.
-**~1 hour.**
+### 7. Record what each character is actually using ✅
+A **My build** block on every Characters card and My plan entry: two pickers for the weapon and the Sonata set, each listing the recommended options first and then everything else that fits the character. Picking something off the recommended list says so, without nagging — a complete off-meta set still beats an incomplete recommended one.
 
-### 8. Input your current stats and compare to recommended
-Optional per-character stat entry shown side by side with the targets, so gaps are visible.
+### 8. Input your current stats and compare to recommended ✅
+Under the same block: one field per target, with the published figure beside it. A figure that clears the low end of the range is ticked in green; one that falls short shows the gap in red. Stored per character, every field optional.
 
-**Now unblocked** — #5 has landed, and `TARGETS` is keyed by character id with one row per stat, so a stored "my value" per label slots straight in. **~2 hours.**
+The floor is the first number in the published value, so "60-75%+" passes at 60 and "220%-230%" at 220. The top of a range is a stretch goal, not a pass mark.
 
 ### 9. Story progress reveals matching glossary spoilers
 Ticking a chapter should auto-unblur the glossary terms belonging to it.
@@ -95,6 +94,6 @@ After provisioning, the real work is rewriting `lib/storage.ts` — which every 
 1. ~~Items 1–4 (quick wins)~~ — done
 2. ~~Item 5 (stat targets)~~ — done
 3. ~~Item 11 (UI/UX)~~ — done
-4. Items 7, 8, 9, 10
+4. ~~Items 7, 8~~ — done; items 9, 10 next
 5. Item 12 (sync) when you want it
 6. Item 6 (materials) last — least certain payoff for the research cost

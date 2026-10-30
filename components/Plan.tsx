@@ -10,6 +10,7 @@ import {
 } from "@/data/plan";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
 import StatLine from "./StatLine";
+import MyBuild from "./MyBuild";
 import Targets from "./Targets";
 
 const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
@@ -158,6 +159,8 @@ export default function Plan() {
             )}
 
             <Targets id={c.id} />
+
+            <MyBuild c={c} />
 
             <h2 className="section">Checklist</h2>
             {PLAN_STEPS.map((s) => {

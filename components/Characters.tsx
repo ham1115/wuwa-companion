@@ -13,6 +13,7 @@ import { DEFAULT_PLAN } from "@/data/plan";
 import { useOwned } from "@/lib/owned";
 import Filters from "./Filters";
 import StatLine from "./StatLine";
+import MyBuild from "./MyBuild";
 import Targets from "./Targets";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
 
@@ -230,6 +231,8 @@ function CharacterRow({
               <p className="term-def">{c.substats}</p>
 
               <Targets id={c.id} />
+
+              <MyBuild c={c} />
 
               {c.materials.length > 0 && (
                 <>
