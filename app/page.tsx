@@ -135,13 +135,6 @@ export default function Page() {
         </>
       )}
 
-      <p className="footnote">
-        Everything you check off or write is stored in this browser only. It is
-        never uploaded, and clearing site data erases it. Game details reflect
-        public guides and may lag behind the current patch — the in-game screens
-        win any disagreement.
-      </p>
-
       <BackToTop />
     </main>
   );

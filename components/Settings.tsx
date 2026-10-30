@@ -27,6 +27,10 @@ const BASE_INK: Record<"light" | "dark", string> = {
   light: "#3f2733",
   dark: "#fbeaf2",
 };
+const BASE_BG: Record<"light" | "dark", string> = {
+  light: "#fff6fa",
+  dark: "#1c1118",
+};
 
 const GROUP_LABELS: { id: StorageGroup; label: string; detail: string }[] = [
   { id: "characters", label: "Characters", detail: "Built marks, per-character notes, and your owned list" },
@@ -122,8 +126,8 @@ export default function Settings() {
       <h2 className="section">Colours</h2>
       <p className="panel-intro">
         A preset changes the accent and the background tint. Underneath it you
-        can set the accent and the text colour yourself, and each one layers
-        over whichever preset is picked.
+        can set the accent, the background and the text colour yourself, and
+        each one layers over whichever preset is picked.
       </p>
 
       <div className="palette-grid">
@@ -164,6 +168,23 @@ export default function Settings() {
         </label>
 
         <label className="mine-field">
+          <span className="target-label">Background</span>
+          <input
+            type="color"
+            className="colour-input"
+            value={
+              theme.bg || theme.palette[theme.mode].bg || BASE_BG[theme.mode]
+            }
+            onChange={(e) => theme.setBg(e.target.value)}
+            aria-label="Custom background colour"
+          />
+          <span className="check-detail">
+            The page, the cards above it, the wells below, and both border
+            weights — spaced as the built-in themes space them.
+          </span>
+        </label>
+
+        <label className="mine-field">
           <span className="target-label">Text</span>
           <input
             type="color"
@@ -183,6 +204,19 @@ export default function Settings() {
           </span>
         </label>
       </div>
+
+      {theme.bgAdjusted && (
+        <div className="callout" data-tone="warn">
+          <strong>That background was pulled back</strong>
+          Its hue is yours, but {theme.mode} mode was kept {theme.mode}. Every
+          pill, tint and soft accent in this mode is built to sit on a{" "}
+          {theme.mode === "light" ? "pale" : "dark"} page, and they are not
+          re-derived from your pick — so a{" "}
+          {theme.mode === "light" ? "dark" : "pale"} background here would make
+          them vanish rather than invert. Switch to{" "}
+          {theme.mode === "light" ? "dark" : "light"} mode for that.
+        </div>
+      )}
 
       {theme.inkAdjusted && (
         <div className="callout" data-tone="warn">
@@ -215,6 +249,11 @@ export default function Settings() {
         {theme.ink && (
           <button className="chip" onClick={() => theme.setInk("")}>
             Drop the custom text colour
+          </button>
+        )}
+        {theme.bg && (
+          <button className="chip" onClick={() => theme.setBg("")}>
+            Drop the custom background
           </button>
         )}
         {theme.customised && (

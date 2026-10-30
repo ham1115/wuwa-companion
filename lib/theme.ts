@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   DEFAULT_PALETTE,
   PALETTES,
@@ -101,15 +101,37 @@ function hexLuminance(hex: string): number {
 const contrast = (a: number, b: number) =>
   (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 
-/**
- * The least forgiving surface each mode puts text on, across every preset:
- * the darkest light background and the lightest dark one. Aim at these and
- * every other surface in that mode does at least as well.
- */
-const WORST_SURFACE: Record<Mode, string> = {
-  light: "#efe9fc",
-  dark: "#182927",
+/** The base themes' own three surfaces, used when nothing overrides them. */
+const BASE_SURFACES: Record<Mode, [string, string, string]> = {
+  light: ["#fff6fa", "#ffffff", "#fdecf3"],
+  dark: ["#1c1118", "#271a22", "#150c11"],
 };
+
+/** Luminance of a token value, which may be a hex or one of our hsl() strings. */
+function cssLuminance(value: string): number | null {
+  const v = value.trim();
+  if (/^#[0-9a-f]{6}$/i.test(v)) return hexLuminance(v);
+  const m = /^hsl\(\s*([\d.]+)\s+([\d.]+)%\s+([\d.]+)%\s*\)$/i.exec(v);
+  return m ? hslLuminance(+m[1], +m[2], +m[3]) : null;
+}
+
+/**
+ * The least forgiving surface text will actually land on, given whatever the
+ * preset and the pickers have resolved to. Text sits on the page, on cards and
+ * in sunken wells, so the ramp has to clear the worst of the three — the
+ * lightest one in dark mode, the darkest one in light.
+ */
+function worstSurfaceLum(
+  vars: Partial<Record<string, string>>,
+  mode: Mode
+): number {
+  const base = BASE_SURFACES[mode];
+  const lums = (["bg", "bg-raised", "bg-sunken"] as const).map((token, i) => {
+    const value = vars[token];
+    return (value ? cssLuminance(value) : null) ?? hexLuminance(base[i]);
+  });
+  return mode === "light" ? Math.min(...lums) : Math.max(...lums);
+}
 
 /**
  * The contrast each text token has to keep. These are the shipped themes' own
@@ -120,8 +142,7 @@ const WORST_SURFACE: Record<Mode, string> = {
 const INK_CONTRAST = { text: 7, dim: 4.5, faint: 2.7 } as const;
 
 /**
- * The lightness nearest `from` that clears `target` against the mode's worst
- * surface.
+ * The lightness nearest `from` that clears `target` against `bg`.
  *
  * This is why the clamp is on measured luminance and not on HSL lightness:
  * lightness is not brightness. Yellow at l=42 and blue at l=42 are the same
@@ -133,9 +154,9 @@ function legibleLightness(
   s: number,
   from: number,
   target: number,
-  mode: Mode
+  mode: Mode,
+  bg: number
 ) {
-  const bg = hexLuminance(WORST_SURFACE[mode]);
   const ok = (l: number) => contrast(hslLuminance(h, s, l), bg) >= target;
   const start = clamp(from);
   if (ok(start)) return start;
@@ -159,7 +180,7 @@ function legibleLightness(
  * faintest captions — each a visible step from the last and all three still
  * readable. The steps are nominal; each is pulled back if it fails its target.
  */
-function inkTrio(hex: string, mode: Mode) {
+function inkTrio(hex: string, mode: Mode, bgLum: number) {
   const hsl = hexToHsl(hex);
   if (!hsl) return null;
   const { h, l } = hsl;
@@ -169,20 +190,22 @@ function inkTrio(hex: string, mode: Mode) {
   const faintSat = clamp(sat * 0.62);
   const step = mode === "light" ? 1 : -1;
 
-  const text = legibleLightness(h, sat, l, INK_CONTRAST.text, mode);
+  const text = legibleLightness(h, sat, l, INK_CONTRAST.text, mode, bgLum);
   const dim = legibleLightness(
     h,
     dimSat,
     text + step * 22,
     INK_CONTRAST.dim,
-    mode
+    mode,
+    bgLum
   );
   const faint = legibleLightness(
     h,
     faintSat,
     text + step * 39,
     INK_CONTRAST.faint,
-    mode
+    mode,
+    bgLum
   );
 
   return {
@@ -196,9 +219,56 @@ function inkTrio(hex: string, mode: Mode) {
   };
 }
 
-/** Whether this colour would be altered before being used as text. */
-export function inkWouldAdjust(hex: string, mode: Mode): boolean {
-  return inkTrio(hex, mode)?.adjusted ?? false;
+/**
+ * How light a custom background is allowed to be. A light mode whose page is
+ * near-black is not a dark mode — it is light mode with every pill, tint and
+ * accent-soft still pale and now invisible. The band keeps each mode
+ * recognisably itself; within it the text ramp re-derives to match.
+ */
+const BG_BAND: Record<Mode, readonly [number, number]> = {
+  light: [84, 99],
+  dark: [0, 14],
+};
+
+/**
+ * One picked background becomes five tokens: the page, the cards that sit
+ * above it, the wells that sit below, and the two border weights. The offsets
+ * are the base themes' own gaps, so a custom background keeps the same sense
+ * of depth rather than flattening the app.
+ */
+function bgSurfaces(hex: string, mode: Mode) {
+  const hsl = hexToHsl(hex);
+  if (!hsl) return null;
+  const { h } = hsl;
+  const band = BG_BAND[mode];
+  // A saturated background fights the text on it; keep it a tint.
+  const sat = clamp(Math.min(hsl.s, mode === "light" ? 40 : 30));
+  const l = Math.min(band[1], Math.max(band[0], hsl.l));
+  const at = (delta: number, s = sat) =>
+    `hsl(${h} ${clamp(s)}% ${clamp(l + delta)}%)`;
+  return mode === "light"
+    ? {
+        bg: at(0),
+        "bg-raised": at(1.4),
+        "bg-sunken": at(-2.6),
+        border: at(-8, sat * 0.7),
+        "border-strong": at(-17.6, sat * 0.64),
+      }
+    : {
+        bg: at(0),
+        "bg-raised": at(3.9),
+        "bg-sunken": at(-2.5),
+        border: at(10.2, sat * 0.9),
+        "border-strong": at(19.2, sat * 0.8),
+      };
+}
+
+/** Whether this background would be moved to keep the mode recognisable. */
+export function bgWouldAdjust(hex: string, mode: Mode): boolean {
+  const hsl = hexToHsl(hex);
+  if (!hsl) return false;
+  const [lo, hi] = BG_BAND[mode];
+  return hsl.l < lo - 1.5 || hsl.l > hi + 1.5;
 }
 
 /** Every token any preset or picker can set, so switching away clears it. */
@@ -223,7 +293,8 @@ function apply(
   palette: Palette,
   mode: Mode,
   customAccent: string,
-  customInk: string
+  customInk: string,
+  customBg: string
 ) {
   const root = document.documentElement;
   const vars: Partial<Record<string, string>> = {
@@ -231,7 +302,15 @@ function apply(
   };
   const trio = customAccent ? accentTrio(customAccent, mode) : null;
   if (trio) Object.assign(vars, trio);
-  const ink = customInk ? inkTrio(customInk, mode) : null;
+  const surfaces = customBg ? bgSurfaces(customBg, mode) : null;
+  if (surfaces) Object.assign(vars, surfaces);
+
+  // Text last, and against the surfaces as finally resolved: the ramp's whole
+  // job is clearing its contrast targets on the background actually in use, so
+  // it cannot be derived before a custom background has had its say.
+  const ink = customInk
+    ? inkTrio(customInk, mode, worstSurfaceLum(vars, mode))
+    : null;
   if (ink) Object.assign(vars, ink.vars);
 
   for (const token of ALL_TOKENS) {
@@ -242,9 +321,10 @@ function apply(
 }
 
 /**
- * Light or dark, which preset, and optional custom accent and text colours.
- * All of it lives in the browser; the preset layers over the base theme
- * rather than replacing it, so only the tokens it names actually change.
+ * Light or dark, which preset, and optional custom accent, text and
+ * background colours. All of it lives in the browser; the preset layers over
+ * the base theme rather than replacing it, so only the tokens it names
+ * actually change.
  */
 export function useTheme() {
   const [mode, setMode] = usePersistentState<Mode>("theme", "light");
@@ -254,13 +334,14 @@ export function useTheme() {
   );
   const [accent, setAccent] = usePersistentState<string>("accent", "");
   const [ink, setInk] = usePersistentState<string>("ink", "");
+  const [bg, setBg] = usePersistentState<string>("bg", "");
 
   const palette = BY_ID.get(paletteId) ?? PALETTES[0];
 
   useEffect(() => {
     document.documentElement.dataset.theme = mode;
-    apply(palette, mode, accent, ink);
-  }, [mode, palette, accent, ink]);
+    apply(palette, mode, accent, ink, bg);
+  }, [mode, palette, accent, ink, bg]);
 
   const toggleMode = useCallback(
     () => setMode(mode === "dark" ? "light" : "dark"),
@@ -271,10 +352,27 @@ export function useTheme() {
     setPaletteId(DEFAULT_PALETTE);
     setAccent("");
     setInk("");
-  }, [setPaletteId, setAccent, setInk]);
+    setBg("");
+  }, [setPaletteId, setAccent, setInk, setBg]);
 
   const customised =
-    paletteId !== DEFAULT_PALETTE || accent !== "" || ink !== "";
+    paletteId !== DEFAULT_PALETTE ||
+    accent !== "" ||
+    ink !== "" ||
+    bg !== "";
+
+  /**
+   * Whether the picked text colour is being moved. Asked of the surfaces as
+   * resolved, so the notice tracks a background change too.
+   */
+  const inkAdjusted = useMemo(() => {
+    if (!ink) return false;
+    const vars: Partial<Record<string, string>> = {
+      ...(mode === "light" ? palette.light : palette.dark),
+      ...(bg ? bgSurfaces(bg, mode) : null),
+    };
+    return inkTrio(ink, mode, worstSurfaceLum(vars, mode))?.adjusted ?? false;
+  }, [ink, bg, mode, palette]);
 
   return {
     mode,
@@ -287,8 +385,11 @@ export function useTheme() {
     setAccent,
     ink,
     setInk,
-    /** True when the picked text colour is being pulled back to stay legible. */
-    inkAdjusted: ink !== "" && inkWouldAdjust(ink, mode),
+    bg,
+    setBg,
+    inkAdjusted,
+    /** True when the picked background is being moved to keep the mode itself. */
+    bgAdjusted: bg !== "" && bgWouldAdjust(bg, mode),
     reset,
     customised,
   };
