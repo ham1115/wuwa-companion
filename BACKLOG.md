@@ -90,21 +90,26 @@ A preset only overrides the tokens that give it its character (backgrounds, bord
 
 ## In flight
 
-### 12. Cross-device sync — blocked
+### 12. Cross-device sync — unblocked, not started
 Optional sign-in that syncs progress across devices; anonymous visitors keep browser-only storage.
 
 - **Decided:** Clerk for auth, Neon Postgres for data, login optional not required.
-- **Done:** project linked to `hambyte/wuwa-companion`; Marketplace discovery run.
-- **Blocked on:** provisioning, which changes the Vercel account, so it needs to be run by the account owner:
+- **Provisioned** (30 October 2026, by the account owner): `clerk-crimson-saddle` and
+  `neon-fuchsia-ridge`, both Available on `hambyte/wuwa-companion`. `CLERK_SECRET_KEY`,
+  `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `DATABASE_URL` and the rest are set for Production,
+  Preview and Development.
+- **Skills installed** by the integrations and committed: `clerk-setup`, `clerk-nextjs-patterns`,
+  `neon-postgres` and others under `.claude/skills/`.
 
-```bash
-vercel integration add clerk --yes --no-claim
-vercel integration add neon --yes --no-claim
-```
+Note for anyone repeating this: `vercel integration add <name> --yes` does **not** work — CLI 65.7.0
+has no `--yes` on `add`. It exists only on `accept-terms`, and only for `neon`. Both integrations
+need a browser consent step, so `vercel integration open <name>` is the reliable route.
 
 Both sit inside free tiers at this scale. Only people who actually register count toward Clerk's user limit.
 
-After provisioning, the real work is rewriting `lib/storage.ts` — which every tab depends on — to be local-first with server sync, plus a merge on first sign-in. **Several hours. Biggest item here.**
+The remaining work is all code: Clerk proxy, provider and sign-in pages, a Postgres schema, API
+routes, and rewriting `lib/storage.ts` — which every tab depends on — to be local-first with server
+sync, plus a merge on first sign-in. **Several hours. Biggest item here, and the only one left.**
 
 ---
 
@@ -114,5 +119,5 @@ After provisioning, the real work is rewriting `lib/storage.ts` — which every 
 2. ~~Item 5 (stat targets)~~ — done
 3. ~~Item 11 (UI/UX)~~ — done
 4. ~~Items 7, 8, 9, 10~~ — done
-5. Item 12 (sync) when you want it
+5. Item 12 (sync) — provisioned and waiting; the only item left
 6. ~~Item 6 (materials)~~ — done
