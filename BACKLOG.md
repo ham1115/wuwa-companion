@@ -134,9 +134,49 @@ comes back semantically identical but not string-identical. Nothing compares ser
 the merge is on timestamps — so it has no effect, but a naive string diff of local against server
 will show a false mismatch.
 
-**Before relying on it in production:** the Clerk instance is in development mode. The Marketplace
-set one key pair across all three Vercel environments, so production is running dev keys with dev
-limits. Claiming the app and running `clerk deploy` is an account-level step for the owner.
+**Production still runs development keys** — see item 13.
+
+---
+
+## In flight
+
+### 13. Promote Clerk off development keys
+Confirmed 30 October 2026 by fetching the live site: it serves `pk_test_...` via
+`clerk.accounts.dev`. The Marketplace provisioned one development key pair and set it across
+Production, Preview and Development, so the deployed app runs a Clerk development instance.
+
+**What that actually costs us**
+
+- 100-user cap. Irrelevant at this scale — it is shared with friends.
+- Sessions use the development browser token in the querystring (`__clerk_db_jwt`) rather than an
+  `HttpOnly` same-site cookie, because the app and `clerk.accounts.dev` are cross-site. **This is
+  the one that could really bite:** browsers that block third-party state, Safari and iOS in
+  particular, may not keep anyone signed in. Untested, and worth testing on a phone before
+  anybody relies on sync.
+- Google sign-in uses Clerk's *shared* development OAuth credentials, so the consent screen is
+  branded `accounts.dev` rather than this app.
+- Not crawlable by search engines. No loss here; nobody wants this indexed.
+- Clerk states plainly that development instances are not suitable for production workloads.
+
+**What promoting needs**
+
+1. A domain we own with DNS control. `vercel domains ls` reports **0 domains**, and a
+   `*.vercel.app` address cannot take the CNAME the Frontend API needs, so this is the real
+   blocker — roughly £10/year, not a Clerk cost.
+2. Clerk Dashboard → Create production instance (cloning development settings or starting fresh).
+3. Add the DNS records the Dashboard's Domains page lists, then Deploy certificates. Propagation
+   can take up to 48 hours, and CAA records that block Let's Encrypt or Google Trust Services will
+   stall issuance.
+4. Our own Google OAuth credentials: SSO connections do not copy to production.
+5. Put `pk_live_` / `sk_live_` into Vercel. Note the existing vars are type **`Config`**, managed
+   by the Marketplace integration rather than plain values, so they need overriding or the
+   integration reconfiguring — not just an edit.
+6. Redeploy.
+
+Clerk's free Hobby plan covers production at 50,000 monthly retained users, so the plan is not the
+obstacle; the domain is. **Recommendation: leave it on development for now.** Nothing about sharing
+this with a handful of friends needs a production instance, and the only genuine risk is sign-in
+persistence on iOS — test that first, and buy a domain if it fails or if this ever goes wider.
 
 ---
 
