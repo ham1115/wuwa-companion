@@ -5,7 +5,7 @@ import type { Character } from "@/data/characters";
 import { SONATA_SETS } from "@/data/echoes";
 import { TARGETS, targetFloor } from "@/data/targets";
 import { WEAPONS, baseWeaponName } from "@/data/weapons";
-import { MAX_LEVEL, useLoadout } from "@/lib/loadout";
+import { MAX_LEVEL, MAX_SEQUENCE, useLoadout } from "@/lib/loadout";
 
 /**
  * What this character is actually running, next to what the guides recommend.
@@ -50,6 +50,36 @@ export default function MyBuild({
 
   const filled = Object.keys(mine.stats ?? {}).length;
 
+  /*
+   * Why a shortfall might not mean the build is wrong. The targets are quoted
+   * at a finished Lv.90 build, and at a particular Resonance Chain — 5-stars
+   * at S0, 4-stars and free characters at S6 — so a figure below them is only
+   * readable once you know where this character actually is. Each of these
+   * only appears when the player has told us the thing it depends on.
+   */
+  const caveats: string[] = [];
+  if (mine.level !== undefined && mine.level < MAX_LEVEL) {
+    caveats.push(
+      `every target is a Lv.${MAX_LEVEL} figure and this character is Lv.${mine.level}`
+    );
+  }
+  if (mine.weaponLevel !== undefined && mine.weaponLevel < MAX_LEVEL) {
+    caveats.push(
+      `the weapon is Lv.${mine.weaponLevel} rather than ${MAX_LEVEL}, which is ATK the targets assume you have`
+    );
+  }
+  if (mine.sequence !== undefined) {
+    if (c.rarity === 5 && mine.sequence > 0) {
+      caveats.push(
+        `the targets are quoted at S0 and this character is S${mine.sequence}, so they are the floor rather than the aim`
+      );
+    } else if (c.rarity === 4 && mine.sequence < MAX_SEQUENCE) {
+      caveats.push(
+        `the targets for a 4-star assume S${MAX_SEQUENCE} and this character is S${mine.sequence}`
+      );
+    }
+  }
+
   return (
     <>
       <h2 className="section">My build</h2>
@@ -72,6 +102,36 @@ export default function MyBuild({
               const after = Math.floor(Number(e.target.value));
               if (after === MAX_LEVEL && before !== MAX_LEVEL) onLevelMaxed?.(c.id);
             }}
+          />
+        </label>
+
+        <label className="mine-field">
+          <span className="target-label">Sequence</span>
+          <input
+            className="picker"
+            type="number"
+            inputMode="numeric"
+            min={0}
+            max={MAX_SEQUENCE}
+            step={1}
+            placeholder={`S0–S${MAX_SEQUENCE}`}
+            value={mine.sequence ?? ""}
+            onChange={(e) => loadout.setNumber(c.id, "sequence", e.target.value)}
+          />
+        </label>
+
+        <label className="mine-field">
+          <span className="target-label">Weapon level</span>
+          <input
+            className="picker"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={MAX_LEVEL}
+            step={1}
+            placeholder={`1–${MAX_LEVEL}`}
+            value={mine.weaponLevel ?? ""}
+            onChange={(e) => loadout.setNumber(c.id, "weaponLevel", e.target.value)}
           />
         </label>
 
@@ -163,16 +223,13 @@ export default function MyBuild({
               <p className="check-detail">
                 Read these off the in-game stat screen with the character active
                 in your party. Leave anything you do not care about blank.
-                {mine.level !== undefined && mine.level < MAX_LEVEL && (
-                  <>
-                    {" "}
-                    Every target below is a Lv.{MAX_LEVEL} figure and this
-                    character is Lv.{mine.level}, so falling short is expected —
-                    the shortfalls are a distance to the finished build, not a
-                    verdict on this one.
-                  </>
-                )}
               </p>
+              {caveats.length > 0 && (
+                <p className="check-detail">
+                  Read the shortfalls as a distance, not a verdict:{" "}
+                  {caveats.join("; ")}.
+                </p>
+              )}
               <div className="compare">
                 {targets.map((t) => {
                   const floor = targetFloor(t.value);
@@ -210,7 +267,12 @@ export default function MyBuild({
         </>
       )}
 
-      {(mine.weapon || mine.set || mine.level !== undefined || filled > 0) && (
+      {(mine.weapon ||
+        mine.set ||
+        mine.level !== undefined ||
+        mine.sequence !== undefined ||
+        mine.weaponLevel !== undefined ||
+        filled > 0) && (
         <div className="queue-controls">
           <button className="mini" onClick={() => loadout.clear(c.id)}>
             Clear my build

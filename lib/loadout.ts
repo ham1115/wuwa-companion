@@ -13,12 +13,33 @@ export type Loadout = {
    * screen, like the stats below it, not a box you tick once.
    */
   level?: number;
+  /**
+   * Resonance Chain, S0–S6: how many copies of the character you have pulled
+   * beyond the first. It belongs with the build because the stat targets are
+   * quoted at a particular sequence — 5-stars at S0, 4-stars and free
+   * characters at S6 — so without it a shortfall cannot be read.
+   */
+  sequence?: number;
+  /** The equipped weapon's own level, 1–90. */
+  weaponLevel?: number;
   /** Keyed by the target's label, e.g. "CRIT Rate" -> "68.4". */
   stats?: Record<string, string>;
 };
 
 /** The cap, and so the point at which a character is finished levelling. */
 export const MAX_LEVEL = 90;
+
+/** S0 through S6 — six duplicates past the first copy. */
+export const MAX_SEQUENCE = 6;
+
+/** The numeric fields, and the range each one accepts. */
+export const NUMERIC_FIELDS = {
+  level: { min: 1, max: MAX_LEVEL },
+  sequence: { min: 0, max: MAX_SEQUENCE },
+  weaponLevel: { min: 1, max: MAX_LEVEL },
+} as const;
+
+export type NumericField = keyof typeof NUMERIC_FIELDS;
 
 /**
  * Per-character record of the real build, as opposed to the recommended one.
@@ -62,26 +83,32 @@ export function useLoadout() {
   );
 
   /**
-   * Sets the current level from raw input. Anything that is not a number in
-   * 1–90 removes it rather than storing a level the game cannot produce, so a
-   * half-typed "9" on the way to "90" simply reads as unset for that keystroke
-   * instead of being clamped to something the player did not mean.
+   * Sets one of the numeric fields from raw input. Anything outside that
+   * field's range removes it rather than storing a value the game cannot
+   * produce, so a half-typed "9" on the way to "90" simply reads as unset for
+   * that keystroke instead of being clamped to something nobody meant.
    */
-  const setLevel = useCallback(
-    (id: string, value: string) =>
+  const setNumber = useCallback(
+    (id: string, field: NumericField, value: string) =>
       setAll((prev) => {
         const entry = { ...prev[id] };
+        const { min, max } = NUMERIC_FIELDS[field];
         const n = Math.floor(Number(value));
-        if (value.trim() !== "" && Number.isFinite(n) && n >= 1 && n <= MAX_LEVEL) {
-          entry.level = n;
+        if (value.trim() !== "" && Number.isFinite(n) && n >= min && n <= max) {
+          entry[field] = n;
         } else {
-          delete entry.level;
+          delete entry[field];
         }
         const next = { ...prev, [id]: entry };
         if (Object.keys(entry).length === 0) delete next[id];
         return next;
       }),
     [setAll]
+  );
+
+  const setLevel = useCallback(
+    (id: string, value: string) => setNumber(id, "level", value),
+    [setNumber]
   );
 
   const clear = useCallback(
@@ -94,5 +121,5 @@ export function useLoadout() {
     [setAll]
   );
 
-  return { all, get, setField, setStat, setLevel, clear, hydrated };
+  return { all, get, setField, setStat, setNumber, setLevel, clear, hydrated };
 }

@@ -202,6 +202,17 @@ then claim); the toolchain for steps 2 and 4 is confirmed ready.
 
 ---
 
+## Added since
+
+**Recommended teams**, 31 October 2026. 178 line-ups for 58 of the 61 Resonators, from the
+prydwen.gg character guides. `data/teams.ts` is generated and its generator fails rather than
+emitting an id that no longer matches the roster. Baizhi, Verina and Lily have none published.
+
+**What a character actually is**, 31 October 2026. Current level, Resonance Chain and weapon level
+now sit with the rest of My build, because the stat targets are quoted at a finished Lv.90 build
+at S0 for a 5-star and S6 for a 4-star — without those three a shortfall cannot be read. Reaching
+Lv.90 asks once whether the character is finished; nothing else ever removes them from the queue.
+
 ## Suggested order
 
 1. ~~Items 1–4 (quick wins)~~ — done
