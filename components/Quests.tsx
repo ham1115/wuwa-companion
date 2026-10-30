@@ -5,10 +5,15 @@ import { CHAPTERS, CHAPTER_DISCLAIMER } from "@/data/progress";
 import { useIdSet, usePersistentState } from "@/lib/storage";
 
 /**
- * Every act in story order. The game gates acts behind the ones before them,
- * so progress is always a prefix of this list — never a scatter of ticks.
+ * Every numbered act in story order. The game gates these behind the ones
+ * before them, so progress through them is always a prefix of this list.
+ * Segues, interludes and side stories are left out — they tick on their own.
  */
-const ACT_ORDER = CHAPTERS.flatMap((c) => c.acts.map((a) => a.id));
+const ACT_ORDER = CHAPTERS.flatMap((c) =>
+  c.acts.filter((a) => !a.optional).map((a) => a.id)
+);
+
+const ALL_ACTS = CHAPTERS.flatMap((c) => c.acts);
 
 export default function Quests() {
   const acts = useIdSet("acts");
@@ -17,25 +22,30 @@ export default function Quests() {
   const [editing, setEditing] = useState(false);
 
   /**
-   * Clicking an act sets progress to that point: ticking fills in every act
-   * before it, un-ticking clears it and everything after.
+   * A numbered act sets progress to that point: ticking fills in every act
+   * before it, un-ticking clears it and everything after. Segues and the like
+   * are independent, so they just toggle.
    */
-  function setProgress(id: string) {
+  function setProgress(id: string, optional?: boolean) {
+    if (optional) {
+      acts.toggle(id);
+      return;
+    }
     const i = ACT_ORDER.indexOf(id);
     if (i < 0) return;
-    acts.set(ACT_ORDER.slice(0, acts.has(id) ? i : i + 1));
+    const keepOptional = acts.ids.filter((x) => !ACT_ORDER.includes(x));
+    const upTo = ACT_ORDER.slice(0, acts.has(id) ? i : i + 1);
+    acts.set([...upTo, ...keepOptional]);
   }
 
-  const totalActs = CHAPTERS.reduce((n, c) => n + c.acts.length, 0);
-  const doneActs = CHAPTERS.reduce(
-    (n, c) => n + c.acts.filter((a) => acts.has(a.id)).length,
-    0
-  );
+  const doneActs = ALL_ACTS.filter((a) => acts.has(a.id)).length;
+  const mainDone = ACT_ORDER.filter((id) => acts.has(id)).length;
 
   return (
     <section>
       <p className="panel-intro">
-        {doneActs} of {totalActs} acts marked complete.
+        {mainDone} of {ACT_ORDER.length} numbered acts complete, {doneActs} of{" "}
+        {ALL_ACTS.length} entries counting segues and interludes.
       </p>
 
       <div className="callout">
@@ -47,9 +57,7 @@ export default function Quests() {
               placeholder={"One per line, e.g.\nFinish the Chronosorter\nPush the main quest"}
               value={priority.join("\n")}
               onChange={(e) =>
-                setPriority(
-                  e.target.value.split("\n").map((l) => l.trimStart())
-                )
+                setPriority(e.target.value.split("\n").map((l) => l.trimStart()))
               }
               autoFocus
             />
@@ -93,16 +101,22 @@ export default function Quests() {
         return (
           <div key={c.id} className="card">
             <div className="build-head">
-              <h3>{c.label}</h3>
-              <span className="badge" data-status={done === c.acts.length ? "done" : "queued"}>
+              <h3>
+                {c.label}: {c.title}
+              </h3>
+              <span
+                className="badge"
+                data-status={done === c.acts.length ? "done" : done > 0 ? "active" : "queued"}
+              >
                 {c.version}
               </span>
             </div>
-            {c.unlocks && (
-              <p className="build-role">Unlocks: {c.unlocks.join(" · ")}</p>
-            )}
+            <p className="build-role">
+              {c.region}
+              {c.unlocks ? ` — unlocks ${c.unlocks.join(", ")}` : ""}
+            </p>
             <p className="progress-line">
-              {done} of {c.acts.length} acts
+              {done} of {c.acts.length} entries
             </p>
 
             {c.acts.map((a) => (
@@ -110,15 +124,21 @@ export default function Quests() {
                 key={a.id}
                 className="check"
                 data-done={acts.has(a.id)}
-                onClick={() => setProgress(a.id)}
+                onClick={() => setProgress(a.id, a.optional)}
               >
                 <span className="box">{acts.has(a.id) ? "✓" : ""}</span>
                 <span className="check-body">
                   <span className="check-label">
-                    {a.label}
-                    {a.title ? ` — ${a.title}` : ""}
+                    {a.label}: {a.title}
+                    {a.optional && <span className="side-pill">side</span>}
+                    {a.version && <span className="ver-pill">{a.version}</span>}
                   </span>
                   {a.note && <span className="check-detail">{a.note}</span>}
+                  {a.parts && (
+                    <span className="check-detail">
+                      Steps: {a.parts.join(" → ")}
+                    </span>
+                  )}
                 </span>
               </button>
             ))}
@@ -126,10 +146,7 @@ export default function Quests() {
         );
       })}
 
-      <p className="footnote">
-        Acts fill in order — ticking one marks everything before it, since the
-        game will not let you clear an act out of sequence. {CHAPTER_DISCLAIMER}
-      </p>
+      <p className="footnote">{CHAPTER_DISCLAIMER}</p>
     </section>
   );
 }

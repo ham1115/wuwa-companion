@@ -308,9 +308,9 @@ export const CHARACTERS: Character[] = [
     materials: ["46x Roaring Rock Fist", "60x Pecok Flower"],
   },
   {
-    id: "lily", name: "Lily", rarity: 5, element: "Spectro", weaponType: "Pistols", role: null,
+    id: "lily", name: "Lily", rarity: 5, element: "Spectro", weaponType: "Pistols", role: "Support",
     weapons: [], sets: [], echoes: [], stats: [],
-    substats: "No published build yet — upcoming character.",
+    substats: "No build yet. Kuro's Resonator Archive preview (8 October 2026) confirms Spectro Pistols and a healing support role for version 3.8; everything else circulating is beta leaks that contradict each other, so nothing is recorded here until she ships.",
     materials: [],
   },
   {

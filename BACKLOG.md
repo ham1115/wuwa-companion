@@ -23,7 +23,12 @@ Progress is now always a prefix of `ACT_ORDER`: ticking an act fills in everythi
 ### 5. Recommended stat targets ✅
 `data/targets.ts` holds prydwen's "Best Endgame Stats (Level 90)" for 60 of the 61 characters, shown on every Characters card and every My plan entry. Ranges and their "(before set bonuses)" qualifiers are kept as published. Seven low-damage supports carry prydwen's note that only Energy Regen really matters for them.
 
-Gaps that are prydwen's, not ours: Lily has no build section, Jingran lists only HP, Camellya lists no HP.
+A first pass reported Jingran and Camellya as having incomplete data upstream. That was wrong — the scraper only read the first `<ul>` and ignored headings, so it missed Camellya's and Denia's HP (in an `<h6>`) and six of Jingran's seven stats (in a second `<ul>`). Fixed; all 60 now carry all seven, plus prydwen's explanation of what moves each range.
+
+Only genuine gap left: Lily, who has not shipped.
+
+### 5b. Real chapter and act names ✅
+The Story tab used to show "Act 1, Act 2, Act 3" placeholders past Chapter I. It now carries the Prologue and Chapters I–IV with their in-game titles, regions and versions — 33 numbered acts and 16 segues, interludes and side stories. Segues tick independently of the sequence, since they gate nothing.
 
 ---
 

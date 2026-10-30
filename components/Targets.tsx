@@ -25,6 +25,7 @@ export default function Targets({ id }: { id: string }) {
             <span className="target-label">{r.label}</span>
             <span className="target-value">{r.value}</span>
             {r.note && <span className="target-note">{r.note}</span>}
+            {r.detail && <span className="target-detail">{r.detail}</span>}
           </div>
         ))}
       </div>

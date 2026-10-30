@@ -9,7 +9,7 @@ A Wuthering Waves companion app. Pastel pink and yellow, light by default, with 
 - **Echoes** — two views. **Sonata sets** (37) shows each set's piece requirement, 2-piece and full bonuses, every character that runs it, and every Echo that can roll it grouped by cost. **Echoes** (187) lists the whole roster; searching a Sonata name returns every Echo that rolls it. Cost-4 entries carry their Echo Skill text.
 - **My plan** — an ordered build queue. Reorder with Up/Down, remove, and work it top to bottom. Each entry reads its build live from the character database, so nothing is duplicated. Each entry also shows its Lv.90 stat targets. A **shopping list** at the top sums every ascension material the whole queue still needs; characters whose "Character to Lv.80" step is ticked drop off it.
 - **Glossary** — 61 lore and systems terms across seven categories, with related-term links. Spoilers past Chapter 1 are tagged and blurred until tapped.
-- **Story** — chapter and act progress tracker, plus a **Right now** list you write yourself. Acts fill in order: ticking Act 5 marks Acts 1–4 too, and un-ticking it clears everything after, because the game gates acts behind the ones before them.
+- **Story** — the real chapter and act list: the Prologue plus Chapters I–IV, 33 numbered acts and 16 segues, interludes and side stories, each with its in-game title and the version it shipped in. The two longest Chapter I acts list their named quest steps. Numbered acts fill in order — ticking Act V marks Acts I–IV too, and un-ticking clears everything after — while segues tick on their own, because they do not gate anything. Also holds a **Right now** list you write yourself.
 - **Routine** — daily and weekly checklist. Daily items clear themselves when the date changes.
 - **Settings** — edit which characters you own, reset any section (or everything) with a confirm step, export your progress to JSON, and import it back on another device.
 
@@ -105,9 +105,10 @@ Character build parameters come from [prydwen.gg](https://www.prydwen.gg/wutheri
 
 Known gaps:
 
-- **Lily** has no published build yet (upcoming character); the card says so, and she has no stat targets.
-- **Jingran** has only one published stat target (HP), and **Camellya** has no HP target. Both reflect prydwen's pages as captured, not a parsing gap.
-- **Act names past Chapter I Act 7** in the Story tab are placeholder structure. Only "Jinzhou Rising" is confirmed.
+- **Lily** is a version 3.8 character who has not shipped. Kuro's own Resonator Archive preview confirms Spectro Pistols and a healing support role; everything else circulating is beta leaks that contradict each other, so her card records nothing further and she has no stat targets.
+- Everything else has all seven stat targets.
 - Glossary definitions are written from general knowledge and may lag the current patch.
+
+Story data comes from the [Wuthering Waves Wiki](https://wutheringwaves.fandom.com/wiki/Main_Quest) Main Quest list, checked 30 October 2026. Chapter II's title follows Kuro's own 2.0 patch notes — "All Silent Souls Can Sing" — rather than the wiki's page heading, which still carries an older translation.
 
 **The in-game screens win any disagreement.** When the app and the game differ, trust the game and edit the data file.

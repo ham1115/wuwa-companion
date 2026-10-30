@@ -4,7 +4,8 @@
  *
  * Values are read off the in-game stat screen with the character out of
  * combat but active in the party, so some passives and set bonuses are
- * already counted. Several entries say which buff they are measured before.
+ * already counted. `note` says which buff a number is measured before;
+ * `detail` is prydwen's explanation of what makes a range move.
  */
 
 export type StatTarget = {
@@ -13,6 +14,8 @@ export type StatTarget = {
   value: string;
   /** Which buff the number is measured before, where prydwen says so. */
   note?: string;
+  /** Why the range is a range — usually the team it was estimated in. */
+  detail?: string;
 };
 
 /** Keyed by character id. Characters without a published build are absent. */
@@ -23,7 +26,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1600-2100+" },
     { label: "CRIT Rate", value: "60-75%+" },
     { label: "CRIT DMG", value: "215-280%+" },
-    { label: "Energy Regen", value: "145%-160%+" },
+    {
+      label: "Energy Regen",
+      value: "145%-160%+",
+      detail: "The lower estimate is based on Iuno+Shorekeeper, and the higher estimate is based on a team with Jiyan+Shorekeeper. No Energy Regen is required if playing Aalto as a DPS.",
+    },
     { label: "Aero DMG Bonus", value: "40-70%+" },
   ],
   "aemeath": [
@@ -32,7 +39,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2000-2400+" },
     { label: "CRIT Rate", value: "65%+", note: "(Before set bonuses)" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "115%-125%+" },
+    {
+      label: "Energy Regen",
+      value: "115%-125%+",
+      detail: "The lower estimate is based on Lynae+Mornye, and the higher estimate is based on a team with Jianxin+Mornye.",
+    },
     { label: "Fusion DMG Bonus", value: "40-70%+" },
   ],
   "augusta": [
@@ -41,7 +52,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2000-2800+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "116%-125%" },
+    {
+      label: "Energy Regen",
+      value: "116%-125%",
+      detail: "Lower end estimated in a team with Mortefi+Shorekeeper, higher end estimated in a team with Iuno+Shorekeeper.",
+    },
     { label: "Electro DMG Bonus", value: "40-70%+" },
   ],
   "baizhi": [
@@ -67,7 +82,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1500-2000+" },
     { label: "CRIT Rate", value: "60%-80%+" },
     { label: "CRIT DMG", value: "215-280%+" },
-    { label: "Energy Regen", value: "125%-180%+" },
+    {
+      label: "Energy Regen",
+      value: "125%-180%+",
+      detail: "Can vary between 125-135% (S2) on teams with Carlotta (lower end) and Phrolova (higher end), as well as 160-180% in those same teams before S2.",
+    },
     { label: "Electro DMG Bonus", value: "0-60%+" },
   ],
   "calcharo": [
@@ -76,15 +95,24 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1800-2300+" },
     { label: "CRIT Rate", value: "60%-80%+" },
     { label: "CRIT DMG", value: "215-280%+" },
-    { label: "Energy Regen", value: "120%-160%+" },
+    {
+      label: "Energy Regen",
+      value: "120%-160%+",
+      detail: "Lower end estimated in a Lynae+Shorekeeper team, Higher end estimated in a Xiangli Yao+Shorekeeper quickswap team. S1 decreases ER requirements by ~20%.",
+    },
     { label: "Electro DMG Bonus", value: "40-70%+" },
   ],
   "camellya": [
+    { label: "HP", value: "15000+" },
     { label: "DEF", value: "1150+" },
     { label: "ATK", value: "2000-2200+" },
     { label: "CRIT Rate", value: "55-80%+" },
     { label: "CRIT DMG", value: "220-280%+" },
-    { label: "Energy Regen", value: "115%-128%+" },
+    {
+      label: "Energy Regen",
+      value: "115%-128%+",
+      detail: "Lower end estimated in a Lynae+Shorekeeper team, Higher end estimated in a Roccia+Shorekeeper team.",
+    },
     { label: "Havoc DMG Bonus", value: "70-100%+" },
   ],
   "cantarella": [
@@ -93,7 +121,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1950-2400+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "210-280%+" },
-    { label: "Energy Regen", value: "120-140%" },
+    {
+      label: "Energy Regen",
+      value: "120-140%",
+      detail: "Lower end was estimated with Midnight Veil in a team with Phrolova+Roccia, higher end was estimated with Moonlit Clouds in a team with Carlotta+Shorekeeper.",
+    },
     { label: "Havoc DMG Bonus", value: "30-70%+" },
   ],
   "carlotta": [
@@ -102,7 +134,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1900-2100+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "210-280%+" },
-    { label: "Energy Regen", value: "108-125%+" },
+    {
+      label: "Energy Regen",
+      value: "108-125%+",
+      detail: "Lower end was estimated in a team with Zhezhi+Shorekeeper, higher end was estimated in a team with Cantarella+Shorekeeper.",
+    },
     { label: "Glacio DMG Bonus", value: "40-70%+" },
   ],
   "cartethyia": [
@@ -119,7 +155,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2000-2200+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "108%-120%+" },
+    {
+      label: "Energy Regen",
+      value: "108%-120%+",
+      detail: "Lower end estimated in Mono Fusion team, Higher end estimated in a team with Brant+Shorekeeper.",
+    },
     { label: "Fusion DMG Bonus", value: "40-70%+" },
   ],
   "chisa": [
@@ -155,15 +195,25 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2000-2200+" },
     { label: "CRIT Rate", value: "60-80%+" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "100%-110%+" },
+    {
+      label: "Energy Regen",
+      value: "100%-110%+",
+      detail: "Lower end estimated in a Phrolova+Cantarella team, Higher end estimated in a Havoc Rover+Shorekeeper team.",
+    },
     { label: "Havoc DMG Bonus", value: "40-70%+" },
   ],
   "denia": [
+    { label: "HP", value: "15500+" },
     { label: "DEF", value: "1100+" },
     { label: "ATK", value: "2100-2300+" },
     { label: "Crit Rate", value: "70%+" },
     { label: "Crit DMG", value: "270%+" },
-    { label: "Energy Regen", value: "108%-122%" },
+    {
+      label: "Energy Regen",
+      value: "108%-122%",
+      detail: "Lower end was estimated using Aemeath + Lupa team",
+    },
+    { label: "higher end was estimated using Aemeath + Shorekeeper", value: "" },
     { label: "Fusion DMG%", value: "40%-70%" },
   ],
   "encore": [
@@ -172,7 +222,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2000-2400+" },
     { label: "CRIT Rate", value: "60-75%+" },
     { label: "CRIT DMG", value: "215-285%+" },
-    { label: "Energy Regen", value: "105-130%" },
+    {
+      label: "Energy Regen",
+      value: "105-130%",
+      detail: "Lower end was estimated using the optimized rotation, Higher end was estimated using the simple rotation",
+    },
     { label: "Fusion DMG Bonus", value: "40-70%+" },
   ],
   "galbrena": [
@@ -181,7 +235,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1900-2100+" },
     { label: "CRIT Rate", value: "60-80%", note: "(before Echo set bonuses)" },
     { label: "CRIT DMG", value: "230-270%+" },
-    { label: "Energy Regen", value: "110-125%" },
+    {
+      label: "Energy Regen",
+      value: "110-125%",
+      detail: "Lower end was estimated in a Mono Fusion team, higher end is for more general use.",
+    },
     { label: "Fusion DMG Bonus", value: "40-70%+" },
   ],
   "hiyuki": [
@@ -199,7 +257,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2100-2500+" },
     { label: "CRIT Rate", value: "65%+", note: "(before Echo set bonuses)" },
     { label: "CRIT DMG", value: "230-270%+" },
-    { label: "Energy Regen", value: "110-115%" },
+    {
+      label: "Energy Regen",
+      value: "110-115%",
+      detail: "Lower end was estimated in a Electro Rover/Suisui Flare team, higher end was estimated in a Jinhsi/Shorekeeper Unison team.",
+    },
     { label: "Electro DMG Bonus", value: "50-80%+" },
   ],
   "iuno": [
@@ -208,7 +270,12 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1800-2400+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "215-260%" },
-    { label: "Energy Regen", value: "120-130%+", note: "(Hybrid) OR 100% (DPS)" },
+    {
+      label: "Energy Regen",
+      value: "120-130%+",
+      note: "(Hybrid) OR 100% (DPS)",
+      detail: "Hybrid was estimated in a team with Augusta, DPS was estimated in a team with Lynae+Shorekeeper.",
+    },
     { label: "Aero DMG Bonus", value: "40-70%+" },
   ],
   "jianxin": [
@@ -217,11 +284,29 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1700-2100+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "210-280%+" },
-    { label: "Energy Regen", value: "155%-175%+" },
-    { label: "Aero DMG Bonus", value: "30-60%+" },
+    {
+      label: "Energy Regen",
+      value: "155%-175%+",
+      detail: "Lower end was estimated in a team with Iuno+Shorekeeper, higher end was estimated in a team with Xiangli Yao+Shorekeeper.",
+    },
+    { label: "Aero DMG Bonus", value: "30-60%+", detail: "Jianxin gains an innate 20% Aero DMG Bonus" },
   ],
   "jingran": [
-    { label: "HP", value: "50000" },
+    {
+      label: "HP",
+      value: "50000",
+      detail: "Prioritize reaching this HP goal above CRIT stats for optimal damage results, since a lot of important self-buffs are tied to this. Jingran can abandon building HP past 50000.",
+    },
+    { label: "DEF", value: "0" },
+    { label: "ATK", value: "3200+", note: "(Post-conversion from HP)" },
+    { label: "CRIT Rate", value: "50%+", note: "(Before Echo set & Signature weapon)" },
+    { label: "CRIT DMG", value: "260-340%+" },
+    {
+      label: "Energy Regen",
+      value: "110-120%+",
+      detail: "Lower end was estimated in a team with Brant/Mortefi+Lupa, higher end was estimated in a team with Iuno+Shorekeeper/Lupa+Mornye.",
+    },
+    { label: "Fusion DMG Bonus", value: "87%", note: "(Before Set & Ghost Shroud bonuses)" },
   ],
   "jinhsi": [
     { label: "HP", value: "15000+" },
@@ -229,8 +314,16 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2000-2400+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "210-280%+" },
-    { label: "Energy Regen", value: "100-125%+" },
-    { label: "Spectro DMG Bonus", value: "60-90%+" },
+    {
+      label: "Energy Regen",
+      value: "100-125%+",
+      detail: "Lower end was estimated in a team with Zhezhi+Shorekeeper, higher end was estimated in a team with Yinlin+Shorekeeper.",
+    },
+    {
+      label: "Spectro DMG Bonus",
+      value: "60-90%+",
+      detail: "Jinhsi gains an innate 20% Spectro DMG Bonus",
+    },
   ],
   "jiyan": [
     { label: "HP", value: "15000+" },
@@ -238,8 +331,16 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1900-2700+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "215-260%+" },
-    { label: "Energy Regen", value: "115-125%+" },
-    { label: "Aero DMG Bonus", value: "20-80%+" },
+    {
+      label: "Energy Regen",
+      value: "115-125%+",
+      detail: "A Iuno+Ciaccona team requires around 117% Energy Regen, but in Shorekeeper/Verina teams more Energy Regen will be required.",
+    },
+    {
+      label: "Aero DMG Bonus",
+      value: "20-80%+",
+      detail: "Aero ATK is technically optimal, but Aero Aero still works as a 3 cost option which may cause this stat to vary significantly.",
+    },
   ],
   "lingyang": [
     { label: "HP", value: "15000+" },
@@ -247,7 +348,7 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2100-2500+" },
     { label: "CRIT Rate", value: "60-80%+" },
     { label: "CRIT DMG", value: "215-260%+" },
-    { label: "Energy Regen", value: "120-125%+" },
+    { label: "Energy Regen", value: "120-125%+", detail: "Estimated in a Zhezhi+Shorekeeper team." },
     { label: "Glacio DMG Bonus", value: "40-70%+" },
   ],
   "lucilla": [
@@ -265,7 +366,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2100-2200+" },
     { label: "CRIT Rate", value: "65%+", note: "(Before Adam Smasher)" },
     { label: "CRIT DMG", value: "210%+" },
-    { label: "Energy Regen", value: "125%" },
+    {
+      label: "Energy Regen",
+      value: "125%",
+      detail: "Suitable for Mornye, Shorekeeper and Verina team variants. With Mornye, Lucy can get away with 121%, but Lucy will be short on Energy if some attacks miss.",
+    },
     { label: "Spectro DMG Bonus", value: "40-70%+" },
   ],
   "lumi": [
@@ -274,7 +379,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2000-2800+" },
     { label: "CRIT Rate", value: "65%+" },
     { label: "CRIT DMG", value: "210%+" },
-    { label: "Energy Regen", value: "142%-150%" },
+    {
+      label: "Energy Regen",
+      value: "142%-150%",
+      detail: "Lower end estimated in a team with Carlotta+Shorekeeper, higher end estimated in a team with Phrolova+Shorekeeper.",
+    },
     { label: "Electro DMG Bonus", value: "30-60%+" },
   ],
   "lupa": [
@@ -283,7 +392,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1800-2500+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "215-260%+" },
-    { label: "Energy Regen", value: "115-130%+" },
+    {
+      label: "Energy Regen",
+      value: "115-130%+",
+      detail: "Lower end was estimated in a team with Changli+Brant, higher end was estimated in a team with Encore+Shorekeeper.",
+    },
     { label: "Fusion DMG Bonus", value: "50-80%+" },
   ],
   "luuk-herssen": [
@@ -292,7 +405,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2100-3000+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "118-125%+" },
+    {
+      label: "Energy Regen",
+      value: "118-125%+",
+      detail: "Lower end estimated in a team with Sanhua+Mornye, higher end estimated with Lynae+Mornye.",
+    },
     { label: "Spectro DMG Bonus", value: "40-70%+" },
   ],
   "lynae": [
@@ -301,7 +418,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2000-2200+" },
     { label: "CRIT Rate", value: "50-80%+" },
     { label: "CRIT DMG", value: "250-280%+" },
-    { label: "Energy Regen", value: "115-130%+" },
+    {
+      label: "Energy Regen",
+      value: "115-130%+",
+      detail: "Lower end was estimated in a team with Iuno+Ciaccona, higher end was estimated in a team with Xiangli Yao+Shorekeeper. Lynae is, however, very flexible teams-wise, so Energy requirements are highly variable - please keep this in mind.",
+    },
     { label: "Spectro DMG Bonus", value: "40-70%+" },
   ],
   "mornye": [
@@ -311,7 +432,7 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "CRIT Rate", value: "20%+" },
     { label: "CRIT DMG", value: "220%+" },
     { label: "Energy Regen", value: "240%", note: "(Before Echo and Passive)" },
-    { label: "Fusion DMG Bonus", value: "0-30%" },
+    { label: "Fusion DMG Bonus", value: "0-30%", detail: "Only possible with Signature equipped." },
   ],
   "mortefi": [
     { label: "HP", value: "15000+" },
@@ -319,7 +440,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1900-2200+" },
     { label: "CRIT Rate", value: "60%-80%" },
     { label: "CRIT DMG", value: "215-260%+" },
-    { label: "Energy Regen", value: "115%-130%+" },
+    {
+      label: "Energy Regen",
+      value: "115%-130%+",
+      detail: "At S2, Mortefi's requirement will be 120% in most teams with 113% using Augusta due to her rotation extension, without S2 this will increase by ~11%.",
+    },
     { label: "Fusion DMG Bonus", value: "40-70%+" },
   ],
   "phoebe": [
@@ -328,7 +453,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1900-2200+" },
     { label: "CRIT Rate", value: "60-80%", note: "(Before Echo Set Bonuses)" },
     { label: "CRIT DMG", value: "215-260%+" },
-    { label: "Energy Regen", value: "115%-125%+" },
+    {
+      label: "Energy Regen",
+      value: "115%-125%+",
+      detail: "Within the Lynae+Spectro Rover team, the requirement is approximately 111%, with this number going up when using her as a support for Zani.",
+    },
     { label: "Spectro DMG Bonus", value: "40-70%+" },
   ],
   "phrolova": [
@@ -337,7 +466,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2000-2500+" },
     { label: "CRIT Rate", value: "60%+", note: "(before Echo set bonuses)" },
     { label: "CRIT DMG", value: "215-260%+", note: "(before any Aftersound stacks)" },
-    { label: "Energy Regen", value: "100%" },
+    {
+      label: "Energy Regen",
+      value: "100%",
+      detail: "Avoid any Energy Regen substats on Phrolova as her Ultimate does not cost any Energy.",
+    },
     { label: "Havoc DMG Bonus", value: "30-70%+" },
   ],
   "qingxiao": [
@@ -346,7 +479,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2100-2400+" },
     { label: "CRIT Rate", value: "55-80%+" },
     { label: "CRIT DMG", value: "255-275%+", note: "(before Echo set bonuses)" },
-    { label: "Energy Regen", value: "110-115%+" },
+    {
+      label: "Energy Regen",
+      value: "110-115%+",
+      detail: "Lower end was estimated in a team with Denia+Mornye/Lynae+Ciaccona, higher end was estimated in a team with Lynae+Mornye.",
+    },
     { label: "Aero DMG Bonus", value: "40-70%+" },
   ],
   "qiuyuan": [
@@ -355,7 +492,12 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1600-2400+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "115-130%+" },
+    {
+      label: "Energy Regen",
+      value: "115-130%+",
+      detail: "The lower end was estimated by a team with Galbrena+Shorekeeper",
+    },
+    { label: "the higher end was estimated by a team with Phrolova+Cantarella.", value: "" },
     { label: "Aero DMG Bonus", value: "40-70%+" },
   ],
   "rebecca": [
@@ -364,7 +506,7 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2000-2300+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "210-280%+", note: "(Before Huntress Buff)" },
-    { label: "Energy Regen", value: "117-118%+" },
+    { label: "Energy Regen", value: "117-118%+", detail: "Generally suitable for all Rebecca teams." },
     { label: "Electro DMG Bonus", value: "30-60%+" },
   ],
   "roccia": [
@@ -373,7 +515,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1900-2600+" },
     { label: "CRIT Rate", value: "70%+" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "120-130%+" },
+    {
+      label: "Energy Regen",
+      value: "120-130%+",
+      detail: "Lower end was estimated in a team with Phrolova+Cantarella, higher end was estimated in a team with Camellya+Shorekeeper.",
+    },
     { label: "Havoc DMG Bonus", value: "40-70%+" },
   ],
   "rover-aero": [
@@ -382,7 +528,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2100+" },
     { label: "CRIT Rate", value: "65%+" },
     { label: "CRIT DMG", value: "210%+" },
-    { label: "Energy Regen", value: "128%-138%" },
+    {
+      label: "Energy Regen",
+      value: "128%-138%",
+      detail: "Lower end estimated with Iuno+Ciaccona, higher end estimate with Cartethyia+Ciaccona. In any case, since Aero Rover always runs Bloodpact's Pledge which gives enough Energy Regen, no substats are needed.",
+    },
     { label: "Aero DMG Bonus", value: "30-60%+" },
   ],
   "rover-electro": [
@@ -391,7 +541,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2100-2400+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "117-120%+" },
+    {
+      label: "Energy Regen",
+      value: "117-120%+",
+      detail: "Lower end was estimated in a Hsin/Suisui team, higher end was estimated in a Hsin/Buling team.",
+    },
     { label: "Electro DMG Bonus", value: "40-70%+" },
   ],
   "rover-havoc": [
@@ -400,7 +554,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1800-2200+" },
     { label: "CRIT Rate", value: "60-75%+", note: "(Before S6 buff)" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "140%+" },
+    {
+      label: "Energy Regen",
+      value: "140%+",
+      detail: "This requirement applies across Phrolova+Cantarella, Danjin+Shorekeeper and Roccia+Shorekeeper.",
+    },
     { label: "Havoc DMG Bonus", value: "40-70%+" },
   ],
   "rover-spectro": [
@@ -409,8 +567,16 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1800-2200+" },
     { label: "CRIT Rate", value: "60-75%+", note: "(Before S1)" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "120%-123%+" },
-    { label: "Spectro DMG Bonus", value: "40-80%+" },
+    {
+      label: "Energy Regen",
+      value: "120%-123%+",
+      detail: "Lower end estimated using Phoebe+Lynae, Higher end estimated using Zani+Phoebe.",
+    },
+    {
+      label: "Spectro DMG Bonus",
+      value: "40-80%+",
+      detail: "Spectro Rover gains 20% Spectro Damage Bonus on S2",
+    },
   ],
   "sanhua": [
     { label: "HP", value: "15000+" },
@@ -418,7 +584,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1800-2200+" },
     { label: "CRIT Rate", value: "60-80%+" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "100%" },
+    {
+      label: "Energy Regen",
+      value: "100%",
+      detail: "On Moonlit Clouds, her only meta set which also gives a lot of extra Energy, Sanhua requires no additional Energy Regen.",
+    },
     { label: "Glacio DMG Bonus", value: "30-60%+" },
   ],
   "sigrika": [
@@ -427,7 +597,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2400-3000+" },
     { label: "CRIT Rate", value: "65%+", note: "(Before Set Bonus)" },
     { label: "CRIT DMG", value: "210-290%+" },
-    { label: "Energy Regen", value: "109%-119%" },
+    {
+      label: "Energy Regen",
+      value: "109%-119%",
+      detail: "The lower estimate was calculated using Qiuyuan Ciaccona (or Phrolova), the higher estimate was calculated using Qiuyuan Shorekeeper.",
+    },
     { label: "Aero DMG Bonus", value: "10-40%+" },
   ],
   "suisui": [
@@ -436,7 +610,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1100-1200+" },
     { label: "CRIT Rate", value: "20%+" },
     { label: "CRIT DMG", value: "250%+" },
-    { label: "Energy Regen", value: "260%" },
+    {
+      label: "Energy Regen",
+      value: "260%",
+      detail: "This is the amount of Energy Regen that is required to get the maximum potential out of Suisui's buffs.",
+    },
     { label: "Glacio DMG Bonus", value: "0%+" },
   ],
   "suoming": [
@@ -445,7 +623,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2100-2400+" },
     { label: "CRIT Rate", value: "65-80%+" },
     { label: "CRIT DMG", value: "260-280%+" },
-    { label: "Energy Regen", value: "100-115%" },
+    {
+      label: "Energy Regen",
+      value: "100-115%",
+      detail: "As a DPS, Suoming needs no Energy Regen to get off her Ultimate, but having one extra roll for safety can be considered (fully optionally). The higher end was estimated as a Unison secondary with Hsin and Shorekeeper.",
+    },
     { label: "Electro DMG Bonus", value: "30-70%+" },
   ],
   "taoqi": [
@@ -454,7 +636,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1800-2200+" },
     { label: "CRIT Rate", value: "60-80%+" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "100%-126%+" },
+    {
+      label: "Energy Regen",
+      value: "100%-126%+",
+      detail: "On Moonlit Clouds Taoqi requires no Energy Regen at S5, Before S5 the estimate is 126% in a Carlotta+Shorekeeper team.",
+    },
     { label: "Havoc DMG Bonus", value: "30-60%+" },
   ],
   "the-shorekeeper": [
@@ -462,7 +648,12 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "DEF", value: "1100+" },
     { label: "CRIT Rate", value: "20%-40%+" },
     { label: "CRIT DMG", value: "220-280%+" },
-    { label: "Energy Regen", value: "230%", note: "(Before Echo/Passive)" },
+    {
+      label: "Energy Regen",
+      value: "230%",
+      note: "(Before Echo/Passive)",
+      detail: "Remember Shorekeeper's passive and her Fallacy of No Return Echo both increase her Energy by 10%, up to 250% total. If running a different Echo, 240% Energy Regen will be required.",
+    },
     { label: "Spectro DMG Bonus", value: "0-30%" },
   ],
   "verina": [
@@ -471,7 +662,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1500+" },
     { label: "CRIT Rate", value: "60%+" },
     { label: "CRIT DMG", value: "210%+" },
-    { label: "Energy Regen", value: "220%-230%" },
+    {
+      label: "Energy Regen",
+      value: "220%-230%",
+      detail: "Less Energy Regen (around 200%) can be required if Verina's skill hits the enemy, however it's better to interrupt it via her Ultimate to save time and hence this Energy requirement should be fulfilled as a priority.",
+    },
     { label: "Spectro DMG Bonus", value: "0-30%" },
   ],
   "xiangli-yao": [
@@ -480,7 +675,7 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1800-2300+" },
     { label: "CRIT Rate", value: "60%-80%+" },
     { label: "CRIT DMG", value: "215-280%+" },
-    { label: "Energy Regen", value: "120%+" },
+    { label: "Energy Regen", value: "120%+", detail: "Estimated in a Lynae+Shorekeeper team." },
     { label: "Electro DMG Bonus", value: "40-70%+" },
   ],
   "yangyang": [
@@ -489,7 +684,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1800-2200+" },
     { label: "CRIT Rate", value: "60-80%+" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "107%+" },
+    {
+      label: "Energy Regen",
+      value: "107%+",
+      detail: "Estimated in a Xiangli Yao+Shorekeeper team using Moonlit Clouds.",
+    },
     { label: "Aero DMG Bonus", value: "30-60%+" },
   ],
   "yangyang-xuanling": [
@@ -498,7 +697,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2100-2300+" },
     { label: "CRIT Rate", value: "65%+", note: "(Before set bonuses)" },
     { label: "CRIT DMG", value: "255-300%+" },
-    { label: "Energy Regen", value: "107%-119%" },
+    {
+      label: "Energy Regen",
+      value: "107%-119%",
+      detail: "Lower end estimated with Rebecca+Chisa, higher end estimated with Chisa+Verina. In any case, should be very easy to meet due to her 2P Echo set giving 10% ER already.",
+    },
     { label: "Havoc DMG Bonus", value: "30-60%+" },
   ],
   "yinlin": [
@@ -507,7 +710,7 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "2000-2400+" },
     { label: "CRIT Rate", value: "45%-65%+", note: "(Before Passive)" },
     { label: "CRIT DMG", value: "255-280%+" },
-    { label: "Energy Regen", value: "128%+" },
+    { label: "Energy Regen", value: "128%+", detail: "Estimated in a Xiangli Yao+Shorekeeper team." },
     { label: "Electro DMG Bonus", value: "30-70%+" },
   ],
   "youhu": [
@@ -525,7 +728,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1200+" },
     { label: "CRIT Rate", value: "60%+" },
     { label: "CRIT DMG", value: "250%+" },
-    { label: "Energy Regen", value: "100%" },
+    {
+      label: "Energy Regen",
+      value: "100%",
+      detail: "Yuanwu's optimal playstyle in a Jinhsi team does not involve his Resonance Liberation.",
+    },
     { label: "Electro DMG Bonus", value: "30-60%+" },
   ],
   "zani": [
@@ -534,7 +741,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1800-2300+" },
     { label: "CRIT Rate", value: "65%+", note: "(before Echo set bonuses)" },
     { label: "CRIT DMG", value: "210-260%+" },
-    { label: "Energy Regen", value: "115%+" },
+    {
+      label: "Energy Regen",
+      value: "115%+",
+      detail: "Energy requirements may be lowered in a Quickswap-heavy playstyle.",
+    },
     { label: "Spectro DMG Bonus", value: "50-80%+" },
   ],
   "zhezhi": [
@@ -543,7 +754,11 @@ export const TARGETS: Record<string, StatTarget[]> = {
     { label: "ATK", value: "1900-2400+" },
     { label: "CRIT Rate", value: "65%-80%+", note: "(before Echo set bonuses)" },
     { label: "CRIT DMG", value: "215-260%+" },
-    { label: "Energy Regen", value: "116%-128%+" },
+    {
+      label: "Energy Regen",
+      value: "116%-128%+",
+      detail: "Lower Estimate is using Moonlit Clouds, highest estimate is using Empyrean Anthem, both in the context of a Carlotta+Shorekeeper team.",
+    },
     { label: "Glacio DMG Bonus", value: "30-70%+" },
   ],
 };
