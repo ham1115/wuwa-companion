@@ -38,6 +38,17 @@
   --mesh-b: 16%;
   --mesh-c: 42%;
 
+  /* Glass. --glass-tint is how much of the opaque surface colour survives:
+   * lower is more transparent. --glass-edge is what actually keeps a panel
+   * readable as a panel, because a translucent surface over this background
+   * separates from it by barely more than 1:1 on its own. */
+  --glass-tint: 72%;
+  --glass-nav-tint: 62%;
+  --glass-blur: 14px;
+  --glass-edge: color-mix(in srgb, var(--border-strong) 70%, transparent);
+  --glass-sheen: rgba(255, 255, 255, 0.9);
+  --glass-shadow: 142 42 86;
+
   /* One motion scale for the whole app. --fast is for a state that flips
    * under the cursor, --med for something that changes size or appears. */
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -87,6 +98,16 @@
   --mesh-a: 20%;
   --mesh-b: 9%;
   --mesh-c: 26%;
+
+  /* Dark is the harder case: translucent plum over plum separated by 1.02:1
+   * in the trial, which is no separation at all. More of the surface colour
+   * survives, and the edge does more of the work. */
+  --glass-tint: 78%;
+  --glass-nav-tint: 70%;
+  --glass-blur: 16px;
+  --glass-edge: color-mix(in srgb, var(--border-strong) 90%, transparent);
+  --glass-sheen: rgba(255, 214, 233, 0.09);
+  --glass-shadow: 0 0 0;
 }
 
 * {
@@ -1572,5 +1593,78 @@ details.more li {
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+}
+
+/* ---------- glass ----------
+ *
+ * Only the nav, the cards and the callouts. Deliberately not the long lists:
+ * the Characters tab renders 61 rows, Weapons 114 and Echoes 187, and those
+ * use .char-row rather than .card, so this never reaches them. The most any
+ * one tab blurs is eleven elements.
+ *
+ * The border is not decoration here. Measured on the live page, a translucent
+ * card separates from the background behind it by 1.02–1.23:1 — as a shape it
+ * is very nearly not there, and the edge and the shadow are what say "panel".
+ */
+.nav {
+  background:
+    color-mix(in srgb, var(--bg) var(--glass-nav-tint), transparent) !important;
+  background-attachment: scroll;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+  border-bottom-color: var(--glass-edge);
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 6px 18px -14px rgb(var(--glass-shadow) / 0.5);
+}
+
+.card,
+.callout {
+  background:
+    color-mix(in srgb, var(--bg-raised) var(--glass-tint), transparent);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+  border-color: var(--glass-edge);
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 8px 24px -12px rgb(var(--glass-shadow) / 0.28),
+    0 2px 6px -3px rgb(var(--glass-shadow) / 0.18);
+}
+
+/*
+ * Without backdrop-filter a translucent surface is just a washed-out panel
+ * with the page showing through it unblurred, which is worse than no glass at
+ * all. Anything that cannot blur gets the opaque surfaces back.
+ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav {
+    background: var(--page-bg) !important;
+    background-attachment: fixed;
+  }
+
+  .card,
+  .callout {
+    background: var(--bg-raised);
+  }
+}
+
+/*
+ * And transparency is something people switch off at the OS level, usually
+ * because it makes text harder to read. Honour that rather than overriding it.
+ */
+@media (prefers-reduced-transparency: reduce) {
+  .nav {
+    background: var(--page-bg) !important;
+    background-attachment: fixed;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .card,
+  .callout {
+    background: var(--bg-raised);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
