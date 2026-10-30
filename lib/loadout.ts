@@ -22,6 +22,12 @@ export type Loadout = {
   sequence?: number;
   /** The equipped weapon's own level, 1–90. */
   weaponLevel?: number;
+  /**
+   * Syntonize rank, R1–R5: duplicates of the weapon. The ranked weapon lists
+   * in data/characters.ts are all quoted at R1, so anything above that is
+   * above what the recommendation assumes.
+   */
+  weaponRank?: number;
   /** Keyed by the target's label, e.g. "CRIT Rate" -> "68.4". */
   stats?: Record<string, string>;
 };
@@ -32,11 +38,15 @@ export const MAX_LEVEL = 90;
 /** S0 through S6 — six duplicates past the first copy. */
 export const MAX_SEQUENCE = 6;
 
+/** R1 through R5. Unlike a sequence, a weapon starts at R1, not R0. */
+export const MAX_RANK = 5;
+
 /** The numeric fields, and the range each one accepts. */
 export const NUMERIC_FIELDS = {
   level: { min: 1, max: MAX_LEVEL },
   sequence: { min: 0, max: MAX_SEQUENCE },
   weaponLevel: { min: 1, max: MAX_LEVEL },
+  weaponRank: { min: 1, max: MAX_RANK },
 } as const;
 
 export type NumericField = keyof typeof NUMERIC_FIELDS;

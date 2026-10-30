@@ -5,7 +5,7 @@ import type { Character } from "@/data/characters";
 import { SONATA_SETS } from "@/data/echoes";
 import { TARGETS, targetFloor } from "@/data/targets";
 import { WEAPONS, baseWeaponName } from "@/data/weapons";
-import { MAX_LEVEL, MAX_SEQUENCE, useLoadout } from "@/lib/loadout";
+import { MAX_LEVEL, MAX_RANK, MAX_SEQUENCE, useLoadout } from "@/lib/loadout";
 
 /**
  * What this character is actually running, next to what the guides recommend.
@@ -66,6 +66,11 @@ export default function MyBuild({
   if (mine.weaponLevel !== undefined && mine.weaponLevel < MAX_LEVEL) {
     caveats.push(
       `the weapon is Lv.${mine.weaponLevel} rather than ${MAX_LEVEL}, which is ATK the targets assume you have`
+    );
+  }
+  if (mine.weaponRank !== undefined && mine.weaponRank > 1) {
+    caveats.push(
+      `the ranked weapons are all quoted at R1 and yours is R${mine.weaponRank}, so it is doing more than the list assumes`
     );
   }
   if (mine.sequence !== undefined) {
@@ -132,6 +137,21 @@ export default function MyBuild({
             placeholder={`1–${MAX_LEVEL}`}
             value={mine.weaponLevel ?? ""}
             onChange={(e) => loadout.setNumber(c.id, "weaponLevel", e.target.value)}
+          />
+        </label>
+
+        <label className="mine-field">
+          <span className="target-label">Weapon rank</span>
+          <input
+            className="picker"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={MAX_RANK}
+            step={1}
+            placeholder={`R1–R${MAX_RANK}`}
+            value={mine.weaponRank ?? ""}
+            onChange={(e) => loadout.setNumber(c.id, "weaponRank", e.target.value)}
           />
         </label>
 
@@ -272,6 +292,7 @@ export default function MyBuild({
         mine.level !== undefined ||
         mine.sequence !== undefined ||
         mine.weaponLevel !== undefined ||
+        mine.weaponRank !== undefined ||
         filled > 0) && (
         <div className="queue-controls">
           <button className="mini" onClick={() => loadout.clear(c.id)}>
