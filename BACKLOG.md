@@ -149,11 +149,14 @@ Production, Preview and Development, so the deployed app runs a Clerk developmen
 **What that actually costs us**
 
 - 100-user cap. Irrelevant at this scale — it is shared with friends.
-- Sessions use the development browser token in the querystring (`__clerk_db_jwt`) rather than an
-  `HttpOnly` same-site cookie, because the app and `clerk.accounts.dev` are cross-site. **This is
-  the one that could really bite:** browsers that block third-party state, Safari and iOS in
-  particular, may not keep anyone signed in. Untested, and worth testing on a phone before
-  anybody relies on sync.
+- Every cold load does a handshake: a cookieless request to the live site returns `307` with
+  `X-Clerk-Auth-Status: handshake` and `X-Clerk-Auth-Reason: dev-browser-missing`, redirecting
+  top-level to `tender-narwhal-52.clerk.accounts.dev/v1/client/handshake` and back. Measured 30
+  October 2026, not inferred. It leaves `__clerk_db_jwt` and `__client_uat` as script-writable
+  first-party cookies. **This is the one that could really bite:** the out-and-back is the pattern
+  iOS Safari's bounce-tracking protection targets, and script-written cookies are capped at seven
+  days there. Likely symptom is being signed out after a week away rather than being unable to
+  sign in at all — still unverified on a real phone, which is the cheapest next test.
 - Google sign-in uses Clerk's *shared* development OAuth credentials, so the consent screen is
   branded `accounts.dev` rather than this app.
 - Not crawlable by search engines. No loss here; nobody wants this indexed.

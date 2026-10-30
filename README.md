@@ -118,9 +118,21 @@ Auth is Clerk (`middleware.ts` protects nothing — sign-in is optional), data i
 anonymous callers. `tab` is deliberately not synced.
 
 Clerk currently runs a **development** instance, because the Vercel Marketplace provisioned one key
-pair and the app has no domain of its own yet. Sign-in works, but the session lives in a querystring
-token rather than a cookie, since the app and `clerk.accounts.dev` are cross-site — so a browser
-that blocks third-party state, iOS Safari especially, may not keep you signed in.
+pair and the app has no domain of its own yet. Sign-in works, but every cold load first bounces
+through Clerk to mint a development-browser token. Measured against the live site on 30 October
+2026, a request with no cookies comes back:
+
+```
+HTTP/1.1 307 Temporary Redirect
+X-Clerk-Auth-Reason: dev-browser-missing
+X-Clerk-Auth-Status: handshake
+Location: https://tender-narwhal-52.clerk.accounts.dev/v1/client/handshake?redirect_url=...
+```
+
+A top-level cross-site redirect out and back, which then leaves `__clerk_db_jwt` and `__client_uat`
+as script-writable first-party cookies. That is the shape iOS Safari treats as bounce tracking, and
+script-written cookies are capped at seven days there — so the likely symptom is not "cannot sign
+in" but "signed out again after a week away".
 [docs/custom-domain.md](docs/custom-domain.md) is the runbook for fixing that properly by putting
 the Frontend API on a subdomain of our own.
 

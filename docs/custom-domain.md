@@ -2,12 +2,36 @@
 
 Written 30 October 2026. The point of this is not the nicer URL — it is that a Clerk
 **production** instance needs a domain you control, and until it has one, sign-in runs on a
-development instance that keeps its session in a querystring token and may not survive on iOS.
+development instance that bounces every cold load through `accounts.dev` to mint a
+development-browser token — the pattern iOS Safari's bounce-tracking protection targets.
 See item 13 in [BACKLOG.md](../BACKLOG.md) for why that matters.
 
 **No application code changes.** Clerk reads its keys from the environment, the middleware
 protects nothing, and the sign-in pages use relative paths. Nothing in `app/`, `lib/` or
 `middleware.ts` has the current URL baked into it — this is all registrar, DNS and environment.
+
+## Do you actually need this?
+
+Probably not, and it is worth being honest about that before spending a weekend on DNS.
+
+Nothing your friends do needs it. They never sign in — the app is fully usable signed out, that is
+the default, and a shared URL gives them a blank slate. Sign-in exists only so your own progress
+follows you between your own devices, so the entire question reduces to: does sign-in survive on
+your phone? **Test that first.** Sign in on the iPhone, use it, come back a week later. If you are
+still signed in, a domain buys you nothing you need.
+
+There is also a cost nobody mentions. Once a Clerk production instance depends on the domain,
+letting the domain lapse breaks sign-in. A free-for-one-year student domain is exactly the kind of
+thing that quietly expires, whereas `wuwa-companion-phi.vercel.app` never will. Set a renewal
+reminder on day one or do not start.
+
+If the phone test does fail, a domain is not the only fix. The installed `@clerk/nextjs` (7.9.22)
+takes a `frontendApiProxy` option on `clerkMiddleware`, which serves the Frontend API from the
+app's own origin at `/__clerk` — same-origin, so no handshake and no cross-site bounce, with no
+domain involved. Clerk's docs confirm proxying is supported on development instances. Two caveats,
+both real: it is unverified here that this removes the dev handshake, and Clerk labels proxying an
+advanced path they would rather you not take instead of the CNAME. Treat it as the cheap experiment
+to run before buying anything, not as the plan.
 
 ## Which domain
 
@@ -101,8 +125,8 @@ Account Portal, and three for mail and DKIM whose targets carry an instance-spec
 exact values from the zone file or the Dashboard's Domains page rather than from this document.
 
 The Frontend API CNAME is the one that makes this whole exercise worthwhile: it puts Clerk on
-`clerk.<domain>`, same-site with the app, so sessions move to a normal `HttpOnly` cookie and the
-iOS problem goes away.
+`clerk.<domain>`, same-site with the app, so the handshake redirect goes away, the session moves to
+a normal `HttpOnly` cookie, and nothing is left for iOS to purge on a seven-day timer.
 
 ### 8. Deploy certificates and verify
 
