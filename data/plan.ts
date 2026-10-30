@@ -12,8 +12,8 @@ export type PlanStep = { key: string; label: string; detail?: string };
 
 /** The same six steps apply to every character, in this order. */
 export const PLAN_STEPS: PlanStep[] = [
-  { key: "level", label: "Character to Lv.80" },
-  { key: "weapon", label: "Weapon to Lv.80" },
+  { key: "level", label: "Character to Lv.90" },
+  { key: "weapon", label: "Weapon to Lv.90" },
   { key: "skills", label: "Skills levelled", detail: "Basic Attack stays at 1 unless the build says otherwise." },
   { key: "sonata", label: "Sonata set complete", detail: "Most sets need 5 matching Echoes; six of them need only 3. Check the Echoes tab." },
   { key: "mainstats", label: "Main stats correct per slot" },

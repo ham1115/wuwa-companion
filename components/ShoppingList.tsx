@@ -223,7 +223,7 @@ export default function ShoppingList({ plan }: { plan: string[] }) {
 
       <p className="check-detail">
         Plus generic frequency cores and Shell Credits per character. Characters
-        whose &ldquo;Character to Lv.80&rdquo; step is ticked drop off this list.
+        whose &ldquo;Character to Lv.90&rdquo; step is ticked drop off this list.
       </p>
     </>
   );
