@@ -12,7 +12,7 @@ export type PlanStep = { key: string; label: string; detail?: string };
 
 /** The same six steps apply to every character, in this order. */
 export const PLAN_STEPS: PlanStep[] = [
-  { key: "level", label: "Character to Lv.80", detail: "Stop at 80 — 80 to 90 costs as much as 1 to 80." },
+  { key: "level", label: "Character to Lv.80" },
   { key: "weapon", label: "Weapon to Lv.80" },
   { key: "skills", label: "Skills levelled", detail: "Basic Attack stays at 1 unless the build says otherwise." },
   { key: "sonata", label: "Sonata set complete", detail: "Most sets need 5 matching Echoes; six of them need only 3. Check the Echoes tab." },
@@ -25,7 +25,6 @@ export const DEFAULT_PLAN: string[] = [];
 
 export const BUILD_RULES = [
   "Build one character at a time. Shell Credits are the bottleneck, not EXP.",
-  "Stop at Lv.80. Going 80 to 90 costs roughly as much as 1 to 80.",
   "A complete 5-piece Sonata with a mediocre 4-cost beats a perfect 4-cost with no set bonus.",
   "An Echo Sonata is locked when it drops. There is no reroll — you re-farm the Echo instead.",
 ];

@@ -881,9 +881,14 @@ details.more li {
   margin: 6px 0 8px;
 }
 
+/* The last column holds either a tick or a shortfall. It used to be 34px,
+ * which fits "✓" and nothing else: a row that is badly short reads "−13200"
+ * and, with nowrap, spilled that out past the card's right edge — worst
+ * exactly when the number matters most. Sized for the longest real shortfall
+ * instead (five digits plus the sign, from the HP targets). */
 .compare-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto 92px 34px;
+  grid-template-columns: minmax(0, 1fr) auto 92px 58px;
   align-items: center;
   gap: 8px;
   background: var(--bg-sunken);
@@ -913,6 +918,7 @@ details.more li {
   font-size: 0.8rem;
   color: var(--text-faint);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .compare-input {
@@ -925,6 +931,7 @@ details.more li {
   font-family: inherit;
   width: 100%;
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .compare-input:focus {
@@ -937,6 +944,7 @@ details.more li {
   font-weight: 700;
   text-align: right;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .compare-row[data-met="true"] .compare-verdict {
@@ -957,8 +965,22 @@ details.more li {
     padding: 7px 10px;
   }
 
+  /* 16px is a threshold, not a type choice: iOS Safari zooms the whole page
+   * whenever a focused field's text is smaller than that, and there are seven
+   * of these to fill in from the in-game stat screen — so it zoomed in and had
+   * to be pinched back out on every single one. The pickers above do the same,
+   * so they are here too. 44px is the matching tap-target floor; these rows
+   * are read off one screen and typed into on another, so they are worth the
+   * extra height. */
   .compare-input {
     grid-column: 1;
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  .picker {
+    font-size: 16px;
+    min-height: 44px;
   }
 
   .compare-verdict {
