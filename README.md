@@ -101,6 +101,29 @@ All content is plain TypeScript data — no CMS, no fetching at runtime.
 
 ## Theming
 
+## Signing in (optional)
+
+The app works completely without an account and that is the default: everything lives in the
+browser, and anyone you share the URL with gets a blank slate. Signing in only turns on sync, so
+the same progress appears on your phone and your desktop.
+
+Storage is local-first (`lib/storage.ts`). Every edit writes to localStorage first and a debounced
+push follows, so nothing in the UI waits on the network. `lib/sync.tsx` reconciles per key, newest
+wins: the server's copy if it is newer, this browser's if it is, whichever side has it when only one
+does. `applyRemote` writes a pulled value *without* re-stamping its timestamp, which is what keeps a
+pull from looking like a local edit and bouncing straight back up.
+
+Auth is Clerk (`middleware.ts` protects nothing — sign-in is optional), data is Neon Postgres
+(`db/schema.sql`, one row per user and key). `app/api/state` is the whole sync surface and refuses
+anonymous callers. `tab` is deliberately not synced.
+
+Scripts: `node --env-file=.env.local scripts/migrate.mjs` applies the schema,
+`scripts/test-merge.mjs` exercises the upsert against the real database, `scripts/inspect.mjs`
+prints what the table holds.
+
+Two devices editing the same key while apart is the one lossy case — the later edit wins that whole
+key. Per-key rows keep it to the one key rather than the whole save.
+
 **Settings → Colours** offers five built-in presets, four pickers — accent, background, text and secondary — and your own saved presets, all stored per browser. A saved preset keeps the four colours plus the built-in preset underneath, and re-derives per mode, so one entry works in both light and dark. Under that: colours are CSS custom properties at the top of `app/globals.css`. Light mode (`:root`) is pastel pink with lemon accents; dark mode (`:root[data-theme="dark"]`) keeps the same hues on a dark plum base. Element pill colours are defined under `.el[data-el="…"]`; rarity, cost and piece-count pills read `--r5-*` / `--r4-*` / `--r3-*` and `--c4-*` / `--c3-*` / `--c1-*`, each defined once per theme. Presets in `data/palettes.ts` override a subset of those tokens as inline styles on `:root`, layered over whichever base theme is active. A custom accent, background or text colour is expanded into its tokens in `lib/theme.ts`: the accent into three, the background into five (page, raised, sunken and both border weights), the text into three. The text ramp is clamped on measured WCAG luminance, not on HSL lightness, because lightness is not brightness — yellow and blue at the same `l` are nowhere near the same contrast. It is also derived *after* the backgrounds, against whichever of the three surfaces is least forgiving, so a custom background re-aims it rather than invalidating it. A custom background is held inside a per-mode lightness band, because the pills, tints and soft accents are not re-derived from it and a light mode on a near-black page would simply hide them.
 
 ## Sources and accuracy

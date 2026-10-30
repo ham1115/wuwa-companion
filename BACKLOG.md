@@ -88,9 +88,9 @@ A preset only overrides the tokens that give it its character (backgrounds, bord
 
 ---
 
-## In flight
+## Done, continued
 
-### 12. Cross-device sync — built, untested signed in
+### 12. Cross-device sync — done ✅
 Optional sign-in that syncs progress across devices; anonymous visitors keep browser-only storage.
 
 - **Decided:** Clerk for auth, Neon Postgres for data, login optional not required.
@@ -122,8 +122,17 @@ Two devices editing the *same* key while apart is the one lossy case: the later 
 key. Per-key rows keep it to the one key rather than the whole save. Noted rather than solved; the
 fix would be set-union semantics for the id-set keys.
 
-**Still to verify:** the signed-in round trip. Signed-out behaviour is confirmed (app fully usable,
-`/api/state` returns 401) and the Clerk modal renders, but nobody has signed in yet.
+**Verified signed in** (30 October 2026, by the account owner). First sign-in uploaded all 13 keys
+with their real contents; `tab` stayed local and the orphaned `account-notes` stayed out. A live
+edit reached the server inside the debounce window, a deletion propagated, and deleting the local
+copy and pressing Sync now pulled it back byte-identical — with the UI updating live and the
+timestamp taken from the server rather than re-stamped, which is what stops a pull bouncing back as
+a push. Signed out, the app is unchanged and `/api/state` returns 401.
+
+One wrinkle worth knowing: Postgres `jsonb` normalises object key order, so a value that round-trips
+comes back semantically identical but not string-identical. Nothing compares serialised values —
+the merge is on timestamps — so it has no effect, but a naive string diff of local against server
+will show a false mismatch.
 
 **Before relying on it in production:** the Clerk instance is in development mode. The Marketplace
 set one key pair across all three Vercel environments, so production is running dev keys with dev
@@ -137,5 +146,5 @@ limits. Claiming the app and running `clerk deploy` is an account-level step for
 2. ~~Item 5 (stat targets)~~ — done
 3. ~~Item 11 (UI/UX)~~ — done
 4. ~~Items 7, 8, 9, 10~~ — done
-5. Item 12 (sync) — provisioned and waiting; the only item left
+5. ~~Item 12 (sync)~~ — done
 6. ~~Item 6 (materials)~~ — done
