@@ -15,6 +15,7 @@ import Filters from "./Filters";
 import StatLine from "./StatLine";
 import MyBuild from "./MyBuild";
 import Targets from "./Targets";
+import Teams from "./Teams";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
 
 export default function Characters() {
@@ -231,6 +232,8 @@ function CharacterRow({
               <p className="term-def">{c.substats}</p>
 
               <Targets id={c.id} />
+
+              <Teams id={c.id} />
 
               <MyBuild c={c} />
 

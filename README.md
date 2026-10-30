@@ -6,7 +6,7 @@ A Wuthering Waves companion app. Pastel pink and yellow, light by default, with 
 
 Grouped three ways: **Reference** is game data that is the same for everyone, **Mine** is your own progress, **Setup** is the owned list, backup and reset. The nav stays pinned to the top as you scroll.
 
-- **Characters** — all 61 Resonators. Search by name, weapon, echo or set. Filter by element, role, rarity, or "mine only". Expand any character for ranked weapons, Sonata sets, main Echo options, main stats per cost slot, substat priority and ascension materials. Each also carries a **My build** block — record the level they are at, pick the weapon and Sonata set you actually run, and type your current stats in to see them checked against the targets, with the level noted so a Lv.70 character is not read as a failed Lv.90 one — and **target stats at Lv.90** — what a finished build should read on the in-game stat screen. **Queue** adds them to My plan; also mark as built and add notes.
+- **Characters** — all 61 Resonators. Search by name, weapon, echo or set. Filter by element, role, rarity, or "mine only". Expand any character for ranked weapons, Sonata sets, main Echo options, main stats per cost slot, substat priority and ascension materials. Each also carries a **My build** block — record the level they are at, pick the weapon and Sonata set you actually run, and type your current stats in to see them checked against the targets, with the level noted so a Lv.70 character is not read as a failed Lv.90 one — and **target stats at Lv.90** — what a finished build should read on the in-game stat screen. **Recommended teams** lists the line-ups the guides put them in — each slot showing its pick and the listed substitutes, with characters you own highlighted — and **Wanted in teams for** answers the reverse. **Queue** adds them to My plan; also mark as built and add notes.
 - **Weapons** — 114 weapons, 3★ and up. Search name, stat or effect; filter by type, rarity, or "for my characters". Each entry opens to base ATK, substat, effect text, and **Wanted by** — every character that ranks it, with their ranking position, owned characters highlighted. Weapons nothing wants are labelled as fodder.
 - **Echoes** — two views. **Sonata sets** (37) shows each set's piece requirement, 2-piece and full bonuses, every character that runs it, and every Echo that can roll it grouped by cost. **Echoes** (187) lists the whole roster; searching a Sonata name returns every Echo that rolls it. Cost-4 entries carry their Echo Skill text.
 - **My plan** — an ordered build queue. Reorder with Up/Down, remove, and work it top to bottom. Each entry reads its build live from the character database, so nothing is duplicated. Each entry also shows its Lv.90 stat targets. A **shopping list** at the top sums every ascension material the whole queue still needs and groups it by source — which boss drops it and where that boss is, or which region you gather it in — with the Waveplate cost of a claim at each activity. Materials behind story you have not ticked off are marked locked. Characters drop off that list once they are done levelling — either the "Character to Lv.80" step is ticked or their recorded level has reached 90. Reaching 90 also asks, once, whether you are finished with them: answer "Built" and they leave the queue with everything you filled in kept, or "Still building" and they stay. Nothing else ever removes a character from the queue.
@@ -22,6 +22,7 @@ Two questions a returning player asks constantly, both answered without a dedica
 - *"I pulled this weapon — who wants it?"* → Weapons tab, open the weapon, read **Wanted by**.
 - *"Who runs this Sonata set?"* → Echoes tab → Sonata sets → open the set → **Run by**.
 - *"Which Echoes roll this set?"* → same place, **Echoes that roll it**, grouped by cost.
+- *"Who needs this character?"* → Characters tab, open them, read **Wanted in teams for**.
 
 ### Colour coding
 
@@ -154,6 +155,8 @@ Known gaps:
 - **Lily** is a version 3.8 character who has not shipped. Kuro's own Resonator Archive preview confirms Spectro Pistols and a healing support role; everything else circulating is beta leaks that contradict each other, so her card records nothing further and she has no stat targets.
 - Everything else has all seven stat targets.
 - Glossary definitions are written from general knowledge and may lag the current patch.
+
+Team compositions come from the same prydwen.gg character guides, captured 31 October 2026. Only the structured lists are reproduced — the named team, its element, and the characters per slot. 58 of the 61 Resonators have teams published; Baizhi, Verina and Lily do not, and show none.
 
 Story data comes from the [Wuthering Waves Wiki](https://wutheringwaves.fandom.com/wiki/Main_Quest) Main Quest list, checked 30 October 2026. Chapter II's title follows Kuro's own 2.0 patch notes — "All Silent Souls Can Sing" — rather than the wiki's page heading, which still carries an older translation.
 

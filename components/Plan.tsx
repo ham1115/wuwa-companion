@@ -9,6 +9,7 @@ import ShoppingList from "./ShoppingList";
 import StatLine from "./StatLine";
 import MyBuild from "./MyBuild";
 import Targets from "./Targets";
+import Teams from "./Teams";
 
 const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
 
@@ -131,6 +132,8 @@ export default function Plan() {
             )}
 
             <Targets id={c.id} />
+
+            <Teams id={c.id} />
 
             <MyBuild c={c} onLevelMaxed={setMaxed} />
 

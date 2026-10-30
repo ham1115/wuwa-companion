@@ -1340,3 +1340,94 @@ details.more li {
   display: block;
   margin-bottom: 2px;
 }
+
+/* Recommended teams. A team is three slots; a slot is its pick followed by the
+ * guide's substitutes for that same slot, which is why the members inside one
+ * slot sit together and the slots are what the separators divide. */
+.team-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 6px 0 8px;
+}
+
+.team-group {
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 7px 10px;
+}
+
+/* One line-up inside a named team. Several of them stack under one heading,
+ * so they need separating from each other but not re-introducing. */
+.team-comp + .team-comp {
+  margin-top: 5px;
+}
+
+.team-comp-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+
+.team-comp-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.team-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 6px;
+}
+
+.team-slot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-content: flex-start;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 5px 6px;
+}
+
+.team-wanted {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 6px 0 8px;
+}
+
+.team-member {
+  font-size: 0.74rem;
+  line-height: 1.5;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+/* A substitute is the same slot, so it keeps the pill but drops the weight —
+ * it reads as "or this one", not as a fourth member. */
+.team-member[data-alt] {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.team-member[data-owned="true"] {
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* The character whose card this is, so a team reads from their point of view
+ * without having to re-find their name in it. */
+.team-member[data-self="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text);
+}
