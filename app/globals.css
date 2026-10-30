@@ -1089,6 +1089,53 @@ details.more li {
   font-weight: 600;
 }
 
+/* ---------- shopping list sources ---------- */
+.source {
+  border-top: 1px solid var(--border);
+  padding: 9px 0 3px;
+}
+
+.source:first-of-type {
+  border-top: none;
+}
+
+.source[data-locked="true"] {
+  opacity: 0.62;
+}
+
+.source-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.source-name {
+  font-weight: 700;
+  font-size: 0.93rem;
+  color: var(--accent-ink);
+}
+
+.source-items {
+  margin: 5px 0 0;
+  padding-left: 19px;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.source-items li {
+  margin-bottom: 3px;
+}
+
+.callout[data-tone="warn"] {
+  border-color: var(--danger);
+  background: var(--bg-raised);
+}
+
+.callout[data-tone="warn"] strong {
+  color: var(--danger);
+}
+
 /* ---------- settings: colour presets ---------- */
 .palette-grid {
   display: grid;

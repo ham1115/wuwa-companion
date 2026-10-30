@@ -536,7 +536,7 @@ export const CHARACTERS: Character[] = [
     echoes: ["Fallacy of No Return", "Spacetrek Explorer"],
     stats: ["4 cost: CRIT DMG > HP%", "3 cost: Energy Regen", "3 cost: Energy Regen / Spectro DMG", "1 cost: HP%", "1 cost: HP%"],
     substats: "Energy Regen (Until 230%) > CRIT DMG ≥ Liberation DMG% > HP% > CRIT Rate > HP > ATK% = ATK",
-    materials: ["46x Topological Confinement", "60x Novas"],
+    materials: ["46x Topological Confinement", "60x Nova"],
   },
   {
     id: "verina", name: "Verina", rarity: 5, element: "Spectro", weaponType: "Rectifier", role: "Support",

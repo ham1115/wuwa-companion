@@ -1,6 +1,6 @@
 # Backlog
 
-Captured 30 October 2026. Items 1–5 and 7–11 are done; the rest are estimates assuming one focused sitting each.
+Captured 30 October 2026. Items 1–11 are done; only cross-device sync is left, and it is blocked on you; the rest are estimates assuming one focused sitting each.
 
 ---
 
@@ -34,12 +34,16 @@ The Story tab used to show "Act 1, Act 2, Act 3" placeholders past Chapter I. It
 
 ## Data to add
 
-### 6. Where materials come from, and what they cost
-For each ascension material: which boss / Tacet Field / region drops it, and the Waveplate cost per run. Would turn the plan's shopping list into an actual farming route with a total Waveplate price.
+### 6. Where materials come from, and what they cost ✅
+`data/materials.ts` maps all 38 ascension materials to a source, from the wiki's item and boss pages. The Plan's shopping list is no longer a flat column of names — it groups needs by **the boss that drops them** (with the boss's location and region) and by **the region you gather them in**, and lists what a claim costs at each activity.
 
-**Caveat:** I don't have this data and I'm not sure how cleanly it scrapes — prydwen has an interactive map, which may not expose structured data. Budget research time before committing. **Half a day, uncertain.**
+Claim costs, confirmed from the wiki's challenge pages: Boss Challenge 60, Weekly Challenge 60, Tacet Field 60, Forgery Challenge 40, Simulation Training 40.
 
----
+**It knows what you cannot reach yet.** Each region is tied to the act that opens it, so a material behind unplayed story is marked `locked` and called out at the top. With the sample queue it correctly reports that Rinascita is the wall, and that both of Phrolova's blockers sit behind it — Fenrico for Truth in Lies and "Afterlife" as a Rinascita gathering material.
+
+**What it deliberately does not do:** estimate run counts. Drops per claim scale with boss level and no table is published, so a "7 more runs" figure would be fabricated. The cost per claim is real; the run count is not guessed.
+
+Two data fixes fell out of this: "Novas" was a typo for **Nova** (a Black Shores specialty), and "Afterlife" is a Rinascita **gathering** material, not a boss drop as previously assumed.
 
 ## Features
 
@@ -101,4 +105,4 @@ After provisioning, the real work is rewriting `lib/storage.ts` — which every 
 3. ~~Item 11 (UI/UX)~~ — done
 4. ~~Items 7, 8, 9, 10~~ — done
 5. Item 12 (sync) when you want it
-6. Item 6 (materials) last — least certain payoff for the research cost
+6. ~~Item 6 (materials)~~ — done

@@ -1,14 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { CHARACTERS } from "@/data/characters";
-import {
-  BUILD_RULES,
-  DEFAULT_PLAN,
-  PLAN_STEPS,
-  parseMaterial,
-} from "@/data/plan";
+import { BUILD_RULES, DEFAULT_PLAN, PLAN_STEPS } from "@/data/plan";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
+import ShoppingList from "./ShoppingList";
 import StatLine from "./StatLine";
 import MyBuild from "./MyBuild";
 import Targets from "./Targets";
@@ -22,23 +18,6 @@ export default function Plan() {
   const [noteOpen, setNoteOpen] = useState<string | null>(null);
 
   const entries = plan.map((id) => BY_ID.get(id)).filter(Boolean);
-
-  /** Everything the whole queue still needs, summed by material name. */
-  const shoppingList = useMemo(() => {
-    const totals = new Map<string, number>();
-    for (const id of plan) {
-      const c = BY_ID.get(id);
-      if (!c) continue;
-      // Skip characters whose levelling is already checked off.
-      if (steps.has(`${id}:level`)) continue;
-      for (const raw of c.materials) {
-        const m = parseMaterial(raw);
-        if (!m) continue;
-        totals.set(m.name, (totals.get(m.name) ?? 0) + m.qty);
-      }
-    }
-    return [...totals.entries()].sort((a, b) => b[1] - a[1]);
-  }, [plan, steps.ids]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function move(id: string, dir: -1 | 1) {
     setPlan((prev) => {
@@ -68,24 +47,7 @@ export default function Plan() {
         </p>
       )}
 
-      {shoppingList.length > 0 && (
-        <>
-          <h2 className="section">Everything the queue still needs</h2>
-          <div className="callout">
-            <strong>Shopping list</strong>
-            <ul>
-              {shoppingList.map(([name, qty]) => (
-                <li key={name}>
-                  {qty}x {name}
-                </li>
-              ))}
-            </ul>
-            Plus generic frequency cores and Shell Credits per character.
-            Characters whose “Character to Lv.80” step is ticked drop off this
-            list.
-          </div>
-        </>
-      )}
+      <ShoppingList plan={plan} />
 
       <div className="callout">
         <strong>Rules that save resources</strong>
