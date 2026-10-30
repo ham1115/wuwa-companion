@@ -30,6 +30,30 @@
 
   --radius: 14px;
   --maxw: 900px;
+
+  /* How strongly each of the three page-background washes tints the base.
+   * Kept as numbers rather than colours so the wash is mixed from whatever
+   * --accent / --lemon / --bg currently are — including a custom palette. */
+  --mesh-a: 14%;
+  --mesh-b: 16%;
+  --mesh-c: 42%;
+
+  /* One motion scale for the whole app. --fast is for a state that flips
+   * under the cursor, --med for something that changes size or appears. */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --fast: 140ms;
+  --med: 240ms;
+}
+
+:root {
+  --page-bg:
+    radial-gradient(60rem 40rem at 12% -8%,
+      color-mix(in srgb, var(--accent) var(--mesh-a), var(--bg)) 0%, transparent 60%),
+    radial-gradient(50rem 36rem at 92% 6%,
+      color-mix(in srgb, var(--lemon) var(--mesh-b), var(--bg)) 0%, transparent 62%),
+    radial-gradient(44rem 40rem at 70% 96%,
+      color-mix(in srgb, var(--accent-soft) var(--mesh-c), var(--bg)) 0%, transparent 60%),
+    var(--bg);
 }
 
 :root[data-theme="dark"] {
@@ -57,6 +81,12 @@
   --c4-bg: #4a2f1c; --c4-ink: #ffd0a9; --c4-line: #b3744a;
   --c3-bg: #1c3b2e; --c3-ink: #a9e6c8; --c3-line: #4d9673;
   --c1-bg: #2b242e; --c1-ink: #b3abb8; --c1-line: #4a4150;
+
+  /* Dark needs a lighter touch on the lemon wash, which goes muddy over plum,
+   * and more of the accent, which would otherwise disappear entirely. */
+  --mesh-a: 20%;
+  --mesh-b: 9%;
+  --mesh-c: 26%;
 }
 
 * {
@@ -69,8 +99,18 @@ body {
   padding: 0;
 }
 
+/*
+ * Three soft washes over the base colour rather than a flat fill. Each one is
+ * mixed from a token, not hardcoded, so a custom accent or background re-tints
+ * the page instead of clashing with it.
+ *
+ * `fixed` matters for more than parallax: it anchors the gradient to the
+ * viewport, which is what lets .nav paint the identical background and line up
+ * with it seamlessly instead of showing as a flat band across the top.
+ */
 body {
-  background: var(--bg);
+  background: var(--page-bg);
+  background-attachment: fixed;
   color: var(--text);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", sans-serif;
@@ -135,7 +175,8 @@ body {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: var(--bg);
+  background: var(--page-bg);
+  background-attachment: fixed;
   padding: 8px 0 6px;
   margin-bottom: 14px;
   border-bottom: 1px solid var(--border);
@@ -1430,4 +1471,106 @@ details.more li {
   background: var(--accent-soft);
   border-color: var(--accent);
   color: var(--text);
+}
+
+/* ---------- motion ----------
+ *
+ * Until now nothing in this stylesheet transitioned, so every tick, hover and
+ * expansion was a hard cut. These are deliberately short — the point is to
+ * take the edge off a state change, not to make anyone wait for it — and they
+ * name their properties rather than using `all`, so a layout property never
+ * gets animated by accident.
+ */
+
+.group,
+.tab,
+.mini,
+.check,
+.char-toggle,
+.picker,
+.compare-input,
+.compare-row,
+.team-member,
+.source {
+  transition:
+    background-color var(--fast) var(--ease),
+    border-color var(--fast) var(--ease),
+    color var(--fast) var(--ease),
+    box-shadow var(--fast) var(--ease),
+    transform var(--fast) var(--ease);
+}
+
+/* The tick box is the one element worth a flourish: it is the thing you came
+ * to the checklist to do, and it is small enough that a scale reads as
+ * feedback rather than movement. */
+.check .box,
+.compare-row[data-met="true"] .compare-verdict {
+  transition:
+    background-color var(--fast) var(--ease),
+    border-color var(--fast) var(--ease),
+    transform var(--med) var(--ease);
+}
+
+.check[data-done="true"] .box {
+  transform: scale(1.1);
+}
+
+/* A row lifting a single pixel under the cursor is what makes a dense list
+ * feel like it is made of objects rather than text. */
+.mini:hover,
+.check:hover {
+  transform: translateY(-1px);
+}
+
+.mini:active,
+.check:active {
+  transform: translateY(0);
+}
+
+/*
+ * An expanded character body is conditionally rendered, so it has no height to
+ * animate from and no element left to animate out. An entry animation covers
+ * the direction that matters — opening — without reshaping the component. The
+ * collapse is still immediate, which is the honest limit of doing this in CSS
+ * alone.
+ */
+@keyframes body-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.char-body,
+.maxed-card {
+  animation: body-in var(--med) var(--ease) both;
+}
+
+/*
+ * Someone who has asked their system for less motion gets none of it. The
+ * durations collapse rather than the rules being removed, so every end state
+ * stays exactly where it was.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --fast: 0.01ms;
+    --med: 0.01ms;
+  }
+
+  .mini:hover,
+  .check:hover,
+  .check[data-done="true"] .box {
+    transform: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
