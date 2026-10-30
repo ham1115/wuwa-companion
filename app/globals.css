@@ -1668,3 +1668,24 @@ details.more li {
     backdrop-filter: none;
   }
 }
+
+/* ---------- chamfer ----------
+ *
+ * Wuthering Waves cuts its panel corners rather than rounding them. Done with
+ * corner-shape rather than clip-path on purpose: clip-path would take the drop
+ * shadow and the inner sheen off with the corner, which is most of what makes
+ * the glass above read as a raised surface. corner-shape keeps the border, the
+ * shadow and the backdrop-filter, and a browser that does not know it simply
+ * renders the rounded corner it already had.
+ *
+ * Two opposite corners, not four. Cutting all four reads as an octagon; the
+ * diagonal is what looks deliberate, and it is what the game does.
+ */
+.card,
+.callout {
+  --chamfer: 18px;
+  border-top-left-radius: var(--chamfer);
+  border-bottom-right-radius: var(--chamfer);
+  corner-top-left-shape: bevel;
+  corner-bottom-right-shape: bevel;
+}
