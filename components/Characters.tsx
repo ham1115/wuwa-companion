@@ -11,6 +11,7 @@ import {
 } from "@/data/characters";
 import { DEFAULT_PLAN } from "@/data/plan";
 import { useOwned } from "@/lib/owned";
+import StatLine from "./StatLine";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
 
 export default function Characters() {
@@ -210,15 +211,9 @@ function CharacterRow({
 
               <h2 className="section">Main stats</h2>
               <div className="stat-grid">
-                {c.stats.map((s, i) => {
-                  const [slot, ...rest] = s.split(": ");
-                  return (
-                    <div className="stat-line" key={i}>
-                      <span className="stat-slot">{slot}</span>
-                      <span>{rest.join(": ")}</span>
-                    </div>
-                  );
-                })}
+                {c.stats.map((s, i) => (
+                  <StatLine key={i} text={s} />
+                ))}
               </div>
 
               <h2 className="section">Substat priority</h2>

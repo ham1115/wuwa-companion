@@ -7,9 +7,9 @@ export const PREFIX = "wuwa-companion:";
 /** Every storage key this app owns, grouped so they can be reset per section. */
 export const STORAGE_GROUPS = {
   characters: ["built", "char-notes", "owned"],
-  plan: ["plan", "build-steps", "plan-notes"],
+  plan: ["plan", "build-steps", "plan-notes", "account-notes"],
   glossary: ["learned", "revealed", "notes"],
-  story: ["acts"],
+  story: ["acts", "priority-now"],
   routine: ["routine", "routine-day"],
   display: ["tab", "theme", "show-account-notes"],
 } as const;
@@ -161,7 +161,10 @@ export function useIdSet(key: string) {
 
   const clear = useCallback(() => setIds([]), [setIds]);
 
-  return { ids, has, toggle, clear, hydrated };
+  /** Replace the whole set — for rules that tick or clear several ids at once. */
+  const set = useCallback((next: string[]) => setIds(next), [setIds]);
+
+  return { ids, has, toggle, clear, set, hydrated };
 }
 
 /** Free-text notes keyed by term id. */

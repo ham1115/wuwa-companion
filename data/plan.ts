@@ -1,7 +1,11 @@
 /**
  * The build queue. Characters are added from the Characters tab; their build
  * parameters are read live from data/characters.ts, so nothing is duplicated
- * here. This file holds only the checklist shape and account-specific notes.
+ * here. This file holds only the checklist shape and the shared build rules.
+ *
+ * Nothing here is personal: the queue and the per-character notes live in the
+ * browser, seeded empty, so a new visitor starts blank. One player's filled-in
+ * version is in data/profile.ts, loadable from Settings.
  */
 
 export type PlanStep = { key: string; label: string; detail?: string };
@@ -16,34 +20,11 @@ export const PLAN_STEPS: PlanStep[] = [
   { key: "substats", label: "Substats acceptable", detail: "Good enough beats perfect. Do not re-farm." },
 ];
 
-export const DEFAULT_PLAN = ["verina", "phrolova", "qiuyuan", "rover-havoc"];
-
-/** Free-form context for specific characters on this account. */
-export const ACCOUNT_NOTES: Record<string, string[]> = {
-  verina: [
-    "Done. Lv.80, weapon Lv.80, skills set, 5-piece Rejuvenating Glow active.",
-    "Sits at ~1680 ATK and 191.7% Energy Regen.",
-    "Correction to earlier advice: prydwen puts CRIT Rate on her 4-cost and keeps Energy Regen on both 3-costs, and names Fallacy of No Return as her main Echo over Bell-Borne Geochelone. Her 198.6% CRIT DMG is therefore not wasted.",
-    "No re-farm needed. Swap pieces in only if they drop while farming something else.",
-  ],
-  phrolova: [
-    "Walled at Lv.40 — needs 46x Truth in Lies and 60x Afterlife, which sit in a region this account has not unlocked.",
-    "Gear is already done: 5-piece Havoc Eclipse with a maxed Crit DMG 44% Phantom: Dreamless.",
-    "Havoc Eclipse is the working fallback. Dream of the Lost is the upgrade once reachable.",
-    "Phantom: Dreamless gains bonus damage after Rover-Havoc uses Resonance Liberation, so Rover is a legitimate third slot.",
-  ],
-  qiuyuan: [
-    "Already Lv.70. Aero, Sword, Hybrid. Named in guides as one of Phrolova's best partners.",
-    "Needs 46x Truth in Lies and 60x Wintry Bell — same boss material as Phrolova, different plant.",
-  ],
-  "rover-havoc": [
-    "Free, already Lv.70. Hold here — do not invest further until Phrolova unblocks.",
-  ],
-};
+/** Empty on purpose. Queue your own from the Characters tab. */
+export const DEFAULT_PLAN: string[] = [];
 
 export const BUILD_RULES = [
   "Build one character at a time. Shell Credits are the bottleneck, not EXP.",
-  "Do not level the Lv.1 characters. No exceptions.",
   "Stop at Lv.80. Going 80 to 90 costs roughly as much as 1 to 80.",
   "A complete 5-piece Sonata with a mediocre 4-cost beats a perfect 4-cost with no set bonus.",
   "An Echo Sonata is locked when it drops. There is no reroll — you re-farm the Echo instead.",

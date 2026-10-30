@@ -1,10 +1,28 @@
 "use client";
 
 import { CHAPTERS, CHAPTER_DISCLAIMER, PRIORITY_NOW } from "@/data/progress";
-import { useIdSet } from "@/lib/storage";
+import { useIdSet, usePersistentState } from "@/lib/storage";
+
+/**
+ * Every act in story order. The game gates acts behind the ones before them,
+ * so progress is always a prefix of this list — never a scatter of ticks.
+ */
+const ACT_ORDER = CHAPTERS.flatMap((c) => c.acts.map((a) => a.id));
 
 export default function Quests() {
   const acts = useIdSet("acts");
+  // Loaded from a profile in Settings, not shipped in the code.
+  const [priority] = usePersistentState<string[]>("priority-now", PRIORITY_NOW);
+
+  /**
+   * Clicking an act sets progress to that point: ticking fills in every act
+   * before it, un-ticking clears it and everything after.
+   */
+  function setProgress(id: string) {
+    const i = ACT_ORDER.indexOf(id);
+    if (i < 0) return;
+    acts.set(ACT_ORDER.slice(0, acts.has(id) ? i : i + 1));
+  }
 
   const totalActs = CHAPTERS.reduce((n, c) => n + c.acts.length, 0);
   const doneActs = CHAPTERS.reduce(
@@ -18,14 +36,16 @@ export default function Quests() {
         {doneActs} of {totalActs} acts marked complete.
       </p>
 
-      <div className="callout">
-        <strong>Right now</strong>
-        <ol>
-          {PRIORITY_NOW.map((p) => (
-            <li key={p}>{p}</li>
-          ))}
-        </ol>
-      </div>
+      {priority.length > 0 && (
+        <div className="callout">
+          <strong>Right now</strong>
+          <ol>
+            {priority.map((p) => (
+              <li key={p}>{p}</li>
+            ))}
+          </ol>
+        </div>
+      )}
 
       {CHAPTERS.map((c) => {
         const done = c.acts.filter((a) => acts.has(a.id)).length;
@@ -49,7 +69,7 @@ export default function Quests() {
                 key={a.id}
                 className="check"
                 data-done={acts.has(a.id)}
-                onClick={() => acts.toggle(a.id)}
+                onClick={() => setProgress(a.id)}
               >
                 <span className="box">{acts.has(a.id) ? "✓" : ""}</span>
                 <span className="check-body">
@@ -65,7 +85,10 @@ export default function Quests() {
         );
       })}
 
-      <p className="footnote">{CHAPTER_DISCLAIMER}</p>
+      <p className="footnote">
+        Acts fill in order — ticking one marks everything before it, since the
+        game will not let you clear an act out of sequence. {CHAPTER_DISCLAIMER}
+      </p>
     </section>
   );
 }

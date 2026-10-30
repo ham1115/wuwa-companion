@@ -17,6 +17,17 @@
   --lemon-ink: #8a6a07;
   --good: #3f9168;
   --danger: #cc4a4a;
+
+  /* rarity — mirrors the in-game gacha colours: gold, purple, blue */
+  --r5-bg: #fff2c2; --r5-ink: #85620a; --r5-line: #f0c040;
+  --r4-bg: #ece2fb; --r4-ink: #5b3a92; --r4-line: #c0a6ec;
+  --r3-bg: #e0eefb; --r3-ink: #2c5c86; --r3-line: #a5cbea;
+
+  /* echo cost — 4 is the main slot, 1 is filler */
+  --c4-bg: #ffe3cd; --c4-ink: #8c4b17; --c4-line: #efae79;
+  --c3-bg: #d6f0e3; --c3-ink: #1d6748; --c3-line: #8fd1b1;
+  --c1-bg: #ecebef; --c1-ink: #5d5a66; --c1-line: #cdcad4;
+
   --radius: 14px;
   --maxw: 900px;
 }
@@ -38,6 +49,14 @@
   --lemon-ink: #ffe9ad;
   --good: #7ed6a8;
   --danger: #ff9b9b;
+
+  --r5-bg: #463619; --r5-ink: #ffe9ad; --r5-line: #b79440;
+  --r4-bg: #332549; --r4-ink: #dcc9f9; --r4-line: #7c5cb5;
+  --r3-bg: #1e3348; --r3-ink: #bcdef8; --r3-line: #4d7ba5;
+
+  --c4-bg: #4a2f1c; --c4-ink: #ffd0a9; --c4-line: #b3744a;
+  --c3-bg: #1c3b2e; --c3-ink: #a9e6c8; --c3-line: #4d9673;
+  --c1-bg: #2b242e; --c1-ink: #b3abb8; --c1-line: #4a4150;
 }
 
 * {
@@ -574,6 +593,7 @@ details.more li {
   border-radius: 999px;
   padding: 2px 10px;
   color: #2d1a24;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .el[data-el="Aero"] { background: #a8e6d0; }
@@ -583,21 +603,33 @@ details.more li {
 .el[data-el="Havoc"] { background: #f7afc8; }
 .el[data-el="Spectro"] { background: #ffe39b; }
 
-.star {
+/*
+ * Rarity, Echo cost and Sonata piece-count all appear as small pills in the
+ * same rows, so each gets its own colour scale rather than sharing one.
+ */
+.star,
+.cost,
+.pieces {
+  flex: none;
   font-size: 0.72rem;
   font-weight: 700;
-  color: var(--lemon-ink);
-  background: var(--lemon-soft);
-  border: 1px solid var(--lemon);
   border-radius: 999px;
   padding: 1px 9px;
+  border: 1px solid transparent;
+  white-space: nowrap;
 }
 
-.star[data-r="4"] {
-  color: var(--text-dim);
-  background: var(--bg-sunken);
-  border-color: var(--border);
-}
+.star[data-r="5"] { color: var(--r5-ink); background: var(--r5-bg); border-color: var(--r5-line); }
+.star[data-r="4"] { color: var(--r4-ink); background: var(--r4-bg); border-color: var(--r4-line); }
+.star[data-r="3"] { color: var(--r3-ink); background: var(--r3-bg); border-color: var(--r3-line); }
+
+.cost[data-cost="4"] { color: var(--c4-ink); background: var(--c4-bg); border-color: var(--c4-line); }
+.cost[data-cost="3"] { color: var(--c3-ink); background: var(--c3-bg); border-color: var(--c3-line); }
+.cost[data-cost="1"] { color: var(--c1-ink); background: var(--c1-bg); border-color: var(--c1-line); }
+
+/* 3-piece sets are the cheap outlier — worth spotting at a glance. */
+.pieces[data-p="3"] { color: var(--c3-ink); background: var(--c3-bg); border-color: var(--c3-line); }
+.pieces[data-p="5"] { color: var(--c1-ink); background: var(--c1-bg); border-color: var(--c1-line); }
 
 .owned-dot {
   font-size: 0.64rem;

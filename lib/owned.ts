@@ -5,8 +5,9 @@ import { OWNED } from "@/data/characters";
 import { usePersistentState } from "./storage";
 
 /**
- * Which characters the viewer owns. Seeded from OWNED in data/characters.ts the
- * first time, then owned by the browser so each player edits their own list.
+ * Which characters the viewer owns. Starts empty (OWNED in data/characters.ts
+ * is deliberately blank) and lives in the browser, so each player builds their
+ * own list in Settings or loads one from a profile.
  */
 export function useOwned() {
   const [owned, setOwned, hydrated] = usePersistentState<string[]>("owned", OWNED);
@@ -22,7 +23,6 @@ export function useOwned() {
   );
 
   const clear = useCallback(() => setOwned([]), [setOwned]);
-  const reseed = useCallback(() => setOwned(OWNED), [setOwned]);
 
-  return { owned, has, toggle, clear, reseed, hydrated };
+  return { owned, has, toggle, clear, hydrated };
 }

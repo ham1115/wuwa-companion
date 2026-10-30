@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { CHARACTERS } from "@/data/characters";
+import { AUTHOR_PROFILE } from "@/data/profile";
 import { useOwned } from "@/lib/owned";
+import { loadProfile } from "@/lib/profile";
 import {
   exportAll,
   importAll,
@@ -29,11 +31,16 @@ export default function Settings() {
   const [message, setMessage] = useState<string | null>(null);
   const [charQuery, setCharQuery] = useState("");
 
-  function wipe(fn: () => number, what: string) {
+  /** Runs a storage change, reports how many keys it touched, then reloads. */
+  function apply(fn: () => number, sentence: (n: string) => string) {
     const n = fn();
-    setMessage(`Cleared ${what} (${n} ${n === 1 ? "entry" : "entries"}). Reloading…`);
+    setMessage(`${sentence(`${n} ${n === 1 ? "entry" : "entries"}`)} Reloading…`);
     setConfirming(null);
     setTimeout(() => window.location.reload(), 600);
+  }
+
+  function wipe(fn: () => number, what: string) {
+    apply(fn, (n) => `Cleared ${what} (${n}).`);
   }
 
   function doExport() {
@@ -58,9 +65,9 @@ export default function Settings() {
   return (
     <section>
       <p className="panel-intro">
-        Everything here affects only this browser. Share the app&apos;s URL and
-        each player gets their own blank progress — nothing you tick is visible
-        to anyone else.
+        Everything here affects only this browser. The app ships blank — no
+        owned characters, no queue, no progress — so sharing the URL gives each
+        player an empty slate. Nothing you tick is visible to anyone else.
       </p>
 
       {message && <div className="callout">{message}</div>}
@@ -83,10 +90,7 @@ export default function Settings() {
       </div>
 
       <div className="chips">
-        <button className="chip" onClick={owned.reseed}>
-          Reset to the default list
-        </button>
-        <button className="chip" onClick={owned.clear}>
+        <button className="chip" onClick={owned.clear} disabled={owned.owned.length === 0}>
           Select none
         </button>
       </div>
@@ -106,7 +110,7 @@ export default function Settings() {
       </div>
       {charResults.length === 0 && <p className="empty">No character by that name.</p>}
 
-      <h2 className="section">Author&apos;s account notes</h2>
+      <h2 className="section">Loaded profile notes</h2>
       <button
         className="check"
         data-done={showNotes}
@@ -114,14 +118,58 @@ export default function Settings() {
       >
         <span className="box">{showNotes ? "✓" : ""}</span>
         <span className="check-body">
-          <span className="check-label">Show account notes in My plan</span>
+          <span className="check-label">Show profile notes in My plan</span>
           <span className="check-detail">
-            These were written about one specific account (current levels, what
-            is blocked). Turn them off if you are sharing this with other
-            players.
+            Only applies if you loaded a profile below. Those notes describe
+            that player&apos;s account, not yours — turn them off once your own
+            per-character notes replace them.
           </span>
         </span>
       </button>
+
+      <h2 className="section">Start from someone else&apos;s progress</h2>
+      <p className="panel-intro">
+        A shortcut if your account looks like theirs. It sets the owned list,
+        the queue and the notes — your ticked checklists and story progress are
+        left alone.
+      </p>
+      <div className="card">
+        <div className="build-head">
+          <h3>{AUTHOR_PROFILE.label}</h3>
+          <span className="badge" data-status="queued">
+            {AUTHOR_PROFILE.owned.length} owned · {AUTHOR_PROFILE.plan.length} queued
+          </span>
+        </div>
+        <p className="build-role">{AUTHOR_PROFILE.detail}</p>
+        {confirming === "profile" ? (
+          <div className="queue-controls">
+            <button
+              className="mini"
+              data-on
+              onClick={() =>
+                apply(
+                  () => loadProfile(AUTHOR_PROFILE),
+                  (n) => `Loaded ${AUTHOR_PROFILE.label} (${n}).`
+                )
+              }
+            >
+              Yes, load it
+            </button>
+            <button className="mini" onClick={() => setConfirming(null)}>
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <div className="queue-controls">
+            <button className="mini" onClick={() => setConfirming("profile")}>
+              Load this profile
+            </button>
+          </div>
+        )}
+        <p className="check-detail">
+          Overwrites your owned list and queue.
+        </p>
+      </div>
 
       <h2 className="section">Back up or move your progress</h2>
       <p className="panel-intro">
@@ -197,11 +245,8 @@ export default function Settings() {
       </div>
 
       <p className="footnote">
-        Sharing checklist: clear <strong>Characters</strong>,{" "}
-        <strong>My plan</strong>, <strong>Glossary</strong>,{" "}
-        <strong>Story</strong> and <strong>Routine</strong>, turn off the
-        author&apos;s account notes, then send the URL. Or just send the URL —
-        visitors never load your data in the first place.
+        To share it, just send the URL. Visitors start blank and never load
+        your data — nothing personal is baked into the app itself.
       </p>
     </section>
   );

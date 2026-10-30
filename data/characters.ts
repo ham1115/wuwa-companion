@@ -66,16 +66,11 @@ export const WEAPON_TYPES: WeaponType[] = [
   "Rectifier",
 ];
 
-/** Characters the account owns. Edit this list as you pull more. */
-export const OWNED = [
-  "verina",
-  "phrolova",
-  "qiuyuan",
-  "lupa",
-  "galbrena",
-  "lynae",
-  "rover-havoc",
-];
+/**
+ * Empty on purpose: every visitor picks their own in Settings. Kept as an
+ * export so the owned-list hook has a default to seed from.
+ */
+export const OWNED: string[] = [];
 
 export const CHARACTERS: Character[] = [
   {

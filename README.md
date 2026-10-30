@@ -9,9 +9,9 @@ A Wuthering Waves companion app. Pastel pink and yellow, light by default, with 
 - **Echoes** — two views. **Sonata sets** (37) shows each set's piece requirement, 2-piece and full bonuses, every character that runs it, and every Echo that can roll it grouped by cost. **Echoes** (187) lists the whole roster; searching a Sonata name returns every Echo that rolls it. Cost-4 entries carry their Echo Skill text.
 - **My plan** — an ordered build queue. Reorder with Up/Down, remove, and work it top to bottom. Each entry reads its build live from the character database, so nothing is duplicated. A **shopping list** at the top sums every ascension material the whole queue still needs; characters whose "Character to Lv.80" step is ticked drop off it.
 - **Glossary** — 61 lore and systems terms across seven categories, with related-term links. Spoilers past Chapter 1 are tagged and blurred until tapped.
-- **Story** — chapter and act progress tracker.
+- **Story** — chapter and act progress tracker. Acts fill in order: ticking Act 5 marks Acts 1–4 too, and un-ticking it clears everything after, because the game gates acts behind the ones before them.
 - **Routine** — daily and weekly checklist. Daily items clear themselves when the date changes.
-- **Settings** — edit which characters you own, reset any section (or everything) with a confirm step, export your progress to JSON, and import it back on another device.
+- **Settings** — edit which characters you own, load a ready-made profile, reset any section (or everything) with a confirm step, export your progress to JSON, and import it back on another device.
 
 ### Reverse lookups
 
@@ -20,6 +20,16 @@ Two questions a returning player asks constantly, both answered without a dedica
 - *"I pulled this weapon — who wants it?"* → Weapons tab, open the weapon, read **Wanted by**.
 - *"Who runs this Sonata set?"* → Echoes tab → Sonata sets → open the set → **Run by**.
 - *"Which Echoes roll this set?"* → same place, **Echoes that roll it**, grouped by cost.
+
+### Colour coding
+
+Three different numbers appear as small pills in the same rows, so each has its own scale:
+
+- **Rarity** mirrors the in-game gacha colours — 5★ gold, 4★ purple, 3★ blue.
+- **Echo cost** runs warm to cool — 4-cost amber (the main slot), 3-cost green, 1-cost grey.
+- **Sonata piece count** marks the cheap outlier — 3-piece green, 5-piece grey.
+
+Cost slots in a character's main-stat rows use the Echo-cost colours too, so "4 cost" means the same thing in every tab.
 
 ### Not every set needs five pieces
 
@@ -61,12 +71,9 @@ To move progress between devices: **Settings → Export to JSON**, then paste it
 
 ## Sharing it with other players
 
-Just send the URL. Each visitor's browser starts empty — your ticks, notes and queue are never visible to anyone else, and nothing you do affects them.
+Just send the URL. **The app ships blank** — no owned characters, no queue, no notes, no "Right now" list — so every visitor starts on an empty slate and nothing personal is baked into the code. Your ticks and notes are never visible to anyone else.
 
-Two things are seeded from the code rather than per-visitor, so a new player sees them until they change them:
-
-- **The owned-characters list** (`OWNED` in `data/characters.ts`) — editable in Settings, so visitors just untick and pick their own.
-- **Account notes** (`ACCOUNT_NOTES` in `data/plan.ts`) and the Story tab's "Right now" list, both written about one specific account. Turn the notes off in Settings, or edit those two files before sharing widely.
+One player's filled-in progress lives in `data/profile.ts` and is loaded only on demand, from **Settings → Start from someone else's progress**. It sets the owned list, the queue and the per-character notes, and leaves ticked checklists and story progress alone. Add your own by exporting the same four fields into a second `Profile`.
 
 ## Development note
 
@@ -82,14 +89,15 @@ All content is plain TypeScript data — no CMS, no fetching at runtime.
 | `data/weapons.ts` | All 114 weapons with stats and effects |
 | `data/echoes.ts` | 37 Sonata sets and all 187 Echoes |
 | `data/glossary.ts` | Terms, categories, spoiler flags, related links |
-| `data/plan.ts` | The queue's checklist shape, default queue, and account notes |
+| `data/plan.ts` | The queue's checklist shape and the shared build rules |
+| `data/profile.ts` | One player's owned list, queue, notes and priorities — opt-in, never loaded automatically |
 | `data/progress.ts` | Chapters, acts, daily and weekly routine |
 
-To mark which characters you own, edit the `OWNED` array in `data/characters.ts`. The queue itself lives in your browser, not in the code — `DEFAULT_PLAN` in `data/plan.ts` only seeds it the first time.
+`OWNED` in `data/characters.ts`, `DEFAULT_PLAN` in `data/plan.ts` and `PRIORITY_NOW` in `data/progress.ts` are all deliberately empty: they are the defaults a new visitor gets. Everything personal lives in the browser, or in an opt-in profile.
 
 ## Theming
 
-Colours are CSS custom properties at the top of `app/globals.css`. Light mode (`:root`) is pastel pink with lemon accents; dark mode (`:root[data-theme="dark"]`) keeps the same hues on a dark plum base. Element pill colours are defined under `.el[data-el="…"]`.
+Colours are CSS custom properties at the top of `app/globals.css`. Light mode (`:root`) is pastel pink with lemon accents; dark mode (`:root[data-theme="dark"]`) keeps the same hues on a dark plum base. Element pill colours are defined under `.el[data-el="…"]`; rarity, cost and piece-count pills read `--r5-*` / `--r4-*` / `--r3-*` and `--c4-*` / `--c3-*` / `--c1-*`, each defined once per theme.
 
 ## Sources and accuracy
 

@@ -151,7 +151,7 @@ function SetRow({
       <button className="char-toggle" onClick={onToggle} aria-expanded={isOpen}>
         <span className="char-name">{s.name}</span>
         {mine.length > 0 && <span className="owned-dot">{mine.length} of mine</span>}
-        <span className="star" data-r={s.pieces === 3 ? 4 : 5}>
+        <span className="pieces" data-p={s.pieces}>
           {s.pieces}-pc
         </span>
         <span className="term-cat">{isOpen ? "▾" : "▸"}</span>
@@ -185,7 +185,9 @@ function SetRow({
           {([4, 3, 1] as const).map((cost) =>
             byCost[cost].length > 0 ? (
               <div className="stat-line" key={cost}>
-                <span className="stat-slot">{cost} cost</span>
+                <span className="cost" data-cost={cost}>
+                  {cost} cost
+                </span>
                 <span>{byCost[cost].map((e) => e.name).join(", ")}</span>
               </div>
             ) : null
@@ -253,7 +255,7 @@ function EchoesView() {
             aria-expanded={open === e.name}
           >
             <span className="char-name">{e.name}</span>
-            <span className="star" data-r={e.cost === 4 ? 5 : 4}>
+            <span className="cost" data-cost={e.cost}>
               {e.cost} cost
             </span>
             <span className="term-cat">{e.echoClass}</span>

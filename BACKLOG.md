@@ -1,33 +1,24 @@
 # Backlog
 
-Captured 30 October 2026. Nothing here is built yet. Estimates assume one focused sitting each.
+Captured 30 October 2026. Items 1–4 are done; the rest are estimates assuming one focused sitting each.
 
 ---
 
-## Quick wins — do these first
+## Done
 
-### 1. Remove the "don't level Lv.1 characters" rule
-`data/plan.ts` → `BUILD_RULES`, delete one line. **1 minute.**
+Shipped 30 October 2026.
 
-### 2. Different colours per Echo cost and per rarity
-Cost 1 / 3 / 4 currently share a badge style, and so do 5★ / 4★ / 3★ — easy to misread at a glance. Give each its own colour, same treatment for elements wherever a badge appears.
-`app/globals.css` → `.star`, `.stat-slot`, `.el`. **~30 minutes.**
+### 1. Remove the "don't level Lv.1 characters" rule ✅
+Gone from `BUILD_RULES`, and from the Story tab's "Right now" list, where it also appeared.
 
-### 3. Story acts shouldn't be skippable
-In-game you can't clear Act 5 without Acts 1–4. Clicking an act should auto-tick every act before it (and un-ticking should clear everything after).
-`components/Quests.tsx`. **~20 minutes.**
+### 2. Different colours per Echo cost and per rarity ✅
+Rarity pills now mirror the in-game gacha colours (5★ gold, 4★ purple, 3★ blue). Echo cost gets its own warm-to-cool scale (4 amber, 3 green, 1 grey), and Sonata piece-count marks the cheap 3-piece outlier in green. Cost slots in main-stat rows use the same colours via a new shared `StatLine` component, so "4 cost" reads identically in every tab. Tokens are `--r5-*`/`--r4-*`/`--r3-*` and `--c4-*`/`--c3-*`/`--c1-*`, defined once per theme.
 
-### 4. Ship blank for other players
-**Highest value of the quick wins — this is what currently blocks sharing.** Four things are baked into the code as one specific account:
+### 3. Story acts shouldn't be skippable ✅
+Progress is now always a prefix of `ACT_ORDER`: ticking an act fills in everything before it, un-ticking clears everything after. Works across chapter boundaries.
 
-| What | Where |
-|---|---|
-| `OWNED` — the 7 owned characters | `data/characters.ts` |
-| `DEFAULT_PLAN` — the seeded queue | `data/plan.ts` |
-| `ACCOUNT_NOTES` — "walled at Lv.40", "191.7% ER" | `data/plan.ts` |
-| `PRIORITY_NOW` — "finish the Chronosorter" | `data/progress.ts` |
-
-Fix: default all four to empty, and keep the personal version as an importable profile (the Settings export format already does this). A new visitor then starts clean. **~1 hour.**
+### 4. Ship blank for other players ✅
+`OWNED`, `DEFAULT_PLAN`, `ACCOUNT_NOTES` and `PRIORITY_NOW` are all empty now. The personal version moved to `data/profile.ts` and loads only when someone presses **Settings → Start from someone else's progress → Load this profile**, which writes the four keys and leaves checklists and story ticks alone.
 
 ---
 
@@ -96,7 +87,7 @@ After provisioning, the real work is rewriting `lib/storage.ts` — which every 
 
 ## Suggested order
 
-1. Items 1–4 (quick wins, ~2 hours total, unblocks sharing)
+1. ~~Items 1–4 (quick wins)~~ — done
 2. Item 5 (stat targets — cheap, and item 8 needs it)
 3. Item 11 (UI/UX — affects everything added after)
 4. Items 7, 9, 10

@@ -122,9 +122,8 @@ export const ROUTINE: Routine[] = [
   },
 ];
 
-export const PRIORITY_NOW = [
-  "Finish the Chronosorter: facing it, disable the right Photonvault, then middle, then left.",
-  "Push the main quest. It unlocks regions, flight, Shell Credits and Phrolova's materials all at once.",
-  "Do not pull. Do not level the Lv.1 characters.",
-  "Claim Milestone and Journey rewards if you have not already.",
-];
+/**
+ * Empty on purpose — a new visitor starts blank. Edit these in the app
+ * (Story tab) or load one player's filled-in list from Settings.
+ */
+export const PRIORITY_NOW: string[] = [];

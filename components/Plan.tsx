@@ -3,13 +3,13 @@
 import { useMemo, useState } from "react";
 import { CHARACTERS } from "@/data/characters";
 import {
-  ACCOUNT_NOTES,
   BUILD_RULES,
   DEFAULT_PLAN,
   PLAN_STEPS,
   parseMaterial,
 } from "@/data/plan";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
+import StatLine from "./StatLine";
 
 const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
 
@@ -17,6 +17,11 @@ export default function Plan() {
   const [plan, setPlan] = usePersistentState<string[]>("plan", DEFAULT_PLAN);
   const steps = useIdSet("build-steps");
   const notes = useNotes("plan-notes");
+  // Loaded from a profile in Settings, not shipped in the code.
+  const [profileNotes] = usePersistentState<Record<string, string[]>>(
+    "account-notes",
+    {}
+  );
   const [showAccountNotes] = usePersistentState<boolean>("show-account-notes", true);
   const [noteOpen, setNoteOpen] = useState<string | null>(null);
 
@@ -99,7 +104,7 @@ export default function Plan() {
         if (!c) return null;
         const done = PLAN_STEPS.filter((s) => steps.has(`${c.id}:${s.key}`)).length;
         const noteText = notes.get(c.id);
-        const accountNotes = showAccountNotes ? ACCOUNT_NOTES[c.id] : undefined;
+        const accountNotes = showAccountNotes ? profileNotes[c.id] : undefined;
         const status =
           done === PLAN_STEPS.length ? "done" : done > 0 ? "active" : "queued";
 
@@ -152,15 +157,9 @@ export default function Plan() {
 
             {c.stats.length > 0 && (
               <div className="stat-grid">
-                {c.stats.map((s, i) => {
-                  const [slot, ...rest] = s.split(": ");
-                  return (
-                    <div className="stat-line" key={i}>
-                      <span className="stat-slot">{slot}</span>
-                      <span>{rest.join(": ")}</span>
-                    </div>
-                  );
-                })}
+                {c.stats.map((s, i) => (
+                  <StatLine key={i} text={s} />
+                ))}
               </div>
             )}
 
@@ -183,9 +182,9 @@ export default function Plan() {
               );
             })}
 
-            {accountNotes && (
+            {accountNotes && accountNotes.length > 0 && (
               <details className="more">
-                <summary>Notes on this account</summary>
+                <summary>Notes from the loaded profile</summary>
                 <ul>
                   {accountNotes.map((n) => (
                     <li key={n}>{n}</li>
