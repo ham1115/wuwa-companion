@@ -12,6 +12,7 @@ import {
 import { DEFAULT_PLAN } from "@/data/plan";
 import { useOwned } from "@/lib/owned";
 import StatLine from "./StatLine";
+import Targets from "./Targets";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
 
 export default function Characters() {
@@ -218,6 +219,8 @@ function CharacterRow({
 
               <h2 className="section">Substat priority</h2>
               <p className="term-def">{c.substats}</p>
+
+              <Targets id={c.id} />
 
               {c.materials.length > 0 && (
                 <>

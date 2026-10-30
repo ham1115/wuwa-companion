@@ -10,6 +10,7 @@ import {
 } from "@/data/plan";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
 import StatLine from "./StatLine";
+import Targets from "./Targets";
 
 const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
 
@@ -17,12 +18,6 @@ export default function Plan() {
   const [plan, setPlan] = usePersistentState<string[]>("plan", DEFAULT_PLAN);
   const steps = useIdSet("build-steps");
   const notes = useNotes("plan-notes");
-  // Loaded from a profile in Settings, not shipped in the code.
-  const [profileNotes] = usePersistentState<Record<string, string[]>>(
-    "account-notes",
-    {}
-  );
-  const [showAccountNotes] = usePersistentState<boolean>("show-account-notes", true);
   const [noteOpen, setNoteOpen] = useState<string | null>(null);
 
   const entries = plan.map((id) => BY_ID.get(id)).filter(Boolean);
@@ -104,7 +99,6 @@ export default function Plan() {
         if (!c) return null;
         const done = PLAN_STEPS.filter((s) => steps.has(`${c.id}:${s.key}`)).length;
         const noteText = notes.get(c.id);
-        const accountNotes = showAccountNotes ? profileNotes[c.id] : undefined;
         const status =
           done === PLAN_STEPS.length ? "done" : done > 0 ? "active" : "queued";
 
@@ -163,6 +157,8 @@ export default function Plan() {
               </div>
             )}
 
+            <Targets id={c.id} />
+
             <h2 className="section">Checklist</h2>
             {PLAN_STEPS.map((s) => {
               const k = `${c.id}:${s.key}`;
@@ -181,17 +177,6 @@ export default function Plan() {
                 </button>
               );
             })}
-
-            {accountNotes && accountNotes.length > 0 && (
-              <details className="more">
-                <summary>Notes from the loaded profile</summary>
-                <ul>
-                  {accountNotes.map((n) => (
-                    <li key={n}>{n}</li>
-                  ))}
-                </ul>
-              </details>
-            )}
 
             <div className="term-actions">
               <button

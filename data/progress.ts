@@ -122,8 +122,3 @@ export const ROUTINE: Routine[] = [
   },
 ];
 
-/**
- * Empty on purpose — a new visitor starts blank. Edit these in the app
- * (Story tab) or load one player's filled-in list from Settings.
- */
-export const PRIORITY_NOW: string[] = [];

@@ -1,6 +1,6 @@
 # Backlog
 
-Captured 30 October 2026. Items 1–4 are done; the rest are estimates assuming one focused sitting each.
+Captured 30 October 2026. Items 1–5 are done; the rest are estimates assuming one focused sitting each.
 
 ---
 
@@ -18,16 +18,16 @@ Rarity pills now mirror the in-game gacha colours (5★ gold, 4★ purple, 3★ 
 Progress is now always a prefix of `ACT_ORDER`: ticking an act fills in everything before it, un-ticking clears everything after. Works across chapter boundaries.
 
 ### 4. Ship blank for other players ✅
-`OWNED`, `DEFAULT_PLAN`, `ACCOUNT_NOTES` and `PRIORITY_NOW` are all empty now. The personal version moved to `data/profile.ts` and loads only when someone presses **Settings → Start from someone else's progress → Load this profile**, which writes the four keys and leaves checklists and story ticks alone.
+`OWNED`, `DEFAULT_PLAN`, `ACCOUNT_NOTES` and `PRIORITY_NOW` are all gone or empty. A loadable profile was built first, then removed on request because the card showed a real name to every visitor — the repository now describes no particular account at all. The Story tab's "Right now" list became an editable field instead, so the feature survived.
+
+### 5. Recommended stat targets ✅
+`data/targets.ts` holds prydwen's "Best Endgame Stats (Level 90)" for 60 of the 61 characters, shown on every Characters card and every My plan entry. Ranges and their "(before set bonuses)" qualifiers are kept as published. Seven low-damage supports carry prydwen's note that only Energy Regen really matters for them.
+
+Gaps that are prydwen's, not ours: Lily has no build section, Jingran lists only HP, Camellya lists no HP.
 
 ---
 
 ## Data to add
-
-### 5. Recommended stat targets
-Per-character target numbers, e.g. Crit 70% / 250%, ATK thresholds, ER targets.
-
-**Concrete lead:** prydwen character pages have a **"Best Endgame Stats (Level 90)"** section — I saw it while scraping and did not extract it. Same scrape approach as the existing data, so this is mostly mechanical. **~1–2 hours.**
 
 ### 6. Where materials come from, and what they cost
 For each ascension material: which boss / Tacet Field / region drops it, and the Waveplate cost per run. Would turn the plan's shopping list into an actual farming route with a total Waveplate price.
@@ -43,8 +43,9 @@ Set the real Echo set and weapon per character, picked from the existing databas
 **~1 hour.**
 
 ### 8. Input your current stats and compare to recommended
-Optional per-character stat entry shown side by side with the targets from #5, so gaps are visible.
-**Depends on #5 landing first. ~2 hours after that.**
+Optional per-character stat entry shown side by side with the targets, so gaps are visible.
+
+**Now unblocked** — #5 has landed, and `TARGETS` is keyed by character id with one row per stat, so a stored "my value" per label slots straight in. **~2 hours.**
 
 ### 9. Story progress reveals matching glossary spoilers
 Ticking a chapter should auto-unblur the glossary terms belonging to it.
@@ -88,8 +89,8 @@ After provisioning, the real work is rewriting `lib/storage.ts` — which every 
 ## Suggested order
 
 1. ~~Items 1–4 (quick wins)~~ — done
-2. Item 5 (stat targets — cheap, and item 8 needs it)
+2. ~~Item 5 (stat targets)~~ — done
 3. Item 11 (UI/UX — affects everything added after)
-4. Items 7, 9, 10
+4. Items 7, 8, 9, 10
 5. Item 12 (sync) when you want it
 6. Item 6 (materials) last — least certain payoff for the research cost

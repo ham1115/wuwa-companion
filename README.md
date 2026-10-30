@@ -4,14 +4,14 @@ A Wuthering Waves companion app. Pastel pink and yellow, light by default, with 
 
 ## Tabs
 
-- **Characters** — all 61 Resonators. Search by name, weapon, echo or set. Filter by element, role, rarity, or "mine only". Expand any character for ranked weapons, Sonata sets, main Echo options, main stats per cost slot, substat priority and ascension materials. **Queue** adds them to My plan; also mark as built and add notes.
+- **Characters** — all 61 Resonators. Search by name, weapon, echo or set. Filter by element, role, rarity, or "mine only". Expand any character for ranked weapons, Sonata sets, main Echo options, main stats per cost slot, substat priority and ascension materials. Each also carries **target stats at Lv.90** — what a finished build should read on the in-game stat screen. **Queue** adds them to My plan; also mark as built and add notes.
 - **Weapons** — 114 weapons, 3★ and up. Search name, stat or effect; filter by type, rarity, or "for my characters". Each entry opens to base ATK, substat, effect text, and **Wanted by** — every character that ranks it, with their ranking position, owned characters highlighted. Weapons nothing wants are labelled as fodder.
 - **Echoes** — two views. **Sonata sets** (37) shows each set's piece requirement, 2-piece and full bonuses, every character that runs it, and every Echo that can roll it grouped by cost. **Echoes** (187) lists the whole roster; searching a Sonata name returns every Echo that rolls it. Cost-4 entries carry their Echo Skill text.
-- **My plan** — an ordered build queue. Reorder with Up/Down, remove, and work it top to bottom. Each entry reads its build live from the character database, so nothing is duplicated. A **shopping list** at the top sums every ascension material the whole queue still needs; characters whose "Character to Lv.80" step is ticked drop off it.
+- **My plan** — an ordered build queue. Reorder with Up/Down, remove, and work it top to bottom. Each entry reads its build live from the character database, so nothing is duplicated. Each entry also shows its Lv.90 stat targets. A **shopping list** at the top sums every ascension material the whole queue still needs; characters whose "Character to Lv.80" step is ticked drop off it.
 - **Glossary** — 61 lore and systems terms across seven categories, with related-term links. Spoilers past Chapter 1 are tagged and blurred until tapped.
-- **Story** — chapter and act progress tracker. Acts fill in order: ticking Act 5 marks Acts 1–4 too, and un-ticking it clears everything after, because the game gates acts behind the ones before them.
+- **Story** — chapter and act progress tracker, plus a **Right now** list you write yourself. Acts fill in order: ticking Act 5 marks Acts 1–4 too, and un-ticking it clears everything after, because the game gates acts behind the ones before them.
 - **Routine** — daily and weekly checklist. Daily items clear themselves when the date changes.
-- **Settings** — edit which characters you own, load a ready-made profile, reset any section (or everything) with a confirm step, export your progress to JSON, and import it back on another device.
+- **Settings** — edit which characters you own, reset any section (or everything) with a confirm step, export your progress to JSON, and import it back on another device.
 
 ### Reverse lookups
 
@@ -73,7 +73,7 @@ To move progress between devices: **Settings → Export to JSON**, then paste it
 
 Just send the URL. **The app ships blank** — no owned characters, no queue, no notes, no "Right now" list — so every visitor starts on an empty slate and nothing personal is baked into the code. Your ticks and notes are never visible to anyone else.
 
-One player's filled-in progress lives in `data/profile.ts` and is loaded only on demand, from **Settings → Start from someone else's progress**. It sets the owned list, the queue and the per-character notes, and leaves ticked checklists and story progress alone. Add your own by exporting the same four fields into a second `Profile`.
+Nothing in the repository describes any particular account.
 
 ## Development note
 
@@ -90,7 +90,7 @@ All content is plain TypeScript data — no CMS, no fetching at runtime.
 | `data/echoes.ts` | 37 Sonata sets and all 187 Echoes |
 | `data/glossary.ts` | Terms, categories, spoiler flags, related links |
 | `data/plan.ts` | The queue's checklist shape and the shared build rules |
-| `data/profile.ts` | One player's owned list, queue, notes and priorities — opt-in, never loaded automatically |
+| `data/targets.ts` | Recommended endgame stats at Lv.90 for 60 characters |
 | `data/progress.ts` | Chapters, acts, daily and weekly routine |
 
 `OWNED` in `data/characters.ts`, `DEFAULT_PLAN` in `data/plan.ts` and `PRIORITY_NOW` in `data/progress.ts` are all deliberately empty: they are the defaults a new visitor gets. Everything personal lives in the browser, or in an opt-in profile.
@@ -101,11 +101,12 @@ Colours are CSS custom properties at the top of `app/globals.css`. Light mode (`
 
 ## Sources and accuracy
 
-Character build parameters come from [prydwen.gg](https://www.prydwen.gg/wuthering-waves/) build guides — reviewed patch 3.6, captured 22 October 2026. Only the structured parameters are reproduced: weapon/echo/set rankings, main-stat slots, substat order and ascension materials. Prydwen's written guides, reviews, rotations and tier-list commentary are their own work and are not included — read them at prydwen.gg.
+Character build parameters come from [prydwen.gg](https://www.prydwen.gg/wuthering-waves/) build guides — reviewed patch 3.6, captured 22 October 2026; the Lv.90 stat targets were captured 30 October 2026. Only the structured parameters are reproduced: weapon/echo/set rankings, main-stat slots, substat order, ascension materials and the Lv.90 stat targets. Prydwen's written guides, reviews, rotations and tier-list commentary are their own work and are not included — read them at prydwen.gg.
 
 Known gaps:
 
-- **Lily** has no published build yet (upcoming character); the card says so.
+- **Lily** has no published build yet (upcoming character); the card says so, and she has no stat targets.
+- **Jingran** has only one published stat target (HP), and **Camellya** has no HP target. Both reflect prydwen's pages as captured, not a parsing gap.
 - **Act names past Chapter I Act 7** in the Story tab are placeholder structure. Only "Jinzhou Rising" is confirmed.
 - Glossary definitions are written from general knowledge and may lag the current patch.
 

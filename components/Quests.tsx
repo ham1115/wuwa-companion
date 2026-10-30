@@ -1,6 +1,7 @@
 "use client";
 
-import { CHAPTERS, CHAPTER_DISCLAIMER, PRIORITY_NOW } from "@/data/progress";
+import { useState } from "react";
+import { CHAPTERS, CHAPTER_DISCLAIMER } from "@/data/progress";
 import { useIdSet, usePersistentState } from "@/lib/storage";
 
 /**
@@ -11,8 +12,9 @@ const ACT_ORDER = CHAPTERS.flatMap((c) => c.acts.map((a) => a.id));
 
 export default function Quests() {
   const acts = useIdSet("acts");
-  // Loaded from a profile in Settings, not shipped in the code.
-  const [priority] = usePersistentState<string[]>("priority-now", PRIORITY_NOW);
+  // Your own short list of what to do next. Starts empty; nothing is shipped.
+  const [priority, setPriority] = usePersistentState<string[]>("priority-now", []);
+  const [editing, setEditing] = useState(false);
 
   /**
    * Clicking an act sets progress to that point: ticking fills in every act
@@ -36,16 +38,55 @@ export default function Quests() {
         {doneActs} of {totalActs} acts marked complete.
       </p>
 
-      {priority.length > 0 && (
-        <div className="callout">
-          <strong>Right now</strong>
-          <ol>
-            {priority.map((p) => (
-              <li key={p}>{p}</li>
-            ))}
-          </ol>
-        </div>
-      )}
+      <div className="callout">
+        <strong>Right now</strong>
+        {editing ? (
+          <>
+            <textarea
+              className="note-area"
+              placeholder={"One per line, e.g.\nFinish the Chronosorter\nPush the main quest"}
+              value={priority.join("\n")}
+              onChange={(e) =>
+                setPriority(
+                  e.target.value.split("\n").map((l) => l.trimStart())
+                )
+              }
+              autoFocus
+            />
+            <div className="queue-controls">
+              <button
+                className="mini"
+                data-on
+                onClick={() => {
+                  setPriority(priority.filter((l) => l.trim() !== ""));
+                  setEditing(false);
+                }}
+              >
+                Done
+              </button>
+            </div>
+          </>
+        ) : priority.length > 0 ? (
+          <>
+            <ol>
+              {priority.map((p, i) => (
+                <li key={i}>{p}</li>
+              ))}
+            </ol>
+            <div className="queue-controls">
+              <button className="mini" onClick={() => setEditing(true)}>
+                Edit
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="queue-controls">
+            <button className="mini" onClick={() => setEditing(true)}>
+              Write what you are doing next
+            </button>
+          </div>
+        )}
+      </div>
 
       {CHAPTERS.map((c) => {
         const done = c.acts.filter((a) => acts.has(a.id)).length;

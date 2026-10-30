@@ -707,6 +707,43 @@ details.more li {
   font-size: 0.78rem;
 }
 
+/* ---------- endgame stat targets ---------- */
+.target-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 7px;
+  margin: 6px 0 8px;
+}
+
+.target {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 7px 11px;
+}
+
+.target-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+.target-value {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--accent-ink);
+}
+
+.target-note {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
 .ranked {
   margin: 6px 0 0;
   padding: 0;

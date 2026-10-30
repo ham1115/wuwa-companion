@@ -2,15 +2,12 @@
 
 import { useState } from "react";
 import { CHARACTERS } from "@/data/characters";
-import { AUTHOR_PROFILE } from "@/data/profile";
 import { useOwned } from "@/lib/owned";
-import { loadProfile } from "@/lib/profile";
 import {
   exportAll,
   importAll,
   resetEverything,
   resetGroup,
-  usePersistentState,
   type StorageGroup,
 } from "@/lib/storage";
 
@@ -20,27 +17,21 @@ const GROUP_LABELS: { id: StorageGroup; label: string; detail: string }[] = [
   { id: "glossary", label: "Glossary", detail: "Learned marks, revealed spoilers and term notes" },
   { id: "story", label: "Story", detail: "Chapter and act ticks" },
   { id: "routine", label: "Routine", detail: "Daily and weekly checks" },
-  { id: "display", label: "Display", detail: "Theme, last open tab, notes visibility" },
+  { id: "display", label: "Display", detail: "Theme and last open tab" },
 ];
 
 export default function Settings() {
   const owned = useOwned();
-  const [showNotes, setShowNotes] = usePersistentState<boolean>("show-account-notes", true);
   const [confirming, setConfirming] = useState<string | null>(null);
   const [payload, setPayload] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [charQuery, setCharQuery] = useState("");
 
-  /** Runs a storage change, reports how many keys it touched, then reloads. */
-  function apply(fn: () => number, sentence: (n: string) => string) {
+  function wipe(fn: () => number, what: string) {
     const n = fn();
-    setMessage(`${sentence(`${n} ${n === 1 ? "entry" : "entries"}`)} Reloading…`);
+    setMessage(`Cleared ${what} (${n} ${n === 1 ? "entry" : "entries"}). Reloading…`);
     setConfirming(null);
     setTimeout(() => window.location.reload(), 600);
-  }
-
-  function wipe(fn: () => number, what: string) {
-    apply(fn, (n) => `Cleared ${what} (${n}).`);
   }
 
   function doExport() {
@@ -109,67 +100,6 @@ export default function Settings() {
         ))}
       </div>
       {charResults.length === 0 && <p className="empty">No character by that name.</p>}
-
-      <h2 className="section">Loaded profile notes</h2>
-      <button
-        className="check"
-        data-done={showNotes}
-        onClick={() => setShowNotes(!showNotes)}
-      >
-        <span className="box">{showNotes ? "✓" : ""}</span>
-        <span className="check-body">
-          <span className="check-label">Show profile notes in My plan</span>
-          <span className="check-detail">
-            Only applies if you loaded a profile below. Those notes describe
-            that player&apos;s account, not yours — turn them off once your own
-            per-character notes replace them.
-          </span>
-        </span>
-      </button>
-
-      <h2 className="section">Start from someone else&apos;s progress</h2>
-      <p className="panel-intro">
-        A shortcut if your account looks like theirs. It sets the owned list,
-        the queue and the notes — your ticked checklists and story progress are
-        left alone.
-      </p>
-      <div className="card">
-        <div className="build-head">
-          <h3>{AUTHOR_PROFILE.label}</h3>
-          <span className="badge" data-status="queued">
-            {AUTHOR_PROFILE.owned.length} owned · {AUTHOR_PROFILE.plan.length} queued
-          </span>
-        </div>
-        <p className="build-role">{AUTHOR_PROFILE.detail}</p>
-        {confirming === "profile" ? (
-          <div className="queue-controls">
-            <button
-              className="mini"
-              data-on
-              onClick={() =>
-                apply(
-                  () => loadProfile(AUTHOR_PROFILE),
-                  (n) => `Loaded ${AUTHOR_PROFILE.label} (${n}).`
-                )
-              }
-            >
-              Yes, load it
-            </button>
-            <button className="mini" onClick={() => setConfirming(null)}>
-              Cancel
-            </button>
-          </div>
-        ) : (
-          <div className="queue-controls">
-            <button className="mini" onClick={() => setConfirming("profile")}>
-              Load this profile
-            </button>
-          </div>
-        )}
-        <p className="check-detail">
-          Overwrites your owned list and queue.
-        </p>
-      </div>
 
       <h2 className="section">Back up or move your progress</h2>
       <p className="panel-intro">

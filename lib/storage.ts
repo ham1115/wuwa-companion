@@ -7,11 +7,11 @@ export const PREFIX = "wuwa-companion:";
 /** Every storage key this app owns, grouped so they can be reset per section. */
 export const STORAGE_GROUPS = {
   characters: ["built", "char-notes", "owned"],
-  plan: ["plan", "build-steps", "plan-notes", "account-notes"],
+  plan: ["plan", "build-steps", "plan-notes"],
   glossary: ["learned", "revealed", "notes"],
   story: ["acts", "priority-now"],
   routine: ["routine", "routine-day"],
-  display: ["tab", "theme", "show-account-notes"],
+  display: ["tab", "theme"],
 } as const;
 
 export type StorageGroup = keyof typeof STORAGE_GROUPS;
