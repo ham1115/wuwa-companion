@@ -31,6 +31,10 @@ const BASE_BG: Record<"light" | "dark", string> = {
   light: "#fff6fa",
   dark: "#1c1118",
 };
+const BASE_LEMON: Record<"light" | "dark", string> = {
+  light: "#f6c744",
+  dark: "#ffd978",
+};
 
 const GROUP_LABELS: { id: StorageGroup; label: string; detail: string }[] = [
   { id: "characters", label: "Characters", detail: "Built marks, per-character notes, and your owned list" },
@@ -48,6 +52,7 @@ export default function Settings() {
   const [payload, setPayload] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [charQuery, setCharQuery] = useState("");
+  const [paletteName, setPaletteName] = useState("");
 
   function wipe(fn: () => number, what: string) {
     const n = fn();
@@ -135,8 +140,8 @@ export default function Settings() {
           <button
             key={p.id}
             className="palette"
-            data-on={theme.paletteId === p.id}
-            onClick={() => theme.setPaletteId(p.id)}
+            data-on={theme.paletteId === p.id && !theme.activeSavedId}
+            onClick={() => theme.choosePreset(p.id)}
           >
             <span className="palette-swatches">
               <span style={{ background: p.swatch[0] }} />
@@ -146,6 +151,40 @@ export default function Settings() {
           </button>
         ))}
       </div>
+
+      {theme.saved.length > 0 && (
+        <>
+          <p className="target-label">Your own</p>
+          <div className="palette-grid">
+            {theme.saved.map((p) => (
+              <div className="palette-own" key={p.id}>
+                <button
+                  className="palette"
+                  data-on={theme.activeSavedId === p.id}
+                  onClick={() => theme.applySaved(p.id)}
+                >
+                  <span className="palette-swatches">
+                    {[p.accent, p.bg, p.lemon, p.ink]
+                      .filter(Boolean)
+                      .map((c, i) => (
+                        <span key={i} style={{ background: c }} />
+                      ))}
+                  </span>
+                  {p.name}
+                </button>
+                <button
+                  className="mini palette-drop"
+                  onClick={() => theme.deleteSaved(p.id)}
+                  aria-label={`Delete the preset ${p.name}`}
+                  title={`Delete ${p.name}`}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       <div className="mine-row">
         <label className="mine-field">
@@ -203,10 +242,29 @@ export default function Settings() {
             chosen per mode so it always reads.
           </span>
         </label>
+
+        <label className="mine-field">
+          <span className="target-label">Secondary</span>
+          <input
+            type="color"
+            className="colour-input"
+            value={
+              theme.lemon ||
+              theme.palette[theme.mode].lemon ||
+              BASE_LEMON[theme.mode]
+            }
+            onChange={(e) => theme.setLemon(e.target.value)}
+            aria-label="Custom secondary colour"
+          />
+          <span className="check-detail">
+            Callouts and the second pill colour — the one the presets pair
+            against the accent.
+          </span>
+        </label>
       </div>
 
       {theme.bgAdjusted && (
-        <div className="callout" data-tone="warn">
+        <div className="callout">
           <strong>That background was pulled back</strong>
           Its hue is yours, but {theme.mode} mode was kept {theme.mode}. Every
           pill, tint and soft accent in this mode is built to sit on a{" "}
@@ -219,7 +277,7 @@ export default function Settings() {
       )}
 
       {theme.inkAdjusted && (
-        <div className="callout" data-tone="warn">
+        <div className="callout">
           <strong>That text colour was pulled back</strong>
           Its hue is yours, but it was {theme.mode === "light"
             ? "darkened"
@@ -240,6 +298,35 @@ export default function Settings() {
         </span>
       </div>
 
+      <div className="save-row">
+        <input
+          className="search save-name"
+          type="text"
+          placeholder="Name these colours to keep them…"
+          value={paletteName}
+          onChange={(e) => setPaletteName(e.target.value)}
+          aria-label="Name for your own preset"
+          maxLength={32}
+        />
+        <button
+          className="chip"
+          data-on={paletteName.trim() !== "" && theme.hasCustomColours}
+          disabled={paletteName.trim() === "" || !theme.hasCustomColours}
+          onClick={() => {
+            theme.savePalette(paletteName);
+            setPaletteName("");
+          }}
+        >
+          Save as my preset
+        </button>
+      </div>
+      <p className="check-detail">
+        Saves the four colours above under that name, in this browser. Reusing
+        a name overwrites that preset, so you can tweak and re-save it. Light
+        and dark are not stored — each saved preset works in both, because the
+        colours are re-derived per mode.
+      </p>
+
       <div className="chips">
         {theme.accent && (
           <button className="chip" onClick={() => theme.setAccent("")}>
@@ -254,6 +341,11 @@ export default function Settings() {
         {theme.bg && (
           <button className="chip" onClick={() => theme.setBg("")}>
             Drop the custom background
+          </button>
+        )}
+        {theme.lemon && (
+          <button className="chip" onClick={() => theme.setLemon("")}>
+            Drop the custom secondary
           </button>
         )}
         {theme.customised && (

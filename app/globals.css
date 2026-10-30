@@ -1201,6 +1201,43 @@ details.more li {
   cursor: pointer;
 }
 
+/* A saved preset carries a delete button beside it, so the two sit as one
+   cell inside the same grid the built-in presets use. */
+.palette-own {
+  display: flex;
+  gap: 5px;
+  align-items: stretch;
+}
+
+.palette-own .palette {
+  flex: 1;
+  min-width: 0;
+}
+
+.palette-drop {
+  flex: none;
+  padding: 0 10px;
+  line-height: 1;
+}
+
+.save-row {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  margin: 12px 0 6px;
+  flex-wrap: wrap;
+}
+
+.save-name {
+  flex: 1;
+  min-width: 190px;
+}
+
+.save-row .chip:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 /* Shows all three text tokens at once, so a custom text colour can be judged
    on the faint caption rather than only on the heading. */
 .colour-sample {

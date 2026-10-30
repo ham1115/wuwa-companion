@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export const PREFIX = "wuwa-companion:";
 
@@ -11,7 +11,16 @@ export const STORAGE_GROUPS = {
   glossary: ["learned", "revealed", "notes"],
   story: ["acts", "priority-now"],
   routine: ["routine", "routine-day"],
-  display: ["tab", "theme", "palette", "accent", "ink", "bg"],
+  display: [
+    "tab",
+    "theme",
+    "palette",
+    "accent",
+    "ink",
+    "bg",
+    "lemon",
+    "my-palettes",
+  ],
 } as const;
 
 export type StorageGroup = keyof typeof STORAGE_GROUPS;
@@ -148,21 +157,39 @@ export function usePersistentState<T>(key: string, fallback: T) {
   const [value, setValue] = useState<T>(fallback);
   const [hydrated, setHydrated] = useState(false);
 
+  /**
+   * The current value, readable without going through a state updater.
+   *
+   * `write` notifies every other component holding this key, which means it
+   * calls their setState. Resolving the next value inside `setValue(prev =>
+   * …)` would put that notification inside an updater, and React runs those
+   * during render — "Cannot update a component while rendering a different
+   * component". Keeping the value in a ref lets `update` resolve and write in
+   * the event handler, where the notification belongs.
+   */
+  const latest = useRef(value);
+
   useEffect(() => {
-    setValue(read<T>(key, fallback));
+    const stored = read<T>(key, fallback);
+    latest.current = stored;
+    setValue(stored);
     setHydrated(true);
-    return subscribe(key, (v) => setValue(v as T));
+    return subscribe(key, (v) => {
+      latest.current = v as T;
+      setValue(v as T);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
   const update = useCallback(
     (next: T | ((prev: T) => T)) => {
-      setValue((prev) => {
-        const resolved =
-          typeof next === "function" ? (next as (p: T) => T)(prev) : next;
-        write(key, resolved);
-        return resolved;
-      });
+      const resolved =
+        typeof next === "function"
+          ? (next as (p: T) => T)(latest.current)
+          : next;
+      latest.current = resolved;
+      setValue(resolved);
+      write(key, resolved);
     },
     [key]
   );

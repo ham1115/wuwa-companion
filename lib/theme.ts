@@ -62,6 +62,29 @@ function accentTrio(hex: string, mode: Mode) {
       };
 }
 
+/**
+ * The secondary colour, which carries callouts and the lemon pills. Same
+ * three-token shape as the accent, but the mid tone sits lighter: this one is
+ * a highlight rather than something text is set in.
+ */
+function lemonTrio(hex: string, mode: Mode) {
+  const hsl = hexToHsl(hex);
+  if (!hsl) return null;
+  const { h, s } = hsl;
+  const sat = clamp(s < 12 ? 12 : s);
+  return mode === "light"
+    ? {
+        lemon: `hsl(${h} ${sat}% 55%)`,
+        "lemon-soft": `hsl(${h} ${clamp(sat * 0.9)}% 88%)`,
+        "lemon-ink": `hsl(${h} ${sat}% 29%)`,
+      }
+    : {
+        lemon: `hsl(${h} ${sat}% 73%)`,
+        "lemon-soft": `hsl(${h} ${clamp(sat * 0.5)}% 19%)`,
+        "lemon-ink": `hsl(${h} ${sat}% 84%)`,
+      };
+}
+
 /** WCAG relative luminance of an hsl() triple. */
 function hslLuminance(h: number, s: number, l: number): number {
   const sat = s / 100;
@@ -101,10 +124,27 @@ function hexLuminance(hex: string): number {
 const contrast = (a: number, b: number) =>
   (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 
-/** The base themes' own three surfaces, used when nothing overrides them. */
-const BASE_SURFACES: Record<Mode, [string, string, string]> = {
-  light: ["#fff6fa", "#ffffff", "#fdecf3"],
-  dark: ["#1c1118", "#271a22", "#150c11"],
+/**
+ * Every surface the app sets text on, with the base themes' values for when
+ * nothing overrides them. `lemon-soft` is in here because callouts are
+ * painted with it — and in dark mode it is lighter than the cards are, which
+ * makes it the binding surface rather than an afterthought.
+ */
+const SURFACE_TOKENS = ["bg", "bg-raised", "bg-sunken", "lemon-soft"] as const;
+
+const BASE_SURFACES: Record<Mode, Record<string, string>> = {
+  light: {
+    bg: "#fff6fa",
+    "bg-raised": "#ffffff",
+    "bg-sunken": "#fdecf3",
+    "lemon-soft": "#fff2c2",
+  },
+  dark: {
+    bg: "#1c1118",
+    "bg-raised": "#271a22",
+    "bg-sunken": "#150c11",
+    "lemon-soft": "#463619",
+  },
 };
 
 /** Luminance of a token value, which may be a hex or one of our hsl() strings. */
@@ -126,9 +166,9 @@ function worstSurfaceLum(
   mode: Mode
 ): number {
   const base = BASE_SURFACES[mode];
-  const lums = (["bg", "bg-raised", "bg-sunken"] as const).map((token, i) => {
+  const lums = SURFACE_TOKENS.map((token) => {
     const value = vars[token];
-    return (value ? cssLuminance(value) : null) ?? hexLuminance(base[i]);
+    return (value ? cssLuminance(value) : null) ?? hexLuminance(base[token]);
   });
   return mode === "light" ? Math.min(...lums) : Math.max(...lums);
 }
@@ -289,21 +329,52 @@ const ALL_TOKENS: PaletteToken[] = [
   "lemon-ink",
 ];
 
-function apply(
-  palette: Palette,
-  mode: Mode,
-  customAccent: string,
-  customInk: string,
-  customBg: string
-) {
-  const root = document.documentElement;
+/** The four colours a person picks, which together make one of their presets. */
+export type Custom = {
+  accent: string;
+  bg: string;
+  ink: string;
+  lemon: string;
+};
+
+/**
+ * One of their own presets: the four colours under a name they chose, plus
+ * the built-in preset they were sitting on. The base matters because a saved
+ * preset need not set all four — one that sets only an accent would otherwise
+ * look different depending on what happened to be selected when it was
+ * applied.
+ */
+export type SavedPalette = Custom & {
+  id: string;
+  name: string;
+  base: string;
+};
+
+export const EMPTY_CUSTOM: Custom = { accent: "", bg: "", ink: "", lemon: "" };
+
+const sameCustom = (a: Custom, b: Custom) =>
+  a.accent === b.accent &&
+  a.bg === b.bg &&
+  a.ink === b.ink &&
+  a.lemon === b.lemon;
+
+function resolve(palette: Palette, mode: Mode, custom: Custom) {
   const vars: Partial<Record<string, string>> = {
     ...(mode === "light" ? palette.light : palette.dark),
   };
-  const trio = customAccent ? accentTrio(customAccent, mode) : null;
+  const trio = custom.accent ? accentTrio(custom.accent, mode) : null;
   if (trio) Object.assign(vars, trio);
-  const surfaces = customBg ? bgSurfaces(customBg, mode) : null;
+  const second = custom.lemon ? lemonTrio(custom.lemon, mode) : null;
+  if (second) Object.assign(vars, second);
+  const surfaces = custom.bg ? bgSurfaces(custom.bg, mode) : null;
   if (surfaces) Object.assign(vars, surfaces);
+  return vars;
+}
+
+function apply(palette: Palette, mode: Mode, custom: Custom) {
+  const root = document.documentElement;
+  const vars = resolve(palette, mode, custom);
+  const customInk = custom.ink;
 
   // Text last, and against the surfaces as finally resolved: the ramp's whole
   // job is clearing its contrast targets on the background actually in use, so
@@ -335,44 +406,119 @@ export function useTheme() {
   const [accent, setAccent] = usePersistentState<string>("accent", "");
   const [ink, setInk] = usePersistentState<string>("ink", "");
   const [bg, setBg] = usePersistentState<string>("bg", "");
+  const [lemon, setLemon] = usePersistentState<string>("lemon", "");
+  const [saved, setSaved] = usePersistentState<SavedPalette[]>(
+    "my-palettes",
+    []
+  );
 
   const palette = BY_ID.get(paletteId) ?? PALETTES[0];
+  const custom = useMemo<Custom>(
+    () => ({ accent, bg, ink, lemon }),
+    [accent, bg, ink, lemon]
+  );
 
   useEffect(() => {
     document.documentElement.dataset.theme = mode;
-    apply(palette, mode, accent, ink, bg);
-  }, [mode, palette, accent, ink, bg]);
+    apply(palette, mode, custom);
+  }, [mode, palette, custom]);
 
   const toggleMode = useCallback(
     () => setMode(mode === "dark" ? "light" : "dark"),
     [mode, setMode]
   );
 
+  const setCustom = useCallback(
+    (next: Custom) => {
+      setAccent(next.accent);
+      setBg(next.bg);
+      setInk(next.ink);
+      setLemon(next.lemon);
+    },
+    [setAccent, setBg, setInk, setLemon]
+  );
+
+  /**
+   * Picking a built-in preset clears the custom colours, because they sit on
+   * top of it: with all four set, a preset sets nothing that is still visible,
+   * and clicking one would appear to do nothing at all. Presets and your own
+   * presets are therefore one single-select list. Anything worth keeping
+   * before switching is what "Save as my preset" is for.
+   */
+  const choosePreset = useCallback(
+    (id: string) => {
+      setPaletteId(id);
+      setCustom(EMPTY_CUSTOM);
+    },
+    [setPaletteId, setCustom]
+  );
+
   const reset = useCallback(() => {
     setPaletteId(DEFAULT_PALETTE);
-    setAccent("");
-    setInk("");
-    setBg("");
-  }, [setPaletteId, setAccent, setInk, setBg]);
+    setCustom(EMPTY_CUSTOM);
+  }, [setPaletteId, setCustom]);
 
   const customised =
-    paletteId !== DEFAULT_PALETTE ||
-    accent !== "" ||
-    ink !== "" ||
-    bg !== "";
+    paletteId !== DEFAULT_PALETTE || !sameCustom(custom, EMPTY_CUSTOM);
+
+  /** Saves whatever is on screen now as one of their own presets. */
+  const savePalette = useCallback(
+    (name: string) => {
+      const trimmed = name.trim();
+      // A preset that sets no colour of its own would match the cleared state
+      // and so read as active forever; there is nothing to save.
+      if (!trimmed || sameCustom(custom, EMPTY_CUSTOM)) return;
+      const entry: SavedPalette = {
+        id: `own-${Date.now().toString(36)}`,
+        name: trimmed,
+        base: paletteId,
+        ...custom,
+      };
+      // Saving under a name that already exists replaces it, so re-saving a
+      // preset after a tweak updates it instead of making a near-duplicate.
+      const without = saved.filter(
+        (p) => p.name.toLowerCase() !== trimmed.toLowerCase()
+      );
+      setSaved([...without, entry]);
+    },
+    [custom, saved, setSaved]
+  );
+
+  const applySaved = useCallback(
+    (id: string) => {
+      const entry = saved.find((p) => p.id === id);
+      if (!entry) return;
+      // Older saves predate `base`; fall back to the default rather than
+      // leaving whatever happens to be selected underneath.
+      setPaletteId(entry.base || DEFAULT_PALETTE);
+      setCustom(entry);
+    },
+    [saved, setCustom, setPaletteId]
+  );
+
+  const deleteSaved = useCallback(
+    (id: string) => setSaved(saved.filter((p) => p.id !== id)),
+    [saved, setSaved]
+  );
+
+  const hasCustomColours = !sameCustom(custom, EMPTY_CUSTOM);
+
+  /** Which of their presets is on screen, found by colour rather than stored. */
+  const activeSavedId = hasCustomColours
+    ? saved.find(
+        (p) => sameCustom(p, custom) && (p.base || DEFAULT_PALETTE) === paletteId
+      )?.id ?? null
+    : null;
 
   /**
    * Whether the picked text colour is being moved. Asked of the surfaces as
-   * resolved, so the notice tracks a background change too.
+   * resolved, so the notice tracks a background or secondary change too.
    */
   const inkAdjusted = useMemo(() => {
     if (!ink) return false;
-    const vars: Partial<Record<string, string>> = {
-      ...(mode === "light" ? palette.light : palette.dark),
-      ...(bg ? bgSurfaces(bg, mode) : null),
-    };
+    const vars = resolve(palette, mode, custom);
     return inkTrio(ink, mode, worstSurfaceLum(vars, mode))?.adjusted ?? false;
-  }, [ink, bg, mode, palette]);
+  }, [ink, custom, mode, palette]);
 
   return {
     mode,
@@ -380,6 +526,7 @@ export function useTheme() {
     toggleMode,
     paletteId,
     setPaletteId,
+    choosePreset,
     palette,
     accent,
     setAccent,
@@ -387,10 +534,18 @@ export function useTheme() {
     setInk,
     bg,
     setBg,
+    lemon,
+    setLemon,
     inkAdjusted,
     /** True when the picked background is being moved to keep the mode itself. */
     bgAdjusted: bg !== "" && bgWouldAdjust(bg, mode),
     reset,
     customised,
+    hasCustomColours,
+    saved,
+    savePalette,
+    applySaved,
+    deleteSaved,
+    activeSavedId,
   };
 }
