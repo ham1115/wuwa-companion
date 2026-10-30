@@ -25,13 +25,64 @@ letting the domain lapse breaks sign-in. A free-for-one-year student domain is e
 thing that quietly expires, whereas `wuwa-companion-phi.vercel.app` never will. Set a renewal
 reminder on day one or do not start.
 
-If the phone test does fail, a domain is not the only fix. The installed `@clerk/nextjs` (7.9.22)
-takes a `frontendApiProxy` option on `clerkMiddleware`, which serves the Frontend API from the
-app's own origin at `/__clerk` — same-origin, so no handshake and no cross-site bounce, with no
-domain involved. Clerk's docs confirm proxying is supported on development instances. Two caveats,
-both real: it is unverified here that this removes the dev handshake, and Clerk labels proxying an
-advanced path they would rather you not take instead of the CNAME. Treat it as the cheap experiment
-to run before buying anything, not as the plan.
+If the phone test does fail, a domain is not the only fix — see the next section, which is the
+result of actually trying the alternative.
+
+## The Frontend API proxy: tried, works, not shipped
+
+Tried 30 October 2026 on `@clerk/nextjs` 7.9.22. It works. It is still not the recommended route,
+and the reason is worth writing down rather than re-deriving later.
+
+**The idea.** `clerkMiddleware` takes a `frontendApiProxy` option that serves Clerk's Frontend API
+from the app's own origin at `/__clerk`. Same-origin means no cross-site hop, which is the entire
+defect a domain would fix. Clerk clearly built this for exactly this situation — its auto-enable
+list in `@clerk/shared/proxy` is literally `['.vercel.app']` — but auto-enable also requires a
+production publishable key, and ours is `pk_test_`, so it has to be switched on by hand.
+
+**Two lines get you most of the way.**
+
+```ts
+// middleware.ts
+export default clerkMiddleware({ frontendApiProxy: { enabled: true } });
+```
+
+```tsx
+// app/layout.tsx — relative, so one value covers localhost, previews and production
+<ClerkProvider proxyUrl="/__clerk">
+```
+
+That half genuinely works. Measured on a cookieless request, the handshake target changes from
+`https://tender-narwhal-52.clerk.accounts.dev/v1/client/handshake?…` to a bare
+`/__clerk/v1/client/handshake?…`. Following the chain: three redirects, back to the original URL
+at 200, `__clerk_db_jwt` and `__client_uat` set by our own host, and a second load with those
+cookies returning 200 with no handshake at all.
+
+**And then Clerk JS will not load.** Setting `proxyUrl` also makes Clerk resolve its own script
+bundles against the proxy, so the browser asks our origin for
+`/__clerk/npm/@clerk/clerk-js@6/dist/clerk.browser.js` and gets a 404 — the proxy forwards API
+paths, not `/npm/…`. Result: `window.Clerk === undefined` and "Failed to load Clerk JS". This
+shipped to production for a few minutes and sign-in was dead; the app itself kept working, because
+it is local-first and signed-out is the default path, but only by luck.
+
+**It can be completed, with two more values.** Pinning both bundles makes it fully work —
+`window.Clerk` loads, no console errors, and every API call goes to `/__clerk/v1/*` at 200:
+
+```
+NEXT_PUBLIC_CLERK_JS_URL=https://<instance>.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js
+NEXT_PUBLIC_CLERK_UI_URL=https://<instance>.clerk.accounts.dev/npm/@clerk/ui@1/dist/ui.browser.js
+```
+
+**Why it is not shipped anyway.** Those two map to `__internal_clerkJSUrl` and
+`__internal_clerkUIUrl`, and the `__internal_` prefix is Clerk telling you not to depend on them.
+They also hardcode the instance hostname and a major version by hand, so they go stale when keys
+rotate or the instance changes. The failure mode is the problem: if Clerk changes how either bundle
+resolves, sign-in breaks **silently** — nobody notices until they try to sign in. Being signed out
+after a week on an iPhone is a smaller fault than that.
+
+So: the proxy is the right mechanism and Clerk agrees, but on a development instance it needs
+undocumented props to hold together. On a production instance with a CNAME, none of this is
+necessary, because the bundles come from `clerk.<domain>` on their own. That is the argument for the
+domain, and it is a better one than the iOS risk alone.
 
 ## Which domain
 

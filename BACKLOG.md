@@ -178,6 +178,16 @@ create the production instance, import its zone file with `vercel dns import`, t
 **No application code changes.** Clerk reads its keys from the environment and nothing in `app/`,
 `lib/` or `middleware.ts` has the current URL baked in.
 
+**The free alternative was tried and rejected, 30 October 2026.** Clerk's `frontendApiProxy` does
+remove the cross-site hop — verified, handshake went same-origin and cookies came from our own host
+— but setting `proxyUrl` also makes Clerk resolve its own script bundles through the proxy, which
+404s. Sign-in was dead on production for a few minutes until it was reverted. It can be completed
+by pinning `NEXT_PUBLIC_CLERK_JS_URL` and `NEXT_PUBLIC_CLERK_UI_URL`, which then works with no
+console errors at all, but those map to `__internal_` props and hardcode the instance hostname, so
+the failure mode is sign-in breaking silently later. Written up in full in
+[docs/custom-domain.md](docs/custom-domain.md). On a production instance with a CNAME none of it is
+needed, which is a better argument for the domain than the iOS risk was.
+
 The prize is step 7 of that document: a CNAME putting the Frontend API on `clerk.<domain>`,
 same-site with the app, which moves sessions off the querystring token and onto a normal
 `HttpOnly` cookie — and so fixes the iOS risk rather than merely testing for it.
