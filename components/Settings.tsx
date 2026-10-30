@@ -13,12 +13,17 @@ import {
   type StorageGroup,
 } from "@/lib/storage";
 
-/** What the pickers show before a custom colour is set: the theme's own. */
-const ACCENT_FALLBACK: Record<"light" | "dark", string> = {
+/**
+ * What a picker shows before a custom colour is set: the colour actually in
+ * use, so opening the swatch does not suggest a colour the app is not using.
+ * For the accent that is the preset's own, since a preset sets one; the
+ * presets leave text alone, so the text swatch shows the base theme's.
+ */
+const BASE_ACCENT: Record<"light" | "dark", string> = {
   light: "#c43f7a",
   dark: "#ff9ac6",
 };
-const INK_FALLBACK: Record<"light" | "dark", string> = {
+const BASE_INK: Record<"light" | "dark", string> = {
   light: "#3f2733",
   dark: "#fbeaf2",
 };
@@ -144,7 +149,11 @@ export default function Settings() {
           <input
             type="color"
             className="colour-input"
-            value={theme.accent || ACCENT_FALLBACK[theme.mode]}
+            value={
+            theme.accent ||
+            theme.palette[theme.mode].accent ||
+            BASE_ACCENT[theme.mode]
+          }
             onChange={(e) => theme.setAccent(e.target.value)}
             aria-label="Custom accent colour"
           />
@@ -159,7 +168,11 @@ export default function Settings() {
           <input
             type="color"
             className="colour-input"
-            value={theme.ink || INK_FALLBACK[theme.mode]}
+            value={
+            theme.ink ||
+            theme.palette[theme.mode].text ||
+            BASE_INK[theme.mode]
+          }
             onChange={(e) => theme.setInk(e.target.value)}
             aria-label="Custom text colour"
           />
