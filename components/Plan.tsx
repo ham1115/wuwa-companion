@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CHARACTERS } from "@/data/characters";
 import { BUILD_RULES, DEFAULT_PLAN, PLAN_STEPS } from "@/data/plan";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
+import { MAX_LEVEL, useLoadout } from "@/lib/loadout";
 import ShoppingList from "./ShoppingList";
 import StatLine from "./StatLine";
 import MyBuild from "./MyBuild";
@@ -16,6 +17,14 @@ export default function Plan() {
   const steps = useIdSet("build-steps");
   const notes = useNotes("plan-notes");
   const [noteOpen, setNoteOpen] = useState<string | null>(null);
+  /**
+   * The character that has just been set to Lv.90, if any. Hitting the cap is
+   * the only thing that volunteers a character for leaving the queue, and even
+   * then it only asks — plenty of characters sit at 90 with their echoes still
+   * half-finished, so the answer is genuinely not knowable from the level.
+   */
+  const [maxed, setMaxed] = useState<string | null>(null);
+  const loadout = useLoadout();
 
   const entries = plan.map((id) => BY_ID.get(id)).filter(Boolean);
 
@@ -32,6 +41,7 @@ export default function Plan() {
 
   function remove(id: string) {
     setPlan((prev) => prev.filter((x) => x !== id));
+    setMaxed((m) => (m === id ? null : m));
   }
 
   return (
@@ -122,7 +132,26 @@ export default function Plan() {
 
             <Targets id={c.id} />
 
-            <MyBuild c={c} />
+            <MyBuild c={c} onLevelMaxed={setMaxed} />
+
+            {maxed === c.id && loadout.get(c.id).level === MAX_LEVEL && (
+              <div className="card maxed-card">
+                <strong>{c.name} is Lv.90. Finished with them?</strong>
+                <p className="check-detail">
+                  Levelling is done, but the build may not be — echoes, weapon
+                  and skills all carry on past 90. Taking them off the queue
+                  keeps everything you have filled in here.
+                </p>
+                <div className="queue-controls">
+                  <button className="mini" data-on onClick={() => remove(c.id)}>
+                    Built — take them off
+                  </button>
+                  <button className="mini" onClick={() => setMaxed(null)}>
+                    Still building
+                  </button>
+                </div>
+              </div>
+            )}
 
             <h2 className="section">Checklist</h2>
             {PLAN_STEPS.map((s) => {

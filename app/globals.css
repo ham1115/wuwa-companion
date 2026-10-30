@@ -1327,3 +1327,16 @@ details.more li {
 .danger-card h3 {
   color: var(--danger);
 }
+
+/* The Lv.90 question in the build queue. It is a decision, not a warning, so
+ * it borrows the accent rather than the danger colour — nothing here is
+ * destructive, and "Still building" is a perfectly ordinary answer. */
+.maxed-card {
+  border-color: var(--accent);
+  background: var(--bg-raised);
+}
+
+.maxed-card strong {
+  display: block;
+  margin-bottom: 2px;
+}

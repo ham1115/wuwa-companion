@@ -10,6 +10,7 @@ import {
 } from "@/data/materials";
 import { parseMaterial } from "@/data/plan";
 import { useIdSet } from "@/lib/storage";
+import { MAX_LEVEL, useLoadout } from "@/lib/loadout";
 
 const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
 
@@ -23,14 +24,18 @@ type Need = { name: string; qty: number };
 export default function ShoppingList({ plan }: { plan: string[] }) {
   const steps = useIdSet("build-steps");
   const acts = useIdSet("acts");
+  const loadout = useLoadout();
 
   const needs = useMemo(() => {
     const totals = new Map<string, number>();
     for (const id of plan) {
       const c = BY_ID.get(id);
       if (!c) continue;
-      // Skip characters whose levelling is already checked off.
+      // Skip characters who are done levelling — either the step is ticked or
+      // the recorded level has reached the cap, which is the same statement
+      // made from the character screen instead of the checklist.
       if (steps.has(`${id}:level`)) continue;
+      if ((loadout.get(id).level ?? 0) >= MAX_LEVEL) continue;
       for (const raw of c.materials) {
         const m = parseMaterial(raw);
         if (!m) continue;
@@ -40,7 +45,7 @@ export default function ShoppingList({ plan }: { plan: string[] }) {
     return [...totals.entries()]
       .map(([name, qty]) => ({ name, qty }))
       .sort((a, b) => b.qty - a.qty);
-  }, [plan, steps.ids]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [plan, steps.ids, loadout.all]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const groups = useMemo(() => {
     const bosses = new Map<

@@ -5,14 +5,25 @@ import type { Character } from "@/data/characters";
 import { SONATA_SETS } from "@/data/echoes";
 import { TARGETS, targetFloor } from "@/data/targets";
 import { WEAPONS, baseWeaponName } from "@/data/weapons";
-import { useLoadout } from "@/lib/loadout";
+import { MAX_LEVEL, useLoadout } from "@/lib/loadout";
 
 /**
  * What this character is actually running, next to what the guides recommend.
- * Everything here is optional — an untouched character shows two empty pickers
- * and nothing else.
+ * Everything here is optional — an untouched character shows empty fields and
+ * nothing else.
+ *
+ * `onLevelMaxed` fires the moment the level is set to 90, and only on the
+ * transition. The build queue uses it to ask whether the character is finished;
+ * the Characters tab passes nothing, because a character that is not queued has
+ * nothing to be dropped from.
  */
-export default function MyBuild({ c }: { c: Character }) {
+export default function MyBuild({
+  c,
+  onLevelMaxed,
+}: {
+  c: Character;
+  onLevelMaxed?: (id: string) => void;
+}) {
   const loadout = useLoadout();
   const mine = loadout.get(c.id);
   const [comparing, setComparing] = useState(false);
@@ -44,6 +55,26 @@ export default function MyBuild({ c }: { c: Character }) {
       <h2 className="section">My build</h2>
 
       <div className="mine-row">
+        <label className="mine-field">
+          <span className="target-label">Current level</span>
+          <input
+            className="picker"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={MAX_LEVEL}
+            step={1}
+            placeholder={`1–${MAX_LEVEL}`}
+            value={mine.level ?? ""}
+            onChange={(e) => {
+              const before = mine.level;
+              loadout.setLevel(c.id, e.target.value);
+              const after = Math.floor(Number(e.target.value));
+              if (after === MAX_LEVEL && before !== MAX_LEVEL) onLevelMaxed?.(c.id);
+            }}
+          />
+        </label>
+
         <label className="mine-field">
           <span className="target-label">Weapon</span>
           <select
@@ -132,6 +163,15 @@ export default function MyBuild({ c }: { c: Character }) {
               <p className="check-detail">
                 Read these off the in-game stat screen with the character active
                 in your party. Leave anything you do not care about blank.
+                {mine.level !== undefined && mine.level < MAX_LEVEL && (
+                  <>
+                    {" "}
+                    Every target below is a Lv.{MAX_LEVEL} figure and this
+                    character is Lv.{mine.level}, so falling short is expected —
+                    the shortfalls are a distance to the finished build, not a
+                    verdict on this one.
+                  </>
+                )}
               </p>
               <div className="compare">
                 {targets.map((t) => {
@@ -170,7 +210,7 @@ export default function MyBuild({ c }: { c: Character }) {
         </>
       )}
 
-      {(mine.weapon || mine.set || filled > 0) && (
+      {(mine.weapon || mine.set || mine.level !== undefined || filled > 0) && (
         <div className="queue-controls">
           <button className="mini" onClick={() => loadout.clear(c.id)}>
             Clear my build
