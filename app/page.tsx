@@ -11,6 +11,7 @@ import Routine from "@/components/Routine";
 import Settings from "@/components/Settings";
 import BackToTop from "@/components/BackToTop";
 import { usePersistentState } from "@/lib/storage";
+import { useTheme } from "@/lib/theme";
 
 /**
  * Eight flat tabs mixed reference data with personal tracking. Grouping them
@@ -55,18 +56,11 @@ const GROUP_OF = new Map<string, string>(
 
 export default function Page() {
   const [tab, setTab] = usePersistentState<TabId>("tab", "characters");
-  const [theme, setTheme] = usePersistentState<"dark" | "light">(
-    "theme",
-    "light"
-  );
+  const theme = useTheme();
 
   // Avoid rendering persisted UI state until after hydration.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-  }, [theme]);
 
   // The open group follows the open tab, so a restored tab restores its group.
   const group = useMemo(
@@ -86,10 +80,10 @@ export default function Page() {
         </div>
         <button
           className="theme-toggle"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          onClick={theme.toggleMode}
           aria-label="Toggle colour theme"
         >
-          {theme === "dark" ? "Light" : "Dark"}
+          {theme.mode === "dark" ? "Light" : "Dark"}
         </button>
       </header>
 

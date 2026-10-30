@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { CHARACTERS } from "@/data/characters";
+import { PALETTES } from "@/data/palettes";
 import { useOwned } from "@/lib/owned";
+import { useTheme } from "@/lib/theme";
 import {
   exportAll,
   importAll,
@@ -22,6 +24,7 @@ const GROUP_LABELS: { id: StorageGroup; label: string; detail: string }[] = [
 
 export default function Settings() {
   const owned = useOwned();
+  const theme = useTheme();
   const [confirming, setConfirming] = useState<string | null>(null);
   const [payload, setPayload] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -100,6 +103,60 @@ export default function Settings() {
         ))}
       </div>
       {charResults.length === 0 && <p className="empty">No character by that name.</p>}
+
+      <h2 className="section">Colours</h2>
+      <p className="panel-intro">
+        Presets change the accent and the background tint; light and dark keep
+        their own readable text and borders either way.
+      </p>
+
+      <div className="palette-grid">
+        {PALETTES.map((p) => (
+          <button
+            key={p.id}
+            className="palette"
+            data-on={theme.paletteId === p.id}
+            onClick={() => theme.setPaletteId(p.id)}
+          >
+            <span className="palette-swatches">
+              <span style={{ background: p.swatch[0] }} />
+              <span style={{ background: p.swatch[1] }} />
+            </span>
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mine-row">
+        <label className="mine-field">
+          <span className="target-label">Or pick your own accent</span>
+          <input
+            type="color"
+            className="colour-input"
+            value={theme.accent || "#c43f7a"}
+            onChange={(e) => theme.setAccent(e.target.value)}
+            aria-label="Custom accent colour"
+          />
+        </label>
+      </div>
+      <p className="check-detail">
+        A custom accent overrides the preset&apos;s. The tint behind it and the
+        darker shade for text on that tint are worked out from the hue, so any
+        colour stays readable in both modes.
+      </p>
+
+      <div className="chips">
+        {theme.accent && (
+          <button className="chip" onClick={() => theme.setAccent("")}>
+            Drop the custom accent
+          </button>
+        )}
+        {theme.customised && (
+          <button className="chip" onClick={theme.reset}>
+            Back to pink &amp; lemon
+          </button>
+        )}
+      </div>
 
       <h2 className="section">Back up or move your progress</h2>
       <p className="panel-intro">

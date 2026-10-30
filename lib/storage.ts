@@ -11,7 +11,7 @@ export const STORAGE_GROUPS = {
   glossary: ["learned", "revealed", "notes"],
   story: ["acts", "priority-now"],
   routine: ["routine", "routine-day"],
-  display: ["tab", "theme"],
+  display: ["tab", "theme", "palette", "accent"],
 } as const;
 
 export type StorageGroup = keyof typeof STORAGE_GROUPS;
@@ -107,13 +107,37 @@ function read<T>(key: string, fallback: T): T {
   }
 }
 
-function write<T>(key: string, value: T) {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(PREFIX + key, JSON.stringify(value));
-  } catch {
-    // Private browsing, blocked storage, or quota. The app keeps working in memory.
+/*
+ * Two components can hold the same key at once — the theme lives in the page
+ * header and in Settings, for instance. Without this, each would keep its own
+ * copy and the stale one would overwrite the fresh one on its next render, so
+ * every writer tells the other holders of that key what it wrote.
+ */
+const listeners = new Map<string, Set<(value: unknown) => void>>();
+
+function subscribe(key: string, fn: (value: unknown) => void) {
+  let set = listeners.get(key);
+  if (!set) {
+    set = new Set();
+    listeners.set(key, set);
   }
+  set.add(fn);
+  return () => {
+    set!.delete(fn);
+    if (set!.size === 0) listeners.delete(key);
+  };
+}
+
+function write<T>(key: string, value: T) {
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(PREFIX + key, JSON.stringify(value));
+    } catch {
+      // Private browsing, blocked storage, or quota. The app keeps working in memory.
+    }
+  }
+  const set = listeners.get(key);
+  if (set) for (const fn of set) fn(value);
 }
 
 /**
@@ -127,6 +151,7 @@ export function usePersistentState<T>(key: string, fallback: T) {
   useEffect(() => {
     setValue(read<T>(key, fallback));
     setHydrated(true);
+    return subscribe(key, (v) => setValue(v as T));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 

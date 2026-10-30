@@ -99,7 +99,7 @@ All content is plain TypeScript data — no CMS, no fetching at runtime.
 
 ## Theming
 
-Colours are CSS custom properties at the top of `app/globals.css`. Light mode (`:root`) is pastel pink with lemon accents; dark mode (`:root[data-theme="dark"]`) keeps the same hues on a dark plum base. Element pill colours are defined under `.el[data-el="…"]`; rarity, cost and piece-count pills read `--r5-*` / `--r4-*` / `--r3-*` and `--c4-*` / `--c3-*` / `--c1-*`, each defined once per theme.
+**Settings → Colours** offers five presets and a custom accent picker, stored per browser. Under that: colours are CSS custom properties at the top of `app/globals.css`. Light mode (`:root`) is pastel pink with lemon accents; dark mode (`:root[data-theme="dark"]`) keeps the same hues on a dark plum base. Element pill colours are defined under `.el[data-el="…"]`; rarity, cost and piece-count pills read `--r5-*` / `--r4-*` / `--r3-*` and `--c4-*` / `--c3-*` / `--c1-*`, each defined once per theme. Presets in `data/palettes.ts` override a subset of those tokens as inline styles on `:root`, layered over whichever base theme is active.
 
 ## Sources and accuracy
 

@@ -1,6 +1,6 @@
 # Backlog
 
-Captured 30 October 2026. Items 1–5 are done; the rest are estimates assuming one focused sitting each.
+Captured 30 October 2026. Items 1–5 and 7–11 are done; the rest are estimates assuming one focused sitting each.
 
 ---
 
@@ -58,9 +58,12 @@ The backlog worried this would need guesswork. It did not: each spoiler term nam
 
 Fixed along the way: the region was recorded as "Lahalloo", which is not its name. It is **Lahai-Roi**, released in 3.0, sitting beneath the Roya Frostlands. Added a Roya Frostlands entry too, since the Story tab now names it.
 
-### 10. Theme customization
-Let people pick their own colours, or choose from preset palettes. The groundwork is already there — every colour is a CSS custom property on `:root` in `app/globals.css`, so a picker writing to those variables would work without touching components.
-**~1–2 hours.**
+### 10. Theme customization ✅
+**Settings → Colours.** Five presets — Pink & lemon, Seafoam & sand, Lavender & honey, Slate & amber, Forest & cream — plus a colour picker for your own accent, which overrides whichever preset is selected.
+
+A preset only overrides the tokens that give it its character (backgrounds, borders, accent, secondary) and layers over the base light or dark theme, so text contrast stays solved in one place instead of five. A custom accent gives one colour, so the tint behind it and the darker shade for text on that tint are derived from its hue — any colour stays readable in both modes.
+
+**Found and fixed a real bug doing this:** `usePersistentState` kept a separate copy per component, so the theme state in the page header and the copy in Settings would fight — picking a palette then toggling light/dark reverted the palette, because the header's stale copy won. Writers now notify every other holder of the same key. The owned-list hook had the same latent problem.
 
 ### 11. UI/UX pass ✅
 - **Tabs are grouped.** Eight flat tabs became three groups — *Reference* (Characters, Weapons, Echoes, Glossary), *Mine* (My plan, Story, Routine) and *Setup* (Settings) — so at most four tabs are on screen and it is clear which half of the app you are in. The open group follows the open tab, so a restored tab restores its group.
@@ -96,6 +99,6 @@ After provisioning, the real work is rewriting `lib/storage.ts` — which every 
 1. ~~Items 1–4 (quick wins)~~ — done
 2. ~~Item 5 (stat targets)~~ — done
 3. ~~Item 11 (UI/UX)~~ — done
-4. ~~Items 7, 8, 9~~ — done; item 10 next
+4. ~~Items 7, 8, 9, 10~~ — done
 5. Item 12 (sync) when you want it
 6. Item 6 (materials) last — least certain payoff for the research cost
