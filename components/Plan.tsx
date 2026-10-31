@@ -76,10 +76,10 @@ export default function Plan() {
    * to somewhere that is not there.
    */
   const sections: PlanSection[] = [
+    { id: "plan-queue", label: "The queue", count: entries.length },
     { id: "plan-materials", label: "What to farm" },
     { id: "plan-costs", label: "Claim costs" },
     { id: "plan-rules", label: "Rules" },
-    { id: "plan-queue", label: "The queue", count: entries.length },
   ];
 
   return (
@@ -90,7 +90,10 @@ export default function Plan() {
       </p>
 
       {/* Listed in page order, so the bar reads as a map of what is below it
-        * rather than as a menu of unrelated places. */}
+        * rather than as a menu of unrelated places. The queue leads: it is
+        * the plan this tab is named after, and the shopping list is derived
+        * from it, so reading the list first was reading a total before
+        * knowing what it was a total of. */}
       <PlanNav sections={sections} />
 
       {entries.length === 0 && (
@@ -98,17 +101,6 @@ export default function Plan() {
           Queue is empty. Open the Characters tab and hit “Queue” on anyone.
         </p>
       )}
-
-      <ShoppingList plan={plan} />
-
-      <div className="callout" id="plan-rules">
-        <strong>Rules that save resources</strong>
-        <ul>
-          {BUILD_RULES.map((r) => (
-            <li key={r}>{r}</li>
-          ))}
-        </ul>
-      </div>
 
       <h2 className="section" id="plan-queue">
         The queue: {entries.length} character{entries.length === 1 ? "" : "s"}
@@ -264,6 +256,20 @@ export default function Plan() {
           </div>
         );
       })}
+
+      {/* Both of these are derived from the queue above rather than read
+        * alongside it: what it will cost you to work through, and the rules
+        * for spending less doing it. */}
+      <ShoppingList plan={plan} />
+
+      <div className="callout" id="plan-rules">
+        <strong>Rules that save resources</strong>
+        <ul>
+          {BUILD_RULES.map((r) => (
+            <li key={r}>{r}</li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }

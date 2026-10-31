@@ -21,6 +21,9 @@ export type PlanSection = { id: string; label: string; count?: number };
  */
 export default function PlanNav({ sections }: { sections: PlanSection[] }) {
   const bar = useRef<HTMLElement>(null);
+  /* Set by a click, and honoured by the spy for long enough that the scroll
+   * it causes cannot immediately overrule it. See jump(). */
+  const pinnedUntil = useRef(0);
   const [active, setActive] = useState<string | null>(null);
   const [present, setPresent] = useState<string[]>([]);
 
@@ -54,8 +57,22 @@ export default function PlanNav({ sections }: { sections: PlanSection[] }) {
      * scheduling frames — which is a real state, not a hypothetical one.
      */
     const read = () => {
-      // Just under the bar's own bottom edge, wherever it has got to.
-      const line = (bar.current?.getBoundingClientRect().bottom ?? 0) + 16;
+      if (performance.now() < pinnedUntil.current) return;
+      const doc = document.documentElement;
+      /*
+       * At the end of the document, "the last heading that passed under the
+       * bar" stops being answerable: the page runs out of scroll before the
+       * last sections can reach the top. Measured here with the queue first,
+       * the maximum scroll is 3,033px while Claim costs starts at 3,343 and
+       * Rules at 3,621 — neither can ever be the top-most thing, so the bar
+       * would sit on "What to farm" while you read the rules. At the bottom
+       * the question becomes which of the sections on screen is last.
+       */
+      const atEnd = window.scrollY + window.innerHeight >= doc.scrollHeight - 2;
+      const line = atEnd
+        ? window.innerHeight
+        : (bar.current?.getBoundingClientRect().bottom ?? 0) + 16;
+
       let current = ids[0];
       for (const id of ids) {
         const el = document.getElementById(id);
@@ -79,13 +96,36 @@ export default function PlanNav({ sections }: { sections: PlanSection[] }) {
   const jump = (id: string) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const chrome = bar.current?.getBoundingClientRect().bottom ?? 0;
+
+    /*
+     * Where the bar will be once it is stuck, not where it is now. Measured
+     * from its current rect, a jump made from the top of the page — where
+     * the bar is still 293px down in normal flow — left the heading 317px
+     * below the chrome instead of 14.
+     */
+    const navH =
+      parseInt(
+        getComputedStyle(document.documentElement).getPropertyValue("--nav-h"),
+        10
+      ) || 0;
+    const chrome = navH + (bar.current?.getBoundingClientRect().height ?? 0);
+
     /* Instant on purpose. These are four destinations a few hundred pixels
      * apart; animating between them is a wait, not continuity. */
     window.scrollTo({
       top: el.getBoundingClientRect().top + window.scrollY - chrome - 14,
       behavior: "instant",
     });
+
+    /*
+     * The last sections cannot reach the top of the screen — the page runs
+     * out of scroll first — so the scroll this causes would land at the
+     * bottom and the spy would answer "Rules" to a click on "Claim costs".
+     * The click is the better answer to what you are now reading, so it wins
+     * for as long as its own scrolling lasts.
+     */
+    setActive(id);
+    pinnedUntil.current = performance.now() + 500;
   };
 
   return (
