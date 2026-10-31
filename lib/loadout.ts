@@ -30,6 +30,12 @@ export type Loadout = {
   weaponRank?: number;
   /** Keyed by the target's label, e.g. "CRIT Rate" -> "68.4". */
   stats?: Record<string, string>;
+  /**
+   * Forte levels, 1-10, keyed by the skill keys in data/skills.ts. Partial on
+   * purpose: a skill you have not recorded is not the same as one at level 1,
+   * and only the ones you have touched are stored.
+   */
+  skills?: Record<string, number>;
 };
 
 /** The cap, and so the point at which a character is finished levelling. */
@@ -40,6 +46,9 @@ export const MAX_SEQUENCE = 6;
 
 /** R1 through R5. Unlike a sequence, a weapon starts at R1, not R0. */
 export const MAX_RANK = 5;
+
+/** Forte levels run 1-10. */
+export const MAX_SKILL_LEVEL = 10;
 
 /** The numeric fields, and the range each one accepts. */
 export const NUMERIC_FIELDS = {
@@ -121,6 +130,36 @@ export function useLoadout() {
     [setNumber]
   );
 
+  /**
+   * One forte's level. Same rule as the other numbers: anything outside 1-10
+   * removes the entry rather than storing a level the game cannot produce, so
+   * clearing the box forgets that skill instead of pinning it to a value.
+   */
+  const setSkillLevel = useCallback(
+    (id: string, skill: string, value: string) =>
+      setAll((prev) => {
+        const entry = { ...prev[id] };
+        const skills = { ...(entry.skills ?? {}) };
+        const n = Math.floor(Number(value));
+        if (
+          value.trim() !== "" &&
+          Number.isFinite(n) &&
+          n >= 1 &&
+          n <= MAX_SKILL_LEVEL
+        ) {
+          skills[skill] = n;
+        } else {
+          delete skills[skill];
+        }
+        if (Object.keys(skills).length === 0) delete entry.skills;
+        else entry.skills = skills;
+        const next = { ...prev, [id]: entry };
+        if (Object.keys(entry).length === 0) delete next[id];
+        return next;
+      }),
+    [setAll]
+  );
+
   const clear = useCallback(
     (id: string) =>
       setAll((prev) => {
@@ -131,5 +170,15 @@ export function useLoadout() {
     [setAll]
   );
 
-  return { all, get, setField, setStat, setNumber, setLevel, clear, hydrated };
+  return {
+    all,
+    get,
+    setField,
+    setStat,
+    setNumber,
+    setLevel,
+    setSkillLevel,
+    clear,
+    hydrated,
+  };
 }

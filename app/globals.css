@@ -1835,7 +1835,7 @@ details.more li {
   background: var(--bg-raised);
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 2px 9px 2px 3px;
+  padding: 2px 3px 2px 3px;
   font-size: 0.75rem;
   color: var(--text-dim);
 }
@@ -1854,19 +1854,78 @@ details.more li {
   font-variant-numeric: tabular-nums;
 }
 
-/* First is where the materials actually go; last is the one to leave at one.
- * Everything between is ordinary, so only the ends are marked. */
-.skill-step[data-rank="1"] {
+/*
+ * The marked step is the one to spend on next, which is the first forte not
+ * yet at ten rather than simply the first in the list. On an untouched
+ * character those are the same thing; on a part-built one the mark travels
+ * down the chain as each skill is finished.
+ */
+.skill-step[data-next="true"] {
   border-color: var(--accent);
   color: var(--text);
   font-weight: 700;
 }
 
-.skill-step[data-rank="1"] .skill-rank {
+.skill-step[data-next="true"] .skill-rank {
   background: var(--accent);
   color: var(--bg-raised);
 }
 
-.skill-step[data-rank="5"] {
-  opacity: 0.72;
+.skill-step[data-maxed="true"] {
+  border-color: var(--good);
+  opacity: 0.75;
+}
+
+.skill-step[data-maxed="true"] .skill-rank {
+  background: var(--good);
+  color: var(--bg-raised);
+}
+
+/* Small enough not to turn the chain into a form, wide enough for two digits. */
+.skill-level {
+  width: 34px;
+  flex: none;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  padding: 1px 2px;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* The spinners do not fit a pill this size and are not worth the width. */
+.skill-level::-webkit-outer-spin-button,
+.skill-level::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.skill-level:focus {
+  outline: 2px solid var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.skill-next {
+  margin: 6px 0 0;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.skill-next[data-done="true"] {
+  color: var(--good);
+}
+
+/* Same 16px rule as the other fields: under it, iOS Safari zooms the page on
+ * focus, and there are five of these per character. */
+@media (max-width: 430px) {
+  .skill-level {
+    font-size: 16px;
+    width: 44px;
+    min-height: 32px;
+  }
 }
