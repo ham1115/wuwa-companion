@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { CHARACTERS } from "@/data/characters";
 import { ECHOES, SONATA_SETS, type Echo, type SonataSet } from "@/data/echoes";
 import { useOwned } from "@/lib/owned";
+import { holdInPlace } from "@/lib/anchor";
 
 /** Sonata name -> characters whose build lists it. */
 const RUN_BY = (() => {
@@ -148,7 +149,14 @@ function SetRow({
 
   return (
     <article className="char-row">
-      <button className="char-toggle" onClick={onToggle} aria-expanded={isOpen}>
+      <button
+        className="char-toggle"
+        onClick={(e) => {
+          holdInPlace(e.currentTarget);
+          onToggle();
+        }}
+        aria-expanded={isOpen}
+      >
         <span className="char-name">{s.name}</span>
         {mine.length > 0 && <span className="owned-dot">{mine.length} of mine</span>}
         <span className="pieces" data-p={s.pieces}>
@@ -251,7 +259,10 @@ function EchoesView() {
         <article className="char-row" key={e.name}>
           <button
             className="char-toggle"
-            onClick={() => setOpen(open === e.name ? null : e.name)}
+            onClick={(ev) => {
+              holdInPlace(ev.currentTarget);
+              setOpen(open === e.name ? null : e.name);
+            }}
             aria-expanded={open === e.name}
           >
             <span className="char-name">{e.name}</span>

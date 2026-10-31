@@ -5,6 +5,7 @@ import { CHARACTERS, WEAPON_TYPES, type WeaponType } from "@/data/characters";
 import { WEAPONS, baseWeaponName, type Weapon } from "@/data/weapons";
 import Filters from "./Filters";
 import { useOwned } from "@/lib/owned";
+import { holdInPlace } from "@/lib/anchor";
 
 /** weapon name -> characters that list it, in the order they rank it. */
 const WANTED_BY = (() => {
@@ -143,7 +144,14 @@ function WeaponRow({
 
   return (
     <article className="char-row">
-      <button className="char-toggle" onClick={onToggle} aria-expanded={isOpen}>
+      <button
+        className="char-toggle"
+        onClick={(e) => {
+          holdInPlace(e.currentTarget);
+          onToggle();
+        }}
+        aria-expanded={isOpen}
+      >
         <span className="char-name">{w.name}</span>
         {mine.length > 0 && <span className="owned-dot">{mine.length} of mine</span>}
         <span className="star" data-r={w.rarity}>

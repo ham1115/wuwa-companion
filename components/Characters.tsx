@@ -18,6 +18,7 @@ import Targets from "./Targets";
 import Teams from "./Teams";
 import SkillPriority from "./SkillPriority";
 import Collapse from "./Collapse";
+import { holdInPlace } from "@/lib/anchor";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
 
 export default function Characters() {
@@ -187,7 +188,14 @@ function CharacterRow({
 }) {
   return (
     <article className="char-row" data-built={isBuilt}>
-      <button className="char-toggle" onClick={onToggle} aria-expanded={isOpen}>
+      <button
+        className="char-toggle"
+        onClick={(e) => {
+          holdInPlace(e.currentTarget);
+          onToggle();
+        }}
+        aria-expanded={isOpen}
+      >
         <span className="char-name">{c.name}</span>
         {isOwned && <span className="owned-dot">mine</span>}
         <span className="star" data-r={c.rarity}>

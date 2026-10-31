@@ -12,6 +12,7 @@ import Targets from "./Targets";
 import Teams from "./Teams";
 import SkillPriority from "./SkillPriority";
 import Collapse from "./Collapse";
+import { holdInPlace } from "@/lib/anchor";
 
 const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
 
@@ -106,7 +107,10 @@ export default function Plan() {
               * checklist is, the element and the role. */}
             <button
               className="build-head build-toggle"
-              onClick={() => setOpen(isOpen ? "" : c.id)}
+              onClick={(e) => {
+                holdInPlace(e.currentTarget);
+                setOpen(isOpen ? "" : c.id);
+              }}
               aria-expanded={isOpen}
             >
               <span className="rank-pill">{idx + 1}</span>

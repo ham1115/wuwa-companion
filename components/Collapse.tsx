@@ -27,8 +27,10 @@ import { reducedMotion } from "@/lib/motion";
  * worst case is an invisible zero-height element lingering a little longer.
  */
 
-/** Must match --med in globals.css; the transition and the unmount share it. */
-const DURATION = 240;
+/** Must match --med in globals.css; the transition and the unmount share it.
+ * Exported so the scroll anchoring in lib/anchor.ts corrects for exactly as
+ * long as the collapse takes, rather than keeping its own copy of the number. */
+export const DURATION = 240;
 
 export default function Collapse({
   open,
