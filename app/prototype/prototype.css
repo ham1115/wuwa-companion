@@ -1,0 +1,429 @@
+/*
+ * Styles for the two desktop layout prototypes. Deliberately a separate file
+ * from globals.css: nothing in the app imports it, and deleting app/prototype
+ * takes all of it with them.
+ *
+ * It borrows the app's tokens and its small parts — .chip, .star, .el,
+ * .section, .ranked, .term-def — so what is being compared is the layout and
+ * not the styling.
+ */
+
+.proto {
+  padding: 0 22px 22px;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * A's two panes can only scroll on their own if something stops the page
+ * growing to fit them, and min-height does not: it lets the column get as
+ * tall as its content, so the window scrolls and both panes move together.
+ * A fixed height is what bounds them. Only A needs it — B is an ordinary
+ * scrolling page with a fixed panel over it.
+ */
+@media (min-width: 900px) {
+  .proto-a {
+    height: 100dvh;
+    overflow: hidden;
+  }
+}
+
+/* ---------- shared chrome ---------- */
+
+.proto-top {
+  flex: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0 12px;
+  border-bottom: 1px solid var(--glass-edge);
+  margin-bottom: 14px;
+}
+
+.proto-top h1 {
+  margin: 0 0 3px;
+  font-size: 1.2rem;
+  color: var(--accent-ink);
+  letter-spacing: -0.015em;
+}
+
+.proto-sub {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  max-width: 60ch;
+}
+
+.proto-switch {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex: none;
+}
+
+.proto-switch a {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 13px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-decoration: none;
+}
+
+.proto-switch a[data-on="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 2px 11px -3px var(--glow-mid);
+}
+
+.proto-switch .proto-back {
+  border-color: transparent;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.proto-filters {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 11px;
+}
+
+.proto-filters .chips {
+  margin-bottom: 0;
+}
+
+.proto-count {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  align-self: center;
+  margin-right: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- A: list beside detail ---------- */
+
+/* 100dvh minus the masthead, so the two panes scroll rather than the page. */
+.proto-a .pa {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 18px;
+}
+
+.pa-list {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pa-scroll {
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+  /* The list is the one thing here that is still a long scroll, so it keeps
+   * the leading-blade row the app already uses. */
+  scrollbar-width: thin;
+}
+
+.pa-row {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  overflow: hidden;
+  background: var(--bg-raised);
+  border: 1px solid var(--glass-edge);
+  border-radius: 5px;
+  border-top-left-radius: 13px;
+  corner-top-left-shape: bevel;
+  padding: 9px 12px;
+  margin-bottom: 5px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 2px 18px -10px var(--glow-soft);
+}
+
+.pa-row::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: color-mix(in srgb, var(--accent) 30%, var(--border-strong));
+}
+
+.pa-row[data-built="true"]::before {
+  width: 4px;
+  background: var(--accent);
+  box-shadow: 0 0 11px 1px var(--glow-hot);
+}
+
+.pa-row:hover {
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--glass-edge));
+}
+
+.pa-row[data-sel="true"] {
+  border-color: var(--accent);
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 0 22px -7px var(--glow-hot);
+}
+
+.pa-row[data-sel="true"]::before {
+  width: 4px;
+  background: var(--accent);
+}
+
+.pa-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pa-detail {
+  min-height: 0;
+  overflow: auto;
+  background: color-mix(in srgb, var(--bg-raised) var(--glass-tint), transparent);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius);
+  border-top-left-radius: 18px;
+  corner-top-left-shape: bevel;
+  padding: 18px 20px;
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 0 30px -8px var(--glow-soft);
+}
+
+/* The back button only exists on the phone sheet. */
+.pa-back {
+  display: none;
+}
+
+/* ---------- B: card grid ---------- */
+
+.pb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+  align-content: start;
+  padding-bottom: 20px;
+}
+
+.pb-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: flex-start;
+  background: var(--bg-raised);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius);
+  border-top-left-radius: 18px;
+  corner-top-left-shape: bevel;
+  padding: 12px 14px;
+  font-family: inherit;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 2px 18px -10px var(--glow-soft);
+  transition:
+    transform var(--fast) var(--ease),
+    border-color var(--fast) var(--ease);
+}
+
+.pb-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--glass-edge));
+}
+
+.pb-card[data-built="true"] {
+  border-color: var(--accent);
+}
+
+.pb-card[data-sel="true"] {
+  border-color: var(--accent);
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 0 22px -7px var(--glow-hot);
+}
+
+.pb-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pb-badges {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.pb-meta {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+
+.pb-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgb(var(--glass-shadow) / 0.28);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.pb-panel {
+  position: fixed;
+  z-index: 41;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(560px, 92vw);
+  overflow: auto;
+  padding: 18px 20px 28px;
+  background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+  border-left: 1px solid var(--glass-edge);
+  box-shadow: -18px 0 50px -30px rgb(var(--glass-shadow) / 0.6);
+  translate: 100% 0;
+  visibility: hidden;
+  transition:
+    translate var(--med) var(--ease),
+    visibility var(--med) step-end;
+}
+
+.pb-panel[data-open="true"] {
+  translate: 0 0;
+  visibility: visible;
+  transition:
+    translate var(--med) var(--ease),
+    visibility 0s;
+}
+
+.proto-b .pa-back {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+/* ---------- the detail itself ---------- */
+
+.pd-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.pd-head h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  color: var(--accent-ink);
+  letter-spacing: -0.015em;
+}
+
+/*
+ * Six ranked lists of two or three items each. Down one column they are
+ * 900px of mostly whitespace; in columns they are one glance. The count is
+ * left to the width rather than fixed, so the panel in B gets one or two and
+ * the pane in A gets three.
+ */
+.pd-cols {
+  columns: 280px 3;
+  column-gap: 24px;
+  margin-bottom: 4px;
+}
+
+.pd-blk {
+  break-inside: avoid;
+  margin-bottom: 14px;
+}
+
+.pd-blk .section {
+  margin-top: 0;
+}
+
+/* ---------- phones: the pane becomes a sheet ---------- */
+
+@media (max-width: 899px) {
+  .proto {
+    padding: 0 14px 14px;
+  }
+
+  .proto-top {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .proto-a .pa {
+    display: block;
+  }
+
+  .pa-scroll {
+    overflow: visible;
+  }
+
+  .pa-detail {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    border-radius: 0;
+    border: 0;
+    padding: 14px;
+    overflow: auto;
+    translate: 100% 0;
+    visibility: hidden;
+    background: var(--bg);
+    transition:
+      translate var(--med) var(--ease),
+      visibility var(--med) step-end;
+  }
+
+  .pa-detail[data-open="true"] {
+    translate: 0 0;
+    visibility: visible;
+    transition:
+      translate var(--med) var(--ease),
+      visibility 0s;
+  }
+
+  .proto-a .pa-back {
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+
+  .pb-panel {
+    width: 100vw;
+    border-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-detail,
+  .pb-panel,
+  .pb-card {
+    transition: none;
+  }
+}
