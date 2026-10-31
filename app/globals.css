@@ -292,6 +292,60 @@ body {
   display: none;
 }
 
+/*
+ * The scrollbar above is hidden on purpose, which left the row with no way to
+ * say it scrolls: on a phone the Reference group runs 378px into 343px, so
+ * "Glossary" was simply cut off and read as clipped rather than as more.
+ *
+ * The right edge now fades while there is more to reach, driven by the row's
+ * own scroll position. No JS and no guard for the case where it does not
+ * overflow: a scroll timeline with nothing to scroll resolves to its end,
+ * which is the keyframe where the fade is already zero. Measured both ways —
+ * 600px of content in 200px holds 30px of fade, 50px in 200px holds none.
+ */
+@supports (animation-timeline: scroll()) {
+  @property --tabs-fade {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+
+  @keyframes tabs-fade {
+    from {
+      --tabs-fade: 22px;
+    }
+    to {
+      --tabs-fade: 0px;
+    }
+  }
+
+  .tabs {
+    animation-name: tabs-fade;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-duration: auto;
+    animation-timeline: scroll(self inline);
+    -webkit-mask-image: linear-gradient(
+      to right,
+      #000 calc(100% - var(--tabs-fade)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      #000 calc(100% - var(--tabs-fade)),
+      transparent 100%
+    );
+  }
+
+  /*
+   * Deliberately not switched off for prefers-reduced-motion. Turning it off
+   * would leave --tabs-fade at its initial 0px, which is not a calmer version
+   * of the hint but no hint at all. Nothing here moves on its own either: the
+   * edge tracks the row's scroll position, so it only ever changes in direct
+   * proportion to a scroll the reader is already making.
+   */
+}
+
 .tab {
   flex: none;
   background: transparent;
