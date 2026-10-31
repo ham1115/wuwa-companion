@@ -2959,3 +2959,108 @@ button,
   align-items: baseline;
   line-height: 1.5;
 }
+
+/* ---------- My plan: the jump bar ---------- */
+/*
+ * Sticky under the tab row, like the search box on the long lists, because
+ * the question it answers — which part of this am I reading — is one you ask
+ * part of the way down rather than at the top.
+ */
+.plan-nav {
+  position: sticky;
+  top: calc(var(--nav-h, 98px) - 1px);
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-inline: calc(-1 * var(--shell-pad));
+  padding: 9px var(--shell-pad);
+  margin-bottom: 16px;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+  border-bottom: 1px solid var(--glass-edge);
+  box-shadow: 0 8px 18px -16px rgb(var(--glass-shadow) / 0.5);
+}
+
+.plan-nav .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+/*
+ * The four labels measure 363px plus their gaps against 343px of phone, so
+ * they wrapped to a second line and the bar became 82px — nearly a quarter
+ * of the screen held permanently for a signpost. One row that scrolls
+ * sideways instead, with the same self-cancelling fade the tab row uses to
+ * admit there is more to the right.
+ */
+@media (max-width: 599px) {
+  .plan-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .plan-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .plan-nav {
+      animation-name: tabs-fade;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-duration: auto;
+      animation-timeline: scroll(self inline);
+      -webkit-mask-image: linear-gradient(
+        to right, #000 calc(100% - var(--tabs-fade)), transparent 100%);
+      mask-image: linear-gradient(
+        to right, #000 calc(100% - var(--tabs-fade)), transparent 100%);
+    }
+  }
+}
+
+/* The count is the one number worth carrying in the bar: how many characters
+ * are queued is the answer to "is there anything to do". */
+.plan-nav-count {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.72rem;
+  font-weight: 700;
+  min-width: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--bg-sunken);
+  color: var(--text-dim);
+}
+
+.plan-nav .chip[data-on="true"] .plan-nav-count {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent-ink);
+}
+
+/* Headings the bar jumps to need to clear the chrome above them when the
+ * browser scrolls there by itself — a hash link, or find-in-page. */
+#plan-materials,
+#plan-costs,
+#plan-rules,
+#plan-queue {
+  scroll-margin-top: calc(var(--nav-h, 98px) + 62px);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .plan-nav {
+    background: var(--bg);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .plan-nav {
+    background: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

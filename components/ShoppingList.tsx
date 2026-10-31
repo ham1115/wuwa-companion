@@ -100,7 +100,9 @@ export default function ShoppingList({ plan }: { plan: string[] }) {
 
   return (
     <>
-      <h2 className="section">Everything the queue still needs</h2>
+      <h2 className="section" id="plan-materials">
+        Everything the queue still needs
+      </h2>
 
       {lockedRegions.length > 0 && (
         <div className="callout" data-tone="warn">
@@ -208,7 +210,7 @@ export default function ShoppingList({ plan }: { plan: string[] }) {
         </div>
       )}
 
-      <div className="callout">
+      <div className="callout" id="plan-costs">
         <strong>What a claim costs</strong>
         <ul>
           {WAVEPLATE_COSTS.map((a) => (

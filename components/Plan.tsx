@@ -12,6 +12,7 @@ import Targets from "./Targets";
 import Teams from "./Teams";
 import SkillPriority from "./SkillPriority";
 import Collapse from "./Collapse";
+import PlanNav, { type PlanSection } from "./PlanNav";
 import { holdInPlace } from "@/lib/anchor";
 
 const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
@@ -68,12 +69,29 @@ export default function Plan() {
     setOpen((o) => (o === id ? null : o));
   }
 
+  /*
+   * plan-materials and plan-costs belong to ShoppingList, which renders
+   * nothing at all when the queue needs nothing. PlanNav drops any heading it
+   * cannot find, so the bar shrinks with the page instead of offering a jump
+   * to somewhere that is not there.
+   */
+  const sections: PlanSection[] = [
+    { id: "plan-materials", label: "What to farm" },
+    { id: "plan-costs", label: "Claim costs" },
+    { id: "plan-rules", label: "Rules" },
+    { id: "plan-queue", label: "The queue", count: entries.length },
+  ];
+
   return (
     <section>
       <p className="panel-intro">
         {entries.length} in the queue, worked top to bottom. Add characters from
         the Characters tab; their builds are read straight from the database.
       </p>
+
+      {/* Listed in page order, so the bar reads as a map of what is below it
+        * rather than as a menu of unrelated places. */}
+      <PlanNav sections={sections} />
 
       {entries.length === 0 && (
         <p className="empty">
@@ -83,7 +101,7 @@ export default function Plan() {
 
       <ShoppingList plan={plan} />
 
-      <div className="callout">
+      <div className="callout" id="plan-rules">
         <strong>Rules that save resources</strong>
         <ul>
           {BUILD_RULES.map((r) => (
@@ -91,6 +109,10 @@ export default function Plan() {
           ))}
         </ul>
       </div>
+
+      <h2 className="section" id="plan-queue">
+        The queue: {entries.length} character{entries.length === 1 ? "" : "s"}
+      </h2>
 
       {entries.map((c, idx) => {
         if (!c) return null;
