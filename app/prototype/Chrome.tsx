@@ -7,7 +7,7 @@ import type { useCharacterFilter } from "./filters";
 type Filter = ReturnType<typeof useCharacterFilter>;
 
 /** Masthead plus the bar that says this is not the real app. */
-export function ProtoHeader({ which }: { which: "A" | "B" }) {
+export function ProtoHeader({ which }: { which: "A" | "B" | "C" }) {
   return (
     <header className="proto-top">
       <div>
@@ -16,9 +16,10 @@ export function ProtoHeader({ which }: { which: "A" | "B" }) {
           Prototype {which} —{" "}
           {which === "A"
             ? "list beside detail"
-            : "card grid with a detail panel"}
-          . Real data, real build components; nothing here is wired into the
-          app.
+            : which === "B"
+              ? "card grid with a detail panel"
+              : "Weapons and Echoes, beside or as a table"}
+          . Real data, real components; nothing here is wired into the app.
         </p>
       </div>
       <nav className="proto-switch">
@@ -27,6 +28,9 @@ export function ProtoHeader({ which }: { which: "A" | "B" }) {
         </Link>
         <Link href="/prototype/b" data-on={which === "B"}>
           B
+        </Link>
+        <Link href="/prototype/c" data-on={which === "C"}>
+          C
         </Link>
         <Link href="/" className="proto-back">
           Back to the app

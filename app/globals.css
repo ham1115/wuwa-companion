@@ -2325,7 +2325,10 @@ button,
   top: calc(var(--nav-h, 98px) - 1px);
   z-index: 10;
   margin-inline: calc(-1 * var(--shell-pad));
-  padding: 9px var(--shell-pad) 1px;
+  /* 9px top, and the bottom comes from the padding rather than from the last
+   * control's own margin, so the rule underneath reads as the edge of the bar
+   * instead of as a line wedged between two controls. */
+  padding: 9px var(--shell-pad) 9px;
   background: color-mix(in srgb, var(--bg) 86%, transparent);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
   backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
@@ -2333,12 +2336,22 @@ button,
   box-shadow: 0 8px 18px -16px rgb(var(--glass-shadow) / 0.5);
 }
 
-.sticky-controls .chips {
-  margin-bottom: 9px;
+.sticky-controls .chips,
+.sticky-controls .search-row {
+  margin-bottom: 12px;
 }
 
-.sticky-controls .search-row {
-  margin-bottom: 9px;
+.sticky-controls > *:last-child {
+  margin-bottom: 0;
+}
+
+/*
+ * Whatever follows the bar stands clear of it. The glossary keeps its eight
+ * category chips outside the bar, and at 11px they sat close enough to the
+ * search box to read as part of it with a stray line through the gap.
+ */
+.sticky-controls + * {
+  margin-top: 16px;
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {

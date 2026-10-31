@@ -528,3 +528,176 @@
   border-color: var(--accent);
   box-shadow: 0 2px 11px -3px var(--glow-mid);
 }
+
+
+/* ---------- C: Weapons and Echoes ---------- */
+
+.pc-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.pc-bar .search {
+  flex: 1 1 260px;
+  max-width: 420px;
+}
+
+.pc-bar .chips {
+  margin-bottom: 0;
+}
+
+.pc-modes {
+  margin-left: auto;
+}
+
+.pc-note {
+  margin-bottom: 14px;
+  max-width: 90ch;
+}
+
+.pc-beside {
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.pc-list {
+  max-height: calc(100dvh - 230px);
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.pc-detail {
+  position: sticky;
+  top: 10px;
+  max-height: calc(100dvh - 230px);
+  overflow: auto;
+  background: color-mix(in srgb, var(--bg-raised) var(--glass-tint), transparent);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius);
+  border-top-left-radius: 18px;
+  corner-top-left-shape: bevel;
+  padding: 18px 20px;
+  min-height: 260px;
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 0 30px -8px var(--glow-soft);
+}
+
+/* ---- the table ---- */
+
+.pc-tablewrap {
+  overflow: auto;
+  max-height: calc(100dvh - 210px);
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius);
+  border-top-left-radius: 18px;
+  corner-top-left-shape: bevel;
+  background: color-mix(in srgb, var(--bg-raised) 70%, transparent);
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 0 30px -8px var(--glow-soft);
+}
+
+.pc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.pc-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 0;
+  text-align: left;
+  background: color-mix(in srgb, var(--bg) 93%, transparent);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.pc-table thead th button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 0;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.pc-table thead th[data-num] button {
+  justify-content: flex-end;
+}
+
+.pc-table thead th button:hover {
+  color: var(--accent-ink);
+}
+
+.pc-table th[aria-sort]:not([aria-sort="none"]) button {
+  color: var(--accent-ink);
+}
+
+.pc-arrow {
+  font-size: 0.6rem;
+}
+
+.pc-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.pc-table tbody td[data-num] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.pc-table tbody tr {
+  cursor: pointer;
+}
+
+.pc-table tbody tr:hover {
+  background: var(--bg-sunken);
+}
+
+.pc-table tbody tr[data-sel="true"] {
+  background: var(--accent-soft);
+}
+
+.pc-sets {
+  color: var(--text-dim);
+}
+
+.pc-none {
+  color: var(--text-faint);
+}
+
+@media (max-width: 899px) {
+  .pc-beside {
+    display: block;
+  }
+
+  .pc-list,
+  .pc-detail,
+  .pc-tablewrap {
+    max-height: none;
+    position: static;
+  }
+
+  .pc-modes {
+    margin-left: 0;
+  }
+}
