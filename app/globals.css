@@ -468,27 +468,33 @@ h2.section {
 
 /* ---------- glossary term ---------- */
 /*
- * Every long list takes the glass vocabulary without the glass: the chamfered
- * corner, the lit top edge and the layered shadow, but no backdrop-filter.
- * One scrolling page holds 61 glossary terms, 61 characters, 114 weapons or
- * 187 echoes, and blurring a list that long is the thing the cards
- * deliberately avoid. Shared, so a row and a term read as the same object.
+ * Every long list takes the glass vocabulary without the glass: the lit top
+ * edge and the layered shadow, but no backdrop-filter. One scrolling page
+ * holds 61 glossary terms, 61 characters, 114 weapons or 187 echoes, and
+ * blurring a list that long is the thing the cards deliberately avoid.
+ *
+ * The surface is shared. The corner is not, because the corner has to answer
+ * to the height: see .term and .char-row below.
  */
 .term,
 .char-row {
   background: var(--bg-raised);
   border: 1px solid var(--glass-edge);
-  border-radius: var(--radius);
-  border-top-left-radius: 18px;
-  border-bottom-right-radius: 18px;
-  corner-top-left-shape: bevel;
-  corner-bottom-right-shape: bevel;
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
     0 6px 16px -12px rgb(var(--glass-shadow) / 0.22);
 }
 
+/*
+ * A term is 147px tall, so an 18px cut is 12% of it — the same share it is on
+ * a card, where the chamfer was designed. It keeps it.
+ */
 .term {
+  border-radius: var(--radius);
+  border-top-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+  corner-top-left-shape: bevel;
+  corner-bottom-right-shape: bevel;
   padding: 13px 16px;
   margin-bottom: 8px;
 }
@@ -497,11 +503,9 @@ h2.section {
  * Learned used to be a full-height gradient from accent to surface, which
  * read as a filled panel rather than a marked one. The game marks state with
  * a lit edge, so this does too: the cut corner glows, the border takes the
- * accent, and the surface stays flat enough to read a definition off. A built
- * character says the same thing about a row, so it gets the same mark.
+ * accent, and the surface stays flat enough to read a definition off.
  */
-.term[data-learned="true"],
-.char-row[data-built="true"] {
+.term[data-learned="true"] {
   border-color: var(--accent);
   background:
     linear-gradient(
@@ -868,14 +872,56 @@ details.more li {
 }
 
 /*
- * The surface, the border and the cut corners come from the shared rule above.
- * What is left here is the list rhythm and the clip: overflow keeps the
- * expanded body inside the cut corner, because the clip follows border-radius
- * and corner-shape together rather than the radius alone.
+ * A row is 46px tall. The 18px cut the cards use was 39% of that, which stops
+ * reading as a corner detail and starts reading as a direction — the row came
+ * out looking like a tag pointing left. What a thin row wants is not a smaller
+ * diagonal but a start point, which is what game lists give them.
+ *
+ * So: near-square ends, one small cut at the top left, and a blade down the
+ * leading edge. overflow keeps both the blade and the expanded body inside the
+ * cut, because the clip follows border-radius and corner-shape together.
  */
 .char-row {
+  position: relative;
+  border-radius: 5px;
+  border-top-left-radius: 13px;
+  corner-top-left-shape: bevel;
   margin-bottom: 7px;
   overflow: hidden;
+}
+
+.char-row::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  /*
+   * Not --border-strong on its own: in dark mode that is #573a47 against a
+   * #271a22 row, which measures 1.67:1 and reads as nothing at 3px wide. A
+   * little accent in it carries the edge in both themes while staying well
+   * clear of the built blade, which is the full accent and a pixel wider.
+   */
+  background: color-mix(in srgb, var(--accent) 30%, var(--border-strong));
+  transition:
+    background-color var(--fast) var(--ease),
+    width var(--fast) var(--ease);
+}
+
+/*
+ * Built used to be marked by the same corner glow a learned term gets, which
+ * the blade now does better: running the full height of the row, it is legible
+ * scanning a list of 61 in a way a 13px corner never was.
+ */
+.char-row[data-built="true"] {
+  border-color: var(--accent);
+}
+
+.char-row[data-built="true"]::before {
+  width: 4px;
+  background: var(--accent);
 }
 
 .char-toggle {
