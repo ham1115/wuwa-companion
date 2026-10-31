@@ -645,19 +645,26 @@ h2.section {
   flex-wrap: wrap;
 }
 
+/*
+ * --text-faint at 12px measured 3.17:1 against a white row, which is below
+ * the 4.5:1 small text needs and was legible mostly if you already knew what
+ * it said. --text-dim is 5.81:1 on light and 8.40:1 on dark. The border goes
+ * up with it, so the thing reads as a button rather than as quiet text.
+ */
 .mini {
   background: transparent;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: 999px;
-  color: var(--text-faint);
+  color: var(--text-dim);
   padding: 4px 11px;
   font-size: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
   font-family: inherit;
 }
 
 .mini:hover {
-  border-color: var(--border-strong);
+  border-color: var(--accent);
   color: var(--text);
 }
 
@@ -2326,14 +2333,17 @@ button,
   z-index: 10;
   margin-inline: calc(-1 * var(--shell-pad));
   /* 9px top, and the bottom comes from the padding rather than from the last
-   * control's own margin, so the rule underneath reads as the edge of the bar
-   * instead of as a line wedged between two controls. */
+   * control's own margin, so nothing is wedged against the controls. */
   padding: 9px var(--shell-pad) 9px;
-  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  /*
+   * No panel, no rule, no shadow. Tinting the bar so it could hide the list
+   * passing under it drew a lighter box around the search and the chips at
+   * rest, when there was nothing to hide. The blur alone does the job:
+   * invisible over an empty page, and a smear rather than readable text once
+   * rows are moving underneath.
+   */
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
   backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
-  border-bottom: 1px solid var(--glass-edge);
-  box-shadow: 0 8px 18px -16px rgb(var(--glass-shadow) / 0.5);
 }
 
 .sticky-controls .chips,
@@ -2389,11 +2399,8 @@ button,
     z-index: 10;
     margin-inline: calc(-1 * var(--shell-pad));
     padding: 9px var(--shell-pad);
-    background: color-mix(in srgb, var(--bg) 86%, transparent);
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
     backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
-    border-bottom: 1px solid var(--glass-edge);
-    box-shadow: 0 8px 18px -16px rgb(var(--glass-shadow) / 0.5);
     margin-bottom: 12px;
   }
 }
@@ -2958,6 +2965,17 @@ button,
 .cost-rows .stat-line {
   align-items: baseline;
   line-height: 1.5;
+}
+
+/*
+ * Queue, Built and Note now lead the body rather than closing it, and a
+ * heading pressed straight up against them read as their caption. The first
+ * block in the pane also has its own top margin removed so the columns line
+ * up, which left nothing at all between the two.
+ */
+.char-body > .term-actions:first-child {
+  margin-top: 0;
+  margin-bottom: 18px;
 }
 
 /* ---------- My plan: the jump bar ---------- */
