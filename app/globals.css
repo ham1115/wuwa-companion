@@ -1893,13 +1893,6 @@ details.more li {
  * because it makes text harder to read. Honour that rather than overriding it.
  */
 @media (prefers-reduced-transparency: reduce) {
-  .sticky-controls,
-  .sticky-controls > .search-row {
-    background: var(--bg);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
   .nav {
     background: var(--page-bg) !important;
     background-attachment: fixed;
@@ -2336,14 +2329,17 @@ button,
    * control's own margin, so nothing is wedged against the controls. */
   padding: 9px var(--shell-pad) 9px;
   /*
-   * No panel, no rule, no shadow. Tinting the bar so it could hide the list
-   * passing under it drew a lighter box around the search and the chips at
-   * rest, when there was nothing to hide. The blur alone does the job:
-   * invisible over an empty page, and a smear rather than readable text once
-   * rows are moving underneath.
+   * The page's own background, pinned the same way body pins it. Because
+   * both are background-attachment: fixed, the bar's slice of the gradient
+   * lands exactly where the page would have painted it — so the bar is
+   * invisible at rest and completely opaque once rows are moving underneath.
+   *
+   * A tint drew a lighter box around the controls. Blurring instead removed
+   * the box but smeared whatever passed beneath into a smudge, which is its
+   * own kind of visible. This is neither.
    */
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+  background: var(--page-bg);
+  background-attachment: fixed;
 }
 
 .sticky-controls .chips,
@@ -2362,13 +2358,6 @@ button,
  */
 .sticky-controls + * {
   margin-top: 16px;
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .sticky-controls,
-  .sticky-controls > .search-row {
-    background: var(--bg);
-  }
 }
 
 /*
@@ -2399,8 +2388,8 @@ button,
     z-index: 10;
     margin-inline: calc(-1 * var(--shell-pad));
     padding: 9px var(--shell-pad);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
-    backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+    background: var(--page-bg);
+    background-attachment: fixed;
     margin-bottom: 12px;
   }
 }
@@ -2631,10 +2620,16 @@ button,
    * the masthead still leaves on the way down and nothing about the rest of
    * the app has to change. The build stays beside the names while they move.
    */
+  /*
+   * A full column, not a box floating at the top of one. With only a
+   * max-height the pane shrank to its content — an empty state 320px tall
+   * beside a list running thousands — which left most of the window blank
+   * and the two sides reading as unrelated things rather than as two panes.
+   */
   .char-detail {
     position: sticky;
     top: calc(var(--nav-h, 98px) + 10px);
-    max-height: calc(100dvh - var(--nav-h, 98px) - 22px);
+    height: calc(100dvh - var(--nav-h, 98px) - 22px);
     overflow: auto;
     background:
       color-mix(in srgb, var(--bg-raised) var(--glass-tint), transparent);
@@ -2691,7 +2686,10 @@ button,
   position: relative;
   display: grid;
   place-items: center;
+  /* Fills the pane it sits in, so the field is the whole column rather than
+   * a letterbox at the top of it. */
   min-height: 320px;
+  height: 100%;
   padding: 24px;
   overflow: hidden;
 }
@@ -2994,11 +2992,10 @@ button,
   margin-inline: calc(-1 * var(--shell-pad));
   padding: 9px var(--shell-pad);
   margin-bottom: 16px;
-  background: color-mix(in srgb, var(--bg) 86%, transparent);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
-  border-bottom: 1px solid var(--glass-edge);
-  box-shadow: 0 8px 18px -16px rgb(var(--glass-shadow) / 0.5);
+  /* Same as the controls bar: the page's own background rather than a tint,
+   * so a second band does not appear welded under the tab row. */
+  background: var(--page-bg);
+  background-attachment: fixed;
 }
 
 .plan-nav .chip {
@@ -3069,16 +3066,3 @@ button,
   scroll-margin-top: calc(var(--nav-h, 98px) + 62px);
 }
 
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .plan-nav {
-    background: var(--bg);
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .plan-nav {
-    background: var(--bg);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
