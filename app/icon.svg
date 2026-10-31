@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!--
+    The same mark as components/Logo.tsx with its colours fixed, because a
+    favicon cannot read the page's palette. Filled rather than stroked: at
+    16px a 2.4px outline closes up into a blob, while a solid tile with the
+    bars knocked out of it still reads.
+
+    The plum is the default palette's accent-ink, which holds its own against
+    both a light and a dark browser tab strip.
+  -->
+  <path
+    fill="#8e2a56"
+    d="M10.4 1h17.2A3.4 3.4 0 0 1 31 4.4v23.2a3.4 3.4 0 0 1-3.4 3.4H4.4A3.4 3.4 0 0 1 1 27.6V10.4Z"
+  />
+  <g fill="#ffd9e8">
+    <rect x="7.2" y="14.6" width="3.4" height="6.4" rx="1.7" />
+    <rect x="13.1" y="10.4" width="3.4" height="12" rx="1.7" />
+    <rect x="19" y="12.8" width="3.4" height="8.6" rx="1.7" />
+    <rect x="24.9" y="15.8" width="3.4" height="4.2" rx="1.7" />
+  </g>
+</svg>

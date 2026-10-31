@@ -18,6 +18,7 @@ import Quests from "@/components/Quests";
 import Routine from "@/components/Routine";
 import Settings from "@/components/Settings";
 import BackToTop from "@/components/BackToTop";
+import Logo from "@/components/Logo";
 import { Show, SignInButton, UserButton } from "@clerk/nextjs";
 import { usePersistentState } from "@/lib/storage";
 import { useTheme } from "@/lib/theme";
@@ -266,7 +267,8 @@ function Codex() {
   return (
     <main className="shell">
       <header className="masthead">
-        <div>
+        <div className="masthead-name">
+          <Logo className="logo" />
           <h1>Resonance Codex</h1>
           <p>
             Wuthering Waves companion: 61 character builds, glossary, story,
