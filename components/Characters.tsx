@@ -16,6 +16,7 @@ import StatLine from "./StatLine";
 import MyBuild from "./MyBuild";
 import Targets from "./Targets";
 import Teams from "./Teams";
+import SkillPriority from "./SkillPriority";
 import Collapse from "./Collapse";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
 
@@ -231,6 +232,8 @@ function CharacterRow({
 
               <h2 className="section">Substat priority</h2>
               <p className="term-def">{c.substats}</p>
+
+              <SkillPriority id={c.id} />
 
               <Targets id={c.id} />
 

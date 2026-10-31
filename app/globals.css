@@ -1751,3 +1751,84 @@ details.more li {
   overflow: hidden;
   min-height: 0;
 }
+
+/* ---------- skill upgrade order ----------
+ * A ranked chain rather than a list, because the positions are the content:
+ * the first is where the materials go, the last is the one to leave alone.
+ */
+.skill-orders {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 6px 0 8px;
+}
+
+.skill-order {
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 7px 10px;
+}
+
+.skill-style {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 5px;
+}
+
+.skill-chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.skill-step {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 9px 2px 3px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.skill-rank {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--bg-sunken);
+  color: var(--text-faint);
+  font-size: 0.66rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* First is where the materials actually go; last is the one to leave at one.
+ * Everything between is ordinary, so only the ends are marked. */
+.skill-step[data-rank="1"] {
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.skill-step[data-rank="1"] .skill-rank {
+  background: var(--accent);
+  color: var(--bg-raised);
+}
+
+.skill-step[data-rank="5"] {
+  opacity: 0.72;
+}

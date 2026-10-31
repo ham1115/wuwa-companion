@@ -10,6 +10,7 @@ import StatLine from "./StatLine";
 import MyBuild from "./MyBuild";
 import Targets from "./Targets";
 import Teams from "./Teams";
+import SkillPriority from "./SkillPriority";
 
 const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
 
@@ -130,6 +131,8 @@ export default function Plan() {
                 ))}
               </div>
             )}
+
+            <SkillPriority id={c.id} />
 
             <Targets id={c.id} />
 
