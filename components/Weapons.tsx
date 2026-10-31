@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { CHARACTERS, WEAPON_TYPES, type WeaponType } from "@/data/characters";
 import { WEAPONS, baseWeaponName, type Weapon } from "@/data/weapons";
 import Filters from "./Filters";
@@ -259,6 +259,24 @@ function WeaponBody({
 }) {
   const wanted = WANTED_BY.get(w.name) ?? [];
 
+  /*
+   * What this weapon is actually competing with: the same type at the same
+   * rarity, which is the set a character chooses from. Between four and
+   * thirteen of them depending on the class, which is also what fills a pane
+   * that a weapon's own two stat lines and one paragraph leave mostly empty.
+   */
+  const peers = useMemo(
+    () =>
+      WEAPONS.filter((o) => o.type === w.type && o.rarity === w.rarity).sort(
+        (a, b) => b.atk - a.atk || a.name.localeCompare(b.name)
+      ),
+    [w.type, w.rarity]
+  );
+  /* Bars run from zero to the best in the group rather than from the group's
+   * own floor: the differences are smaller that way, but they are the real
+   * ones. 5-star Broadblades run 412 to 675, which is worth seeing honestly. */
+  const peerMax = Math.max(...peers.map((o) => o.atk));
+
   return (
     <div className="char-body">
       <div className="stat-grid">
@@ -291,6 +309,33 @@ function WeaponBody({
           No character in the database ranks this in their top four. Safe to
           treat as fodder.
         </p>
+      )}
+
+      {peers.length > 1 && (
+        <>
+          <h2 className="section">
+            The other {w.rarity}★ {w.type}
+          </h2>
+          <p className="check-detail">
+            Base ATK at Lv.90, against the hardest-hitting of them. Everything
+            here fits the same characters, so it is the list this one is
+            actually competing with.
+          </p>
+          <div className="peers">
+            {peers.map((o) => (
+              <div
+                key={o.name}
+                className="peer"
+                data-this={o.name === w.name}
+                style={{ "--fill": `${(o.atk / peerMax) * 100}%` } as CSSProperties}
+              >
+                <span className="peer-name">{o.name}</span>
+                <span className="peer-sub">{o.substat}</span>
+                <span className="peer-atk">{o.atk}</span>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

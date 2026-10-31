@@ -2146,17 +2146,25 @@ details.more li {
  * different content there was never much for a cross-fade to tie together.
  *
  * backwards, not both: the fill holds the start frame before the animation
- * begins, and leaves no animated transform behind afterwards to become a
- * containing block for anything fixed inside the panel.
+ * begins and leaves nothing behind afterwards. That was written when the
+ * animation still carried a transform, and guarded the wrong end of it — see
+ * the keyframes below for what the transform was actually doing while it ran.
  */
 html {
   scroll-behavior: smooth;
 }
 
+/*
+ * Fade only. It used to rise 7px as well, and a transform on the panel makes
+ * background-attachment: fixed inside it resolve against the panel rather
+ * than the viewport — so for the 240ms of every tab change, the sticky bars'
+ * slice of the page gradient stopped lining up with the page behind them and
+ * a lighter band appeared across the width, then vanished. 7px of movement is
+ * not worth a visible seam on every tab change.
+ */
 @keyframes panel-in {
   from {
     opacity: 0;
-    transform: translateY(7px);
   }
 }
 
@@ -3066,3 +3074,92 @@ button,
   scroll-margin-top: calc(var(--nav-h, 98px) + 62px);
 }
 
+
+/* ---------- a weapon against its own class ---------- */
+/*
+ * A weapon is two stat lines, a paragraph and a row of names — 380px in a
+ * pane that is 900. Rather than fill the rest with decoration, it holds the
+ * only comparison that matters: the same type at the same rarity, which is
+ * the set a character actually picks from.
+ */
+.peers {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.peer {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 0.83rem;
+  overflow: hidden;
+}
+
+/* The bar is the row's own background rather than an element beside it, so a
+ * long weapon name never has to share the width with a chart. */
+.peer::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--fill);
+  background: color-mix(in srgb, var(--accent) 11%, transparent);
+  border-radius: 8px 0 0 8px;
+}
+
+.peer > * {
+  position: relative;
+}
+
+.peer-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.peer-sub {
+  grid-column: 1;
+  color: var(--text-dim);
+  font-size: 0.76rem;
+}
+
+.peer-atk {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--accent-ink);
+}
+
+/* The one you are reading, marked the way a built row is. */
+.peer[data-this="true"] {
+  border-color: var(--accent);
+}
+
+.peer[data-this="true"]::before {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* Side by side once there is room for the substat on the same line. */
+@media (min-width: 560px) {
+  .peer {
+    grid-template-columns: minmax(0, 1fr) minmax(0, auto) auto;
+  }
+
+  .peer-sub {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .peer-atk {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
