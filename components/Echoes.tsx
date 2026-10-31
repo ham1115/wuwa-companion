@@ -222,16 +222,21 @@ function SetBody({
       )}
 
       <h2 className="section">Echoes that roll it: {rolled.length}</h2>
-      {([4, 3, 1] as const).map((cost) =>
-        byCost[cost].length > 0 ? (
-          <div className="stat-line" key={cost}>
-            <span className="cost" data-cost={cost}>
-              {cost} cost
-            </span>
-            <span>{byCost[cost].map((e) => e.name).join(", ")}</span>
-          </div>
-        ) : null
-      )}
+      {/* In a grid, not loose siblings: .stat-line carries no margin of its
+        * own anywhere in the app, so three of them in a row sat edge to edge
+        * and read as one block with lines through it. */}
+      <div className="cost-rows">
+        {([4, 3, 1] as const).map((cost) =>
+          byCost[cost].length > 0 ? (
+            <div className="stat-line" key={cost}>
+              <span className="cost" data-cost={cost}>
+                {cost} cost
+              </span>
+              <span>{byCost[cost].map((e) => e.name).join(", ")}</span>
+            </div>
+          ) : null
+        )}
+      </div>
     </div>
   );
 }

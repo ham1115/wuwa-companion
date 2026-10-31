@@ -2941,3 +2941,21 @@ button,
     transition: none;
   }
 }
+
+
+/*
+ * The cost rows in a sonata set's sheet. Wider than .stat-grid's 5px because
+ * these rows wrap to two and three lines each — at the tighter gap the wrap
+ * inside a row and the gap between two of them were the same distance, so
+ * where one row ended and the next began stopped being readable.
+ */
+.cost-rows {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.cost-rows .stat-line {
+  align-items: baseline;
+  line-height: 1.5;
+}
