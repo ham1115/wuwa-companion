@@ -16,52 +16,50 @@ import { useMemo } from "react";
  * tweened: there is no in-between state, because an 8-bit animation never had
  * one.
  *
- *   .  nothing   B  body        D  outline     P  inner ear
- *   L  eye       K  pupil       N  nose        R  blush
+ *   .  nothing   D  outline     W  coat
+ *   S  shade     P  pink        (ears and toe beans)
  */
 const CAT_OPEN = [
-  "..DD........DD..",
-  "..DPD......DPD..",
-  "..DPPD....DPPD..",
+  "...D........D...",
+  "...DD......DD...",
+  "...DPD....DPD...",
   "..DPPDDDDDDPPD..",
-  ".DBBBBBBBBBBBBD.",
-  ".DBBBBBBBBBBBBD.",
-  ".DBLKKBBBBKKLBD.",
-  ".DBKKKBBBBKKKBD.",
-  ".DBKKKBBBBKKKBD.",
-  ".DBRRBBNNBBRRBD.",
-  ".DBBBBBDDBBBBBD.",
-  ".DBBBBDBBDBBBBD.",
-  "..DBBBBBBBBBBD..",
-  "..DLLBBBBBBLLD..",
-  "...DDDDDDDDDD...",
-  "................",
+  "..DWWWWWWWWWWD..",
+  "..DWWWWWWWWWWD..",
+  "..DWDWWWWWWDWD..",
+  "..DWWWWDWDWWWD..",
+  "..DWWWWWDWWWWD..",
+  ".DWWWWWWWWWWWWD.",
+  "DWPPWWWWWWWWPPWD",
+  "DWPPWSSSSSSWPPWD",
+  ".DDWWSSSSSSWWDD.",
+  "..DDDDDDDDDDDD..",
 ];
 
 /**
- * The same cat with its eyes shut. Three rows differ, which is the whole
- * blink: the eye whites go, and a dark line is left where they were.
+ * The same cat with its eyes shut. One row differs: the two dots become two
+ * dashes, which is all a blink is at this size.
  */
 const CAT_SHUT = [
-  "..DD........DD..",
-  "..DPD......DPD..",
-  "..DPPD....DPPD..",
+  "...D........D...",
+  "...DD......DD...",
+  "...DPD....DPD...",
   "..DPPDDDDDDPPD..",
-  ".DBBBBBBBBBBBBD.",
-  ".DBBBBBBBBBBBBD.",
-  ".DBBBBBBBBBBBBD.",
-  ".DBKKKBBBBKKKBD.",
-  ".DBBBBBBBBBBBBD.",
-  ".DBRRBBNNBBRRBD.",
-  ".DBBBBBDDBBBBBD.",
-  ".DBBBBDBBDBBBBD.",
-  "..DBBBBBBBBBBD..",
-  "..DLLBBBBBBLLD..",
-  "...DDDDDDDDDD...",
-  "................",
+  "..DWWWWWWWWWWD..",
+  "..DWWWWWWWWWWD..",
+  "..DWDDWWWWDDWD..",
+  "..DWWWWDWDWWWD..",
+  "..DWWWWWDWWWWD..",
+  ".DWWWWWWWWWWWWD.",
+  "DWPPWWWWWWWWPPWD",
+  "DWPPWSSSSSSWPPWD",
+  ".DDWWSSSSSSWWDD.",
+  "..DDDDDDDDDDDD..",
 ];
 
-const SIZE = CAT_OPEN.length;
+/* The sprite is wider than it is tall, so the grid is told the row
+ * length rather than the row count. */
+const COLUMNS = CAT_OPEN[0].length;
 
 function Frame({ rows, className }: { rows: string[]; className: string }) {
   const cells = useMemo(
@@ -84,7 +82,7 @@ function Frame({ rows, className }: { rows: string[]; className: string }) {
 
 export default function Sprite() {
   return (
-    <div className="sprite" aria-hidden="true" style={{ "--sprite-size": SIZE } as React.CSSProperties}>
+    <div className="sprite" aria-hidden="true" style={{ "--sprite-size": COLUMNS } as React.CSSProperties}>
       <Frame rows={CAT_OPEN} className="sprite-frame sprite-open" />
       <Frame rows={CAT_SHUT} className="sprite-frame sprite-shut" />
     </div>

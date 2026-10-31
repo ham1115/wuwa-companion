@@ -2775,38 +2775,34 @@ button,
   --px: 13px;
 }
 
-.sprite-frame i[data-c="B"] {
+/*
+ * A pale coat with a near-black outline and the palette's colour kept for
+ * the ears and the toe beans. The cat is not made of the accent any more:
+ * saturating the whole body in it made a pink cat rather than a cat, and the
+ * pink reads far better as the two or three places it actually belongs.
+ */
+.sprite-frame i[data-c="W"] {
+  background: color-mix(in srgb, var(--accent) 7%, #fff);
+}
+
+/* Under the chin and between the paws. Enough to sit the loaf on the ground
+ * without becoming a second colour. */
+.sprite-frame i[data-c="S"] {
+  background: color-mix(in srgb, var(--accent) 22%, #fff);
+}
+
+/* Ears and toe beans, and the only place the palette shows. */
+.sprite-frame i[data-c="P"] {
   background: var(--accent);
 }
 
+/*
+ * Near-black rather than a darker tint of the coat. A pale cat wants a hard
+ * line around it, and because the coat is almost white the same outline
+ * works on a light page and a dark one without being swapped.
+ */
 .sprite-frame i[data-c="D"] {
-  background: color-mix(in srgb, var(--accent) 58%, #000);
-}
-
-.sprite-frame i[data-c="P"] {
-  background: color-mix(in srgb, var(--accent) 55%, #fff);
-}
-
-.sprite-frame i[data-c="L"] {
-  background: color-mix(in srgb, var(--accent) 12%, #fff);
-}
-
-/* The eye itself, darker than the outline. Big and dark with one light pixel
- * in the corner is the whole trick: a 1px pupil in a white square reads as a
- * blank stare, and the sparkle is what turns a dot into a look. */
-.sprite-frame i[data-c="K"] {
-  background: color-mix(in srgb, var(--accent) 28%, #000);
-}
-
-/* The cheeks. Lighter than the body rather than warmer: at half the
- * secondary they came out yellow, which put three yellow marks on the face
- * and left the nose with nothing to be the only one of. */
-.sprite-frame i[data-c="R"] {
-  background: color-mix(in srgb, var(--accent) 45%, #fff);
-}
-
-.sprite-frame i[data-c="N"] {
-  background: var(--lemon);
+  background: color-mix(in srgb, var(--accent) 14%, #141014);
 }
 
 /*
