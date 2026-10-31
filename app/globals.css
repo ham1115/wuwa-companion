@@ -50,6 +50,16 @@
   --glass-sheen: rgba(255, 255, 255, 0.9);
   --glass-shadow: 142 42 86;
 
+  /* Glow. Mixed out of --accent rather than written as a fixed colour, so a
+   * custom palette lights the app in its own colour instead of in pink.
+   * Light mode glows less: a bloom on a near-white page is a tint, and past
+   * about a third of the accent it stops reading as light and starts reading
+   * as a smudge. */
+  --glow-soft: color-mix(in srgb, var(--accent) 22%, transparent);
+  --glow-mid: color-mix(in srgb, var(--accent) 34%, transparent);
+  --glow-hot: color-mix(in srgb, var(--accent) 52%, transparent);
+  --glow-lemon: color-mix(in srgb, var(--lemon) 50%, transparent);
+
   /* One motion scale for the whole app. --fast is for a state that flips
    * under the cursor, --med for something that changes size or appears. */
   /* How a tapped control reacts, now that the browser's own tap flash is off.
@@ -113,6 +123,15 @@
   --glass-edge: color-mix(in srgb, var(--border-strong) 90%, transparent);
   --glass-sheen: rgba(255, 214, 233, 0.09);
   --glass-shadow: 0 0 0;
+
+  /* Dark carries the glow much further, because the shadow above is pure
+   * black: on a #1c1118 page it draws nothing, so until now the only thing
+   * separating a raised surface from the background was its border. Here
+   * light does that job, which is also how the game marks anything active. */
+  --glow-soft: color-mix(in srgb, var(--accent) 26%, transparent);
+  --glow-mid: color-mix(in srgb, var(--accent) 46%, transparent);
+  --glow-hot: color-mix(in srgb, var(--accent) 72%, transparent);
+  --glow-lemon: color-mix(in srgb, var(--lemon) 62%, transparent);
 }
 
 * {
@@ -553,8 +572,20 @@ h2.section {
   border-bottom-right-radius: 18px;
   corner-top-left-shape: bevel;
   corner-bottom-right-shape: bevel;
-  padding: 13px 16px;
-  margin-bottom: 8px;
+  padding: 11px 15px;
+  margin-bottom: 7px;
+}
+
+/*
+ * The learn and note buttons, moved up out of the body. Pushed to the end of
+ * the head so the term name still starts the line, and allowed to drop onto
+ * their own line only when the name is long enough to need it.
+ */
+.term-tools {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+  flex: none;
 }
 
 /*
@@ -598,7 +629,7 @@ h2.section {
 }
 
 .term-def {
-  margin: 6px 0 0;
+  margin: 5px 0 0;
   color: var(--text-dim);
   font-size: 0.92rem;
 }
@@ -636,7 +667,7 @@ h2.section {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
-  margin-top: 10px;
+  margin-top: 7px;
   align-items: center;
 }
 
@@ -1851,6 +1882,13 @@ details.more li {
  * because it makes text harder to read. Honour that rather than overriding it.
  */
 @media (prefers-reduced-transparency: reduce) {
+  .sticky-controls,
+  .sticky-controls > .search-row {
+    background: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
   .nav {
     background: var(--page-bg) !important;
     background-attachment: fixed;
@@ -2227,3 +2265,241 @@ button,
  * Keyboard focus is untouched by all of the above: the ring is the browser's
  * own, and it is the only indicator a keyboard has.
  */
+
+/* ---------- flat nav: one row of tabs once they fit ---------- */
+/*
+ * Measured at 900px of content: the eight tab labels come to 722px, the group
+ * pill was giving one word 284px, and the tab row underneath it was using 363
+ * of 900. Two bands and an extra click bought nothing a single row does not.
+ *
+ * The switch is at 860px. Measured: the row itself is 762px, so it fits on
+ * one line from 794px of viewport up, and the extra 66px is slack for a
+ * browser that renders the labels wider than this one does. Below it the
+ * grouped nav takes over, because eight tabs genuinely do not fit on a phone.
+ * flex-wrap is the safety net above it, and costs a second line rather than
+ * an overflow if a future label is longer than anything in this data.
+ */
+.flat-tabs {
+  display: none;
+}
+
+@media (min-width: 860px) {
+  .grouped-nav {
+    display: none;
+  }
+
+  .flat-tabs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  /* All that survives of the grouping, which the tabs' own order already
+   * carries: a hairline where one half of the app ends and the next starts. */
+  .tab-sep {
+    flex: none;
+    align-self: stretch;
+    width: 1px;
+    margin: 4px 7px;
+    background: var(--border-strong);
+    opacity: 0.55;
+  }
+}
+
+/* ---------- the controls stay with the list ---------- */
+/*
+ * Narrowing a 114-row list used to mean scrolling back to the top for the
+ * search box and then scrolling back down. The box follows the list instead.
+ *
+ * --nav-h is written by the page from the real nav, because the nav is two
+ * bands on a phone and one on a desktop, and a sticky offset guessed wrong
+ * either laps the nav or floats below it.
+ */
+.sticky-controls {
+  position: sticky;
+  top: calc(var(--nav-h, 98px) - 1px);
+  z-index: 10;
+  margin-inline: calc(-1 * var(--shell-pad));
+  padding: 9px var(--shell-pad) 1px;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+  border-bottom: 1px solid var(--glass-edge);
+  box-shadow: 0 8px 18px -16px rgb(var(--glass-shadow) / 0.5);
+}
+
+.sticky-controls .chips {
+  margin-bottom: 9px;
+}
+
+.sticky-controls .search-row {
+  margin-bottom: 9px;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .sticky-controls,
+  .sticky-controls > .search-row {
+    background: var(--bg);
+  }
+}
+
+/*
+ * On a phone the chips get out of the bar and scroll away with the list.
+ *
+ * Measured at 375x812: nav and full bar together hold 200px, a quarter of the
+ * screen, which leaves 11.6 rows visible instead of 13.5. A bar that deep is
+ * its own kind of friction — fewer rows per screen is more scrolling, which is
+ * the thing this was supposed to fix. The search box is the control worth
+ * 65px; the filter chips are set once and then left alone, so they can live at
+ * the top of the list like any other content. 163px, and 12.3 rows.
+ */
+@media (max-width: 599px) {
+  /*
+   * display: contents, not position: static. A sticky element can never
+   * travel outside its own parent's box, and this wrapper is only as tall as
+   * the two rows inside it — made static it scrolled away with them, 1,253px
+   * off the top of the screen. Dissolving the box hands the search row to the
+   * list's own section, which is thousands of pixels tall, and it sticks.
+   */
+  .sticky-controls {
+    display: contents;
+  }
+
+  .sticky-controls > .search-row {
+    position: sticky;
+    top: calc(var(--nav-h, 98px) - 1px);
+    z-index: 10;
+    margin-inline: calc(-1 * var(--shell-pad));
+    padding: 9px var(--shell-pad);
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+    border-bottom: 1px solid var(--glass-edge);
+    box-shadow: 0 8px 18px -16px rgb(var(--glass-shadow) / 0.5);
+    margin-bottom: 12px;
+  }
+}
+
+/* ---------- glow ---------- */
+/*
+ * Level B of the three that were tried: surfaces sit in a faint bloom, and
+ * anything that is ON emits light — the selected tab, an active chip, a built
+ * row and its blade. Keeping the glow for state is what stops it being
+ * decoration: if everything glows, the glow says nothing.
+ *
+ * Every layer here is additive. The inset sheen and the dark drop shadow are
+ * repeated verbatim from the rules above, because a box-shadow cannot be
+ * appended to — it is one property, declared whole.
+ */
+.term,
+.char-row {
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 6px 16px -12px rgb(var(--glass-shadow) / 0.22),
+    0 2px 18px -10px var(--glow-soft);
+}
+
+.card,
+.callout {
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 8px 24px -12px rgb(var(--glass-shadow) / 0.28),
+    0 2px 6px -3px rgb(var(--glass-shadow) / 0.18),
+    0 0 30px -8px var(--glow-soft);
+}
+
+.nav {
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 6px 18px -14px rgb(var(--glass-shadow) / 0.5),
+    0 0 26px -10px var(--glow-soft);
+}
+
+.search:focus {
+  box-shadow: 0 0 0 3px var(--glow-soft);
+}
+
+/* --- lit state --- */
+.tab[aria-selected="true"] {
+  box-shadow:
+    0 0 0 1px var(--glow-mid),
+    0 3px 14px -4px var(--glow-hot);
+}
+
+.chip[data-on="true"] {
+  box-shadow: 0 2px 11px -3px var(--glow-mid);
+}
+
+.chip[data-tone="lemon"][data-on="true"] {
+  box-shadow: 0 2px 11px -3px var(--glow-lemon);
+}
+
+.groups::before {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.07),
+    0 0 16px -5px var(--glow-mid);
+}
+
+.term[data-learned="true"],
+.char-row[data-built="true"] {
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 6px 16px -12px rgb(var(--glass-shadow) / 0.3),
+    0 0 22px -7px var(--glow-hot);
+}
+
+/* The blade is 3px wide. Lighting it is most of what makes a built row
+ * findable while scrolling past sixty that are not. */
+.char-row[data-built="true"]::before {
+  box-shadow: 0 0 11px 1px var(--glow-hot);
+}
+
+/* ---------- queued build: collapsed to its head ---------- */
+/*
+ * Same move the long lists already make, applied to the one tab that was not
+ * making it. A queued character's card is the whole build sheet — materials,
+ * stat targets, teams, the editable loadout and the checklist — and all four
+ * of them stood open at once.
+ *
+ * The head carries everything you read the queue by: position, name, how far
+ * the checklist has got, element and role. Opening one is what costs a screen.
+ */
+.build-toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+  text-align: left;
+}
+
+.build-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Pushed to the end of the row, so the chevron is in the same place on every
+ * card however many badges the character in front of it happens to carry. */
+.build-chevron {
+  margin-left: auto;
+}
+
+.build-toggle:hover .build-name {
+  color: var(--accent-ink);
+}
+
+/* Closed, the card is a row and should sit like one. Open, it goes back to
+ * the padding the body was designed in. */
+.card[data-open="false"] {
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+
+.card[data-open="false"] .build-head {
+  margin-bottom: 0;
+}

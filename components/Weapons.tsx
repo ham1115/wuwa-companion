@@ -54,36 +54,40 @@ export default function Weapons() {
         to see who wants it.
       </p>
 
-      <div className="search-row">
-        <input
-          className="search"
-          type="search"
-          placeholder="Search name, stat or effect…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          aria-label="Search weapons"
-        />
-      </div>
+      {/* The longest list in the app at 114 rows, and the one that gains most
+        * from the search box staying put. */}
+      <div className="sticky-controls">
+        <div className="search-row">
+          <input
+            className="search"
+            type="search"
+            placeholder="Search name, stat or effect…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            aria-label="Search weapons"
+          />
+        </div>
 
-      <div className="chips">
-        <button
-          className="chip"
-          data-tone="lemon"
-          data-on={mineOnly}
-          onClick={() => setMineOnly(!mineOnly)}
-        >
-          {mineOnly ? "★ For my characters" : "For my characters"}
-        </button>
-        {([5, 4, 3] as const).map((r) => (
+        <div className="chips">
           <button
-            key={r}
             className="chip"
-            data-on={rarity === r}
-            onClick={() => setRarity(rarity === r ? "all" : r)}
+            data-tone="lemon"
+            data-on={mineOnly}
+            onClick={() => setMineOnly(!mineOnly)}
           >
-            {r}★
+            {mineOnly ? "★ For my characters" : "For my characters"}
           </button>
-        ))}
+          {([5, 4, 3] as const).map((r) => (
+            <button
+              key={r}
+              className="chip"
+              data-on={rarity === r}
+              onClick={() => setRarity(rarity === r ? "all" : r)}
+            >
+              {r}★
+            </button>
+          ))}
+        </div>
       </div>
 
       <Filters active={type !== "all" ? 1 : 0} onClear={() => setType("all")}>

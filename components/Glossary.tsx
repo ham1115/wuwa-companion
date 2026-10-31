@@ -46,15 +46,20 @@ export default function Glossary() {
         past Chapter 1 are blurred until you tap them.
       </p>
 
-      <div className="search-row">
-        <input
-          className="search"
-          type="search"
-          placeholder="Search terms and definitions…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          aria-label="Search glossary"
-        />
+      {/* Only the search box is pinned here. The eight category chips wrap to
+        * three lines on a phone, and a sticky bar that deep would cost more
+        * of the screen than the scrolling it saves. */}
+      <div className="sticky-controls">
+        <div className="search-row">
+          <input
+            className="search"
+            type="search"
+            placeholder="Search terms and definitions…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            aria-label="Search glossary"
+          />
+        </div>
       </div>
 
       <div className="chips">
@@ -95,13 +100,49 @@ export default function Glossary() {
 
             return (
               <article key={t.id} className="term" data-learned={isLearned}>
+                {/*
+                 * The category label that used to sit here said the same thing
+                 * as the heading this term is filed under, and the two buttons
+                 * that used to sit below the definition are now up here with
+                 * it. Between them they were costing about 34px on every one
+                 * of 62 terms, for a row of chrome under definitions nobody is
+                 * acting on while they read.
+                 */}
                 <div className="term-head">
                   <h3 className="term-name">{t.term}</h3>
-                  <span className="term-cat">{cat.label}</span>
                   {t.spoiler && !byStory && (
                     <span className="spoiler-tag">spoiler</span>
                   )}
                   {byStory && <span className="side-pill">you&apos;ve been here</span>}
+
+                  <span className="term-tools">
+                    <button
+                      className="mini"
+                      data-on={isLearned}
+                      aria-label={
+                        isLearned
+                          ? `${t.term} is marked as learned`
+                          : `Mark ${t.term} as learned`
+                      }
+                      onClick={() => learned.toggle(t.id)}
+                    >
+                      {isLearned ? "✓ Learned" : "Learn"}
+                    </button>
+                    <button
+                      className="mini"
+                      data-on={Boolean(noteText)}
+                      aria-label={
+                        noteText
+                          ? `Edit your note on ${t.term}`
+                          : `Add a note on ${t.term}`
+                      }
+                      onClick={() =>
+                        setOpenNote(openNote === t.id ? null : t.id)
+                      }
+                    >
+                      {noteText ? "Note ✎" : "Note"}
+                    </button>
+                  </span>
                 </div>
 
                 <div className="spoiler-body" data-hidden={isHidden}>
@@ -137,25 +178,6 @@ export default function Glossary() {
                     })}
                   </div>
                 )}
-
-                <div className="term-actions">
-                  <button
-                    className="mini"
-                    data-on={isLearned}
-                    onClick={() => learned.toggle(t.id)}
-                  >
-                    {isLearned ? "✓ Learned" : "Mark learned"}
-                  </button>
-                  <button
-                    className="mini"
-                    data-on={Boolean(noteText)}
-                    onClick={() =>
-                      setOpenNote(openNote === t.id ? null : t.id)
-                    }
-                  >
-                    {noteText ? "Note ✎" : "Add note"}
-                  </button>
-                </div>
 
                 {openNote === t.id && (
                   <textarea

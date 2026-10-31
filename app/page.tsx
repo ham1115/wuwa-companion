@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Fragment,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -119,6 +120,16 @@ const GROUP_OF = new Map<string, string>(
   GROUPS.flatMap((g) => g.tabs.map((t) => [t.id, g.id] as [string, string]))
 );
 
+/**
+ * Every tab in reading order, for the flat nav and its arrow keys. Widened off
+ * the `as const` tuples deliberately: flatMap over a union of three differently
+ * shaped readonly tuples infers nothing useful, and this list only ever needs
+ * the id and the label.
+ */
+const ALL_TABS: { id: TabId; label: string }[] = GROUPS.flatMap((g) =>
+  g.tabs.map((t) => ({ id: t.id as TabId, label: t.label as string }))
+);
+
 export default function Page() {
   return (
     <SyncProvider>
@@ -223,6 +234,29 @@ function Codex() {
     window.scrollTo({ top: scrollMemory.current[tab] ?? 0, behavior: "instant" });
   }, [tab]);
 
+  /*
+   * The list tabs pin their search box directly under the nav, and the nav is
+   * not one height: two bands on a phone, one from 820px up, and taller again
+   * if a label ever wraps. Measuring the real element is the only offset that
+   * is right in all of them — guess it and the bar either laps the nav or
+   * floats below it with a stripe of list showing through the gap.
+   */
+  const navRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = navRef.current;
+    if (!el) return;
+    const write = () =>
+      document.documentElement.style.setProperty(
+        "--nav-h",
+        `${Math.round(el.getBoundingClientRect().height)}px`
+      );
+    write();
+    const observer = new ResizeObserver(write);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   // The open group follows the open tab, so a restored tab restores its group.
   const group = useMemo(
     () => GROUPS.find((g) => g.id === GROUP_OF.get(tab)) ?? GROUPS[0],
@@ -259,84 +293,132 @@ function Codex() {
         </div>
       </header>
 
-      <nav className="nav" aria-label="Sections">
+      <nav className="nav" aria-label="Sections" ref={navRef}>
         {/*
-          * The selected group is painted by one sliding element rather than by
-          * each button's own background, so switching moves the indicator
-          * instead of cross-fading it out of one button and into another —
-          * which at this size read as the pill teleporting.
-          */}
+         * Two navigations, one shown at a time by a media query in the
+         * stylesheet. The hidden one is display:none, so it is out of the
+         * accessibility tree rather than a duplicate set of tabs.
+         *
+         * A phone keeps the group pill, because eight tabs do not fit and
+         * choosing a half of the app first is what makes that bearable. From
+         * 820px up all eight measure 722px and fit on one line, at which point
+         * the grouping only costs: a second band of chrome, an extra click to
+         * reach a tab in another group, and one word stretched across 284px.
+         */}
         <div
-          className="groups"
+          className="flat-tabs"
           role="tablist"
-          aria-label="Section groups"
+          aria-label="Sections"
           onKeyDown={(e) => {
-            const i = nextIndexByKey(
-              GROUPS.map((g) => g.id),
-              group.id,
-              e.key
-            );
+            const ids = ALL_TABS.map((t) => t.id);
+            const i = nextIndexByKey(ids, tab, e.key);
             if (i === null) return;
             e.preventDefault();
-            setTab(GROUPS[i].tabs[0].id);
+            setTab(ids[i]);
             focusTab(e.currentTarget, i);
           }}
-          style={
-            {
-              "--group-count": GROUPS.length,
-              "--group-index": Math.max(
-                0,
-                GROUPS.findIndex((g) => g.id === group.id)
-              ),
-            } as React.CSSProperties
-          }
-          data-ready={mounted}
         >
-          {GROUPS.map((g) => (
-            <button
-              key={g.id}
-              className="group"
-              role="tab"
-              aria-selected={mounted && group.id === g.id}
-              /* Roving tabindex: a tablist is one tab stop, and the arrow keys
-               * move within it. Three separate stops is what it was before. */
-              tabIndex={mounted && group.id === g.id ? 0 : -1}
-              title={g.hint}
-              onClick={() => setTab(g.tabs[0].id)}
-            >
-              {g.label}
-            </button>
+          {GROUPS.map((g, gi) => (
+            <Fragment key={g.id}>
+              {/* The groups survive as a hairline, so the three halves of the
+               * app are still legible without costing a click. */}
+              {gi > 0 && <span className="tab-sep" role="presentation" />}
+              {g.tabs.map((t) => (
+                <button
+                  key={t.id}
+                  className="tab"
+                  role="tab"
+                  aria-selected={mounted && tab === t.id}
+                  tabIndex={mounted && tab === t.id ? 0 : -1}
+                  title={g.hint}
+                  onClick={() => setTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </Fragment>
           ))}
         </div>
 
-        {group.tabs.length > 1 && (
+        <div className="grouped-nav">
+          {/*
+            * The selected group is painted by one sliding element rather than by
+            * each button's own background, so switching moves the indicator
+            * instead of cross-fading it out of one button and into another —
+            * which at this size read as the pill teleporting.
+            */}
           <div
-            className="tabs"
+            className="groups"
             role="tablist"
-            aria-label={group.label}
+            aria-label="Section groups"
             onKeyDown={(e) => {
-              const ids = group.tabs.map((t) => t.id);
-              const i = nextIndexByKey(ids, tab, e.key);
+              const i = nextIndexByKey(
+                GROUPS.map((g) => g.id),
+                group.id,
+                e.key
+              );
               if (i === null) return;
               e.preventDefault();
-              setTab(ids[i]);
+              setTab(GROUPS[i].tabs[0].id);
               focusTab(e.currentTarget, i);
             }}
+            style={
+              {
+                "--group-count": GROUPS.length,
+                "--group-index": Math.max(
+                  0,
+                  GROUPS.findIndex((g) => g.id === group.id)
+                ),
+              } as React.CSSProperties
+            }
+            data-ready={mounted}
           >
-            {group.tabs.map((t) => (
+            {GROUPS.map((g) => (
               <button
-                key={t.id}
-                className="tab"
+                key={g.id}
+                className="group"
                 role="tab"
-                aria-selected={mounted && tab === t.id}
-                tabIndex={mounted && tab === t.id ? 0 : -1}
-                onClick={() => setTab(t.id)}
+                aria-selected={mounted && group.id === g.id}
+                /* Roving tabindex: a tablist is one tab stop, and the arrow keys
+                 * move within it. Three separate stops is what it was before. */
+                tabIndex={mounted && group.id === g.id ? 0 : -1}
+                title={g.hint}
+                onClick={() => setTab(g.tabs[0].id)}
               >
-                {t.label}
+                {g.label}
               </button>
             ))}
           </div>
-        )}
+
+          {group.tabs.length > 1 && (
+            <div
+              className="tabs"
+              role="tablist"
+              aria-label={group.label}
+              onKeyDown={(e) => {
+                const ids = group.tabs.map((t) => t.id);
+                const i = nextIndexByKey(ids, tab, e.key);
+                if (i === null) return;
+                e.preventDefault();
+                setTab(ids[i]);
+                focusTab(e.currentTarget, i);
+              }}
+            >
+              {group.tabs.map((t) => (
+                <button
+                  key={t.id}
+                  className="tab"
+                  role="tab"
+                  aria-selected={mounted && tab === t.id}
+                  tabIndex={mounted && tab === t.id ? 0 : -1}
+                  onClick={() => setTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </nav>
 
       {!mounted ? (

@@ -63,32 +63,36 @@ export default function Characters() {
         {built.ids.length} marked as built.
       </p>
 
-      <div className="search-row">
-        <input
-          className="search"
-          type="search"
-          placeholder="Search name, weapon, echo or set…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          aria-label="Search characters"
-        />
-      </div>
+      {/* Pinned under the nav: 61 rows is far enough that going back for the
+        * search box was most of the work of using the filter. */}
+      <div className="sticky-controls">
+        <div className="search-row">
+          <input
+            className="search"
+            type="search"
+            placeholder="Search name, weapon, echo or set…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            aria-label="Search characters"
+          />
+        </div>
 
-      <div className="chips">
-        <button
-          className="chip"
-          data-tone="lemon"
-          data-on={ownedOnly}
-          onClick={() => setOwnedOnly(!ownedOnly)}
-        >
-          {ownedOnly ? "★ Mine only" : "Mine only"}
-        </button>
-        <button className="chip" data-on={rarity === 5} onClick={() => setRarity(rarity === 5 ? "all" : 5)}>
-          5★
-        </button>
-        <button className="chip" data-on={rarity === 4} onClick={() => setRarity(rarity === 4 ? "all" : 4)}>
-          4★
-        </button>
+        <div className="chips">
+          <button
+            className="chip"
+            data-tone="lemon"
+            data-on={ownedOnly}
+            onClick={() => setOwnedOnly(!ownedOnly)}
+          >
+            {ownedOnly ? "★ Mine only" : "Mine only"}
+          </button>
+          <button className="chip" data-on={rarity === 5} onClick={() => setRarity(rarity === 5 ? "all" : 5)}>
+            5★
+          </button>
+          <button className="chip" data-on={rarity === 4} onClick={() => setRarity(rarity === 4 ? "all" : 4)}>
+            4★
+          </button>
+        </div>
       </div>
 
       <Filters
