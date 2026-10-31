@@ -13,6 +13,7 @@ import Teams from "./Teams";
 import SkillPriority from "./SkillPriority";
 import Collapse from "./Collapse";
 import PlanNav, { type PlanSection } from "./PlanNav";
+import NotMine from "./NotMine";
 import { holdInPlace } from "@/lib/anchor";
 
 const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
@@ -105,6 +106,12 @@ export default function Plan() {
       <h2 className="section" id="plan-queue">
         The queue: {entries.length} character{entries.length === 1 ? "" : "s"}
       </h2>
+
+      {/* Above the cards rather than inside them: only one card is open at a
+        * time, so a note per card would be invisible for the rest. */}
+      <NotMine
+        entries={entries.flatMap((c) => (c ? [{ id: c.id, name: c.name }] : []))}
+      />
 
       {entries.map((c, idx) => {
         if (!c) return null;

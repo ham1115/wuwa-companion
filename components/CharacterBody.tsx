@@ -6,6 +6,7 @@ import MyBuild from "./MyBuild";
 import Targets from "./Targets";
 import Teams from "./Teams";
 import SkillPriority from "./SkillPriority";
+import NotMine from "./NotMine";
 
 /**
  * Everything the list shows about one character.
@@ -70,6 +71,10 @@ export default function CharacterBody({
       )}
 
       {note && !noteOpen && <p className="check-detail">{note}</p>}
+
+      {/* Right under the button that caused it, so queueing someone you have
+        * not pulled says so straight away rather than on another tab. */}
+      {isQueued && <NotMine entries={[{ id: c.id, name: c.name }]} />}
 
       {c.role === null ? (
         <p className="term-def">{c.substats}</p>

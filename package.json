@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check-data": "node scripts/check-data.mjs",
+    "prebuild": "node scripts/check-data.mjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.22",

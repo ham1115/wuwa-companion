@@ -115,7 +115,11 @@ export const PALETTES: Palette[] = [
   },
   {
     id: "slate-amber",
-    label: "Slate & amber",
+    /* Named accent-first like the other four. It read "Slate & amber" while
+     * its swatches showed amber then slate, because amber is the accent here
+     * and slate is the secondary — the one preset whose dots did not line up
+     * with its own name. The id stays, so nobody's saved choice moves. */
+    label: "Amber & slate",
     swatch: ["#b86914", "#4a6075"],
     light: {
       bg: "#f7f8fa",
@@ -142,6 +146,40 @@ export const PALETTES: Palette[] = [
       lemon: "#8fa8bf",
       "lemon-soft": "#1e2a35",
       "lemon-ink": "#c3d5e6",
+    },
+  },
+  {
+    id: "sky-lemon",
+    label: "Sky & lemon",
+    swatch: ["#1b6e9e", "#e3b43c"],
+    light: {
+      bg: "#f4faff",
+      "bg-raised": "#ffffff",
+      "bg-sunken": "#e6f2fb",
+      border: "#d3e7f5",
+      "border-strong": "#a3cbe6",
+      /* 5.57:1 on white. The accent is body-adjacent here — section
+       * headings, badges and the selected tab are all set in it — so it has
+       * to clear 4.5 rather than merely look like the colour. */
+      accent: "#1b6e9e",
+      "accent-soft": "#cfe7f6",
+      "accent-ink": "#0f4e73",
+      lemon: "#e3b43c",
+      "lemon-soft": "#fbeec9",
+      "lemon-ink": "#7a5b0d",
+    },
+    dark: {
+      bg: "#0e1620",
+      "bg-raised": "#182532",
+      "bg-sunken": "#0a1017",
+      border: "#243545",
+      "border-strong": "#3a5570",
+      accent: "#7cc4ee",
+      "accent-soft": "#16303f",
+      "accent-ink": "#b4ddf6",
+      lemon: "#f0cc6a",
+      "lemon-soft": "#352c14",
+      "lemon-ink": "#f6e3ab",
     },
   },
   {
