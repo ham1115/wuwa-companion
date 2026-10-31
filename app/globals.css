@@ -29,7 +29,11 @@
   --c1-bg: #ecebef; --c1-ink: #5d5a66; --c1-line: #cdcad4;
 
   --radius: 14px;
-  --maxw: 900px;
+  /* 900px was a phone layout given a wider phone. The window is the point of
+   * a desktop, and the Characters tab now spends the extra on a second
+   * column rather than on margins. Prose is capped separately below, because
+   * a definition set in 1,200px lines is harder to read, not easier. */
+  --maxw: 1240px;
   --shell-pad: 16px;
 
   /* How strongly each of the three page-background washes tints the base.
@@ -2502,4 +2506,280 @@ button,
 
 .card[data-open="false"] .build-head {
   margin-bottom: 0;
+}
+
+
+/* ---------- reading width ---------- */
+/*
+ * The shell is as wide as the window now, which is right for a list and
+ * wrong for a paragraph: past roughly 80 characters the eye loses the start
+ * of the next line. Anything that is prose keeps a measure of its own.
+ */
+.panel-intro,
+.footnote,
+.term-def,
+.empty {
+  max-width: 78ch;
+}
+
+/* ---------- Characters: list beside the build ---------- */
+
+@media (min-width: 900px) {
+  .char-split {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  /* The controls belong over the column they filter. Their bleed to the
+   * shell edge is for the full-width layout and is wrong in a 300px box. */
+  .char-list .sticky-controls {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  .char-pick {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    overflow: hidden;
+    background: var(--bg-raised);
+    border: 1px solid var(--glass-edge);
+    border-radius: 5px;
+    border-top-left-radius: 13px;
+    corner-top-left-shape: bevel;
+    padding: 9px 12px;
+    margin-bottom: 5px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    box-shadow:
+      0 1px 0 var(--glass-sheen) inset,
+      0 2px 18px -10px var(--glow-soft);
+    transition:
+      transform var(--fast) var(--ease),
+      border-color var(--fast) var(--ease);
+  }
+
+  .char-pick::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: color-mix(in srgb, var(--accent) 30%, var(--border-strong));
+  }
+
+  .char-pick[data-built="true"]::before {
+    width: 4px;
+    background: var(--accent);
+    box-shadow: 0 0 11px 1px var(--glow-hot);
+  }
+
+  .char-pick:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--accent) 38%, var(--glass-edge));
+  }
+
+  .char-pick[data-sel="true"] {
+    border-color: var(--accent);
+    box-shadow:
+      0 1px 0 var(--glass-sheen) inset,
+      0 0 22px -7px var(--glow-hot);
+  }
+
+  .char-pick[data-sel="true"]::before {
+    width: 4px;
+    background: var(--accent);
+  }
+
+  .char-pick .char-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /*
+   * Sticky rather than a pane of its own height: the page still scrolls, so
+   * the masthead still leaves on the way down and nothing about the rest of
+   * the app has to change. The build stays beside the names while they move.
+   */
+  .char-detail {
+    position: sticky;
+    top: calc(var(--nav-h, 98px) + 10px);
+    max-height: calc(100dvh - var(--nav-h, 98px) - 22px);
+    overflow: auto;
+    background:
+      color-mix(in srgb, var(--bg-raised) var(--glass-tint), transparent);
+    border: 1px solid var(--glass-edge);
+    border-radius: var(--radius);
+    border-top-left-radius: 18px;
+    corner-top-left-shape: bevel;
+    padding: 16px 18px;
+    box-shadow:
+      0 1px 0 var(--glass-sheen) inset,
+      0 0 30px -8px var(--glow-soft);
+  }
+
+  .char-detail-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .char-detail-head h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--accent-ink);
+    letter-spacing: -0.015em;
+  }
+
+  /* Inside a row this wrapper does nothing. Here it is what makes a build
+   * fit: five lists of two or three items are mostly whitespace in a column. */
+  .char-detail .char-quick {
+    columns: 230px 3;
+    column-gap: 24px;
+  }
+
+  .char-detail .char-blk {
+    break-inside: avoid;
+    margin-bottom: 13px;
+  }
+
+  .char-detail .char-blk .section:first-child {
+    margin-top: 0;
+  }
+
+  .char-detail .char-body {
+    padding: 0;
+    border: 0;
+  }
+}
+
+/* ---------- the pane with nobody in it ---------- */
+
+.char-nobody {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  padding: 24px;
+  overflow: hidden;
+}
+
+/* The words have to win over the field behind them, and dimming the whole
+ * field far enough to guarantee that leaves nothing to look at. A soft hole
+ * burned in the middle costs the animation almost nothing. */
+.char-nobody-say {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 44ch;
+  padding: 20px 26px;
+  background: radial-gradient(
+    62% 72% at 50% 50%,
+    color-mix(in srgb, var(--bg-raised) 94%, transparent) 0 52%,
+    transparent 100%
+  );
+}
+
+.char-nobody-say h2 {
+  margin: 0 0 6px;
+  font-size: 1.25rem;
+  color: var(--accent-ink);
+  letter-spacing: -0.015em;
+}
+
+.char-nobody-say p {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.88rem;
+}
+
+/*
+ * The field. One pulse on one loop, held back per cell in proportion to its
+ * distance from the focus, which is what turns 220 identical animations into
+ * a ring travelling outward. Only opacity changes, so none of it leaves the
+ * compositor.
+ */
+.field {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: 6px;
+  padding: 18px;
+  align-content: center;
+  pointer-events: none;
+}
+
+.field i {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.05;
+  animation: field-pulse 3.4s linear infinite;
+  /* The extra cycle subtracted puts every cell mid-animation on the first
+   * frame. Without it the far corners sit dark while the first ring crawls
+   * out to them. */
+  animation-delay: calc(var(--d) * 0.14s - 4s);
+}
+
+@keyframes field-pulse {
+  0% { opacity: 0.05; }
+  7% { opacity: 0.44; }
+  24% { opacity: 0.05; }
+  100% { opacity: 0.05; }
+}
+
+/*
+ * Still a field, just a still one: the same falloff the wave would leave
+ * behind, drawn once. Switching the animation off without this would leave
+ * every cell at 0.05 and the pane looking empty rather than calm.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .field i {
+    animation: none;
+    opacity: calc(0.34 - var(--d) * 0.022);
+  }
+}
+
+
+/* ---------- long lists on a wide window ---------- */
+/*
+ * At 1240px a term ran its name along the left and its two buttons along the
+ * right with eleven hundred pixels of nothing between them, which reads as
+ * two unrelated things rather than one row. Two columns put that width to
+ * work instead, and halve how far the glossary runs.
+ */
+@media (min-width: 1100px) {
+  .term-group {
+    columns: 2;
+    column-gap: 14px;
+  }
+
+  .term {
+    break-inside: avoid;
+  }
+}
+
+/*
+ * Weapons and Echoes still expand in place, so they cannot take columns —
+ * a row growing by 2,000px would drag half its column with it. Until they
+ * get the same split the Characters tab now has, they keep a width a row
+ * can actually span.
+ */
+@media (min-width: 1000px) {
+  .char-row {
+    max-width: 980px;
+  }
 }

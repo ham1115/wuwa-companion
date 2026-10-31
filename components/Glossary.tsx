@@ -91,6 +91,9 @@ export default function Glossary() {
           <h2 className="section">
             {cat.label}: {cat.blurb}
           </h2>
+          {/* Wrapped so a wide window can set the terms in two columns. The
+            * heading stays outside it, or it would be columnised with them. */}
+          <div className="term-group">
           {grouped.get(cat.id)!.map((t) => {
             const isLearned = learned.has(t.id);
             const byStory = Boolean(t.revealedBy) && acts.has(t.revealedBy!);
@@ -195,6 +198,7 @@ export default function Glossary() {
               </article>
             );
           })}
+          </div>
         </div>
       ))}
 
