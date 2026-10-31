@@ -61,7 +61,6 @@
    * as a smudge. */
   --glow-soft: color-mix(in srgb, var(--accent) 22%, transparent);
   --glow-mid: color-mix(in srgb, var(--accent) 34%, transparent);
-  --glow-hot: color-mix(in srgb, var(--accent) 52%, transparent);
   --glow-lemon: color-mix(in srgb, var(--lemon) 50%, transparent);
 
   /* One motion scale for the whole app. --fast is for a state that flips
@@ -134,7 +133,6 @@
    * light does that job, which is also how the game marks anything active. */
   --glow-soft: color-mix(in srgb, var(--accent) 26%, transparent);
   --glow-mid: color-mix(in srgb, var(--accent) 46%, transparent);
-  --glow-hot: color-mix(in srgb, var(--accent) 72%, transparent);
   --glow-lemon: color-mix(in srgb, var(--lemon) 62%, transparent);
 }
 
@@ -2456,11 +2454,14 @@ button,
 .tab[aria-selected="true"] {
   box-shadow:
     0 0 0 1px var(--glow-mid),
-    0 3px 14px -4px var(--glow-hot);
+    0 1px 7px -2px var(--glow-mid),
+    0 2px 20px -4px var(--glow-soft);
 }
 
 .chip[data-on="true"] {
-  box-shadow: 0 2px 11px -3px var(--glow-mid);
+  box-shadow:
+    0 1px 6px -2px var(--glow-mid),
+    0 2px 18px -5px var(--glow-soft);
 }
 
 .chip[data-tone="lemon"][data-on="true"] {
@@ -2473,18 +2474,28 @@ button,
     0 0 16px -5px var(--glow-mid);
 }
 
+/*
+ * Two stops, not one. A single 22px blur pulled in by a 7px negative spread
+ * concentrates almost all of its alpha into a narrow band, which traces the
+ * edge of the box rather than falling away from it — and on a row with a 5px
+ * radius, tracing the edge means drawing a rectangle. Real light does not
+ * have an edge, so: a close stop that holds the shape and a wide one that
+ * fades out of it, both at lower alpha than the single band was.
+ */
 .term[data-learned="true"],
 .char-row[data-built="true"] {
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
     0 6px 16px -12px rgb(var(--glass-shadow) / 0.3),
-    0 0 22px -7px var(--glow-hot);
+    0 0 9px -3px var(--glow-mid),
+    0 0 30px -6px var(--glow-soft);
 }
 
 /* The blade is 3px wide. Lighting it is most of what makes a built row
- * findable while scrolling past sixty that are not. */
+ * findable while scrolling past sixty that are not. A positive spread on
+ * something that thin just draws a second, brighter bar, so it has none. */
 .char-row[data-built="true"]::before {
-  box-shadow: 0 0 11px 1px var(--glow-hot);
+  box-shadow: 0 0 12px 0 var(--glow-mid);
 }
 
 /* ---------- queued build: collapsed to its head ---------- */
@@ -2606,7 +2617,7 @@ button,
   .char-pick[data-built="true"]::before {
     width: 4px;
     background: var(--accent);
-    box-shadow: 0 0 11px 1px var(--glow-hot);
+    box-shadow: 0 0 12px 0 var(--glow-mid);
   }
 
   .char-pick:hover {
@@ -2618,7 +2629,8 @@ button,
     border-color: var(--accent);
     box-shadow:
       0 1px 0 var(--glass-sheen) inset,
-      0 0 22px -7px var(--glow-hot);
+      0 0 9px -3px var(--glow-mid),
+      0 0 30px -6px var(--glow-soft);
   }
 
   .char-pick[data-sel="true"]::before {
@@ -2945,7 +2957,8 @@ button,
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
     0 6px 16px -12px rgb(var(--glass-shadow) / 0.3),
-    0 0 22px -7px var(--glow-hot);
+    0 0 9px -3px var(--glow-mid),
+    0 0 30px -6px var(--glow-soft);
 }
 
 .char-row[data-sel="true"]::before {
