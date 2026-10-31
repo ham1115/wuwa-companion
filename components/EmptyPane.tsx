@@ -6,9 +6,9 @@ import DataField from "./DataField";
 /**
  * What a detail pane shows before anything is picked.
  *
- * The field of bits behind the words is decoration and nothing else, which
- * is why it is aria-hidden and why anything worth knowing is written out
- * rather than left for it to imply.
+ * The bits behind the words spell the title, which is why the title is also
+ * written out in front of them. The field is decoration that happens to be
+ * honest, not a second way of saying something.
  */
 export default function EmptyPane({
   title,
@@ -19,7 +19,7 @@ export default function EmptyPane({
 }) {
   return (
     <div className="char-nobody">
-      <DataField />
+      <DataField message={title} />
       <div className="char-nobody-say">
         <h2>{title}</h2>
         <p>{children}</p>

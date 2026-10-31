@@ -5,68 +5,63 @@ import { useMemo, type CSSProperties } from "react";
 const BYTES_PER_ROW = 5;
 const ROWS = 11;
 const BITS = 8;
+const CHARS = ROWS * BYTES_PER_ROW;
 
 /**
- * A deterministic 0–1 from an index.
+ * Bits that say something, read by a scan travelling across them.
  *
- * Math.random would do, but this keeps the field identical on every render
- * for a given cell, so React re-rendering the pane never reshuffles a
- * pattern the reader is already looking at.
+ * The first version of this was random: every cell flipped on its own timer,
+ * which looked like data and was not. It was noise wearing a costume, and it
+ * read as one — there was nothing to follow, so there was nothing to look at.
+ *
+ * These are the real bits of a real sentence, the pane's own prompt, eight to
+ * a byte and most significant first. That it decodes is the point: the first
+ * three bits of every byte are 0, 1, 0 for any capital letter, so the left of
+ * each group lines up into columns that no random field would ever produce.
+ * You can see it is language before you can read it.
+ *
+ * The animation is the reading, not the data. A pulse crosses column by
+ * column, and a bit that is set takes it brighter than one that is not.
  */
-function noise(n: number) {
-  let x = (n * 2654435761) % 2147483647;
-  x ^= x << 13;
-  x ^= x >> 17;
-  x ^= x << 5;
-  return Math.abs(x % 1000) / 1000;
+function bitsOf(message: string) {
+  const phrase = `${message} / `.toUpperCase();
+  let text = "";
+  while (text.length < CHARS) text += phrase;
+  return [...text.slice(0, CHARS)].map((ch) => {
+    const code = ch.charCodeAt(0) & 0xff;
+    return Array.from({ length: BITS }, (_, i) => (code >> (BITS - 1 - i)) & 1);
+  });
 }
 
-/**
- * Bits, grouped into bytes, flipping on and off.
- *
- * This replaced a ring travelling out through an even grid. The ring was
- * pretty and said nothing: it read as a pond. Eight cells to a byte, five
- * bytes to a row, each bit holding its own state for its own length of time
- * says the thing the pane is actually waiting on, which is data.
- *
- * The flip is a step rather than a fade. A bit is on or it is off, and
- * easing between the two is the one thing that would make it look analogue.
- */
-export default function DataField() {
-  const rows = useMemo(
-    () =>
-      Array.from({ length: ROWS }, (_, r) =>
-        Array.from({ length: BYTES_PER_ROW }, (_, b) =>
-          Array.from({ length: BITS }, (_, i) => {
-            const n = (r * BYTES_PER_ROW + b) * BITS + i;
-            return {
-              key: `${r}-${b}-${i}`,
-              /* Between 1.8s and 4.2s, so neighbours drift apart instead of
-               * settling into a pulse the eye can follow. */
-              duration: 1.8 + noise(n) * 2.4,
-              offset: noise(n + 7919),
-            };
-          })
-        )
-      ),
-    []
-  );
+export default function DataField({ message }: { message: string }) {
+  const rows = useMemo(() => {
+    const bytes = bitsOf(message);
+    return Array.from({ length: ROWS }, (_, r) =>
+      Array.from({ length: BYTES_PER_ROW }, (_, b) => ({
+        key: `${r}-${b}`,
+        bits: bytes[r * BYTES_PER_ROW + b],
+      }))
+    );
+  }, [message]);
 
   return (
     <div className="field" aria-hidden="true">
       {rows.map((bytes, r) => (
         <div className="field-row" key={r}>
-          {bytes.map((bits, b) => (
-            <span className="byte" key={b}>
-              {bits.map((bit) => (
+          {bytes.map((byte, b) => (
+            <span className="byte" key={byte.key}>
+              {byte.bits.map((bit, i) => (
                 <i
-                  key={bit.key}
+                  key={i}
+                  data-on={bit === 1}
                   style={
                     {
-                      "--dur": `${bit.duration.toFixed(2)}s`,
-                      /* Negative, so every bit is already mid-cycle on the
-                       * first frame rather than switching on together. */
-                      "--delay": `${(-bit.offset * bit.duration).toFixed(2)}s`,
+                      /* Where this bit sits across the whole row, which is
+                       * what the scan is a function of. */
+                      "--col": b * BITS + i,
+                      /* Rows lag each other slightly so the scan reads as a
+                       * sweep rather than a shutter coming down. */
+                      "--row": r,
                     } as CSSProperties
                   }
                 />

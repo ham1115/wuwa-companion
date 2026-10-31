@@ -2791,38 +2791,51 @@ button,
   height: 13px;
   border-radius: 2px;
   background: var(--accent);
-  opacity: 0.06;
-  animation: bit var(--dur) steps(1, end) var(--delay) infinite;
+  /*
+   * The resting values are the message. A set bit sits four times brighter
+   * than a clear one, which is enough to read the shape of the text without
+   * competing with the words in front of it.
+   */
+  opacity: var(--rest);
+  --rest: 0.07;
+  --peak: 0.16;
+  /*
+   * One pulse crossing the field, column by column and row by row. The whole
+   * sweep takes about 2.4s of a 5s cycle, and the rest of the cycle is the
+   * field sitting still, which is when it is most readable.
+   */
+  animation: scan 5s linear infinite;
+  animation-delay: calc((var(--col) * 55ms) + (var(--row) * 90ms) - 5s);
 }
 
-@keyframes bit {
+.field i[data-on="true"] {
+  --rest: 0.3;
+  --peak: 0.72;
+}
+
+@keyframes scan {
   0% {
-    opacity: 0.06;
+    opacity: var(--rest);
   }
-  45% {
-    opacity: 0.42;
+  4% {
+    opacity: var(--peak);
   }
-  70% {
-    opacity: 0.06;
+  13% {
+    opacity: var(--rest);
+  }
+  100% {
+    opacity: var(--rest);
   }
 }
 
 /*
- * Still a field, just a still one. Switching the animation off would leave
- * every bit at 0.06 and the pane looking empty rather than calm, so the
- * reduced-motion version is a fixed pattern instead: the same noise, frozen.
+ * Reduced motion keeps the message and drops the reading of it. That is the
+ * right half to keep: the bits were always the content and the scan was only
+ * ever how your eye got across them.
  */
 @media (prefers-reduced-motion: reduce) {
   .field i {
     animation: none;
-  }
-
-  .field i:nth-child(3n + 1) {
-    opacity: 0.3;
-  }
-
-  .field i:nth-child(4n) {
-    opacity: 0.18;
   }
 }
 
