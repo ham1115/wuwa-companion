@@ -2715,30 +2715,23 @@ button,
 
 .char-nobody {
   position: relative;
-  display: grid;
-  place-items: center;
-  /* Fills the pane it sits in, so the field is the whole column rather than
-   * a letterbox at the top of it. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
   min-height: 320px;
   height: 100%;
   padding: 24px;
   overflow: hidden;
 }
 
-/* The words have to win over the field behind them, and dimming the whole
- * field far enough to guarantee that leaves nothing to look at. A soft hole
- * burned in the middle costs the animation almost nothing. */
+/* No backdrop any more. The sprite used to sit behind these words and had to
+ * be bleached out from under them; it stands above them now, so the words
+ * need nothing to win against. */
 .char-nobody-say {
-  position: relative;
-  z-index: 1;
   text-align: center;
   max-width: 44ch;
-  padding: 20px 26px;
-  background: radial-gradient(
-    62% 72% at 50% 50%,
-    color-mix(in srgb, var(--bg-raised) 94%, transparent) 0 52%,
-    transparent 100%
-  );
 }
 
 .char-nobody-say h2 {
@@ -2754,88 +2747,108 @@ button,
   font-size: 0.88rem;
 }
 
+/* ---------- the sprite ---------- */
 /*
- * The field of bits. Eight to a byte, five bytes to a row, each one holding
- * its own state for its own length of time.
+ * A grid of cells rather than an image, so the colours come from the palette.
+ * Every cell is given a role and the role is resolved here, which is why the
+ * cat is pink under Pink and lemon and blue under Sky and lemon with no
+ * second asset in the repository.
  *
- * The flip is a step, not a fade: a bit is on or it is off, and easing
- * between the two is the single thing that would make it look analogue.
- * Only opacity changes, so none of it leaves the compositor.
+ * The outline and the eye are mixed against black and white rather than taken
+ * from --accent-ink and --bg-raised. Those two swap relative lightness
+ * between the themes, which would have put a lighter outline around a darker
+ * body every time the lights went out.
  */
-.field {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 11px;
-  padding: 18px;
+.sprite {
+  display: grid;
+  flex: none;
   pointer-events: none;
+  /* Two positions, not a glide. */
+  animation: sprite-bob 2.6s steps(2, jump-none) infinite alternate;
 }
 
-.field-row {
-  display: flex;
-  gap: 18px;
+.sprite-frame {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: repeat(var(--sprite-size), var(--px));
+  grid-auto-rows: var(--px);
+  --px: 13px;
 }
 
-/* The gap inside a byte is smaller than the gap between two, which is the
- * whole reason these read as bytes rather than as an even grid. */
-.byte {
-  display: flex;
-  gap: 3px;
-}
-
-.field i {
-  width: 13px;
-  height: 13px;
-  border-radius: 2px;
+.sprite-frame i[data-c="B"] {
   background: var(--accent);
-  /*
-   * The resting values are the message. A set bit sits four times brighter
-   * than a clear one, which is enough to read the shape of the text without
-   * competing with the words in front of it.
-   */
-  opacity: var(--rest);
-  --rest: 0.07;
-  --peak: 0.16;
-  /*
-   * One pulse crossing the field, column by column and row by row. The whole
-   * sweep takes about 2.4s of a 5s cycle, and the rest of the cycle is the
-   * field sitting still, which is when it is most readable.
-   */
-  animation: scan 5s linear infinite;
-  animation-delay: calc((var(--col) * 55ms) + (var(--row) * 90ms) - 5s);
 }
 
-.field i[data-on="true"] {
-  --rest: 0.3;
-  --peak: 0.72;
+.sprite-frame i[data-c="D"] {
+  background: color-mix(in srgb, var(--accent) 58%, #000);
 }
 
-@keyframes scan {
-  0% {
-    opacity: var(--rest);
-  }
-  4% {
-    opacity: var(--peak);
-  }
-  13% {
-    opacity: var(--rest);
-  }
-  100% {
-    opacity: var(--rest);
-  }
+.sprite-frame i[data-c="P"] {
+  background: color-mix(in srgb, var(--accent) 55%, #fff);
+}
+
+.sprite-frame i[data-c="L"] {
+  background: color-mix(in srgb, var(--accent) 12%, #fff);
+}
+
+.sprite-frame i[data-c="N"] {
+  background: var(--lemon);
 }
 
 /*
- * Reduced motion keeps the message and drops the reading of it. That is the
- * right half to keep: the bits were always the content and the scan was only
- * ever how your eye got across them.
+ * The blink. Each frame cuts to the other with no interpolation at all,
+ * because an 8-bit animation never had an in-between, and tweening one is the
+ * single thing that would stop this reading as a sprite.
  */
+.sprite-open {
+  animation: sprite-awake 4.4s infinite;
+}
+
+.sprite-shut {
+  animation: sprite-blink 4.4s infinite;
+}
+
+@keyframes sprite-awake {
+  0%,
+  93% {
+    opacity: 1;
+  }
+  93.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sprite-blink {
+  0%,
+  93% {
+    opacity: 0;
+  }
+  93.01%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* One pixel up and back, landing on the grid rather than between it. */
+@keyframes sprite-bob {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 -13px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .field i {
+  .sprite,
+  .sprite-open,
+  .sprite-shut {
     animation: none;
+  }
+
+  .sprite-shut {
+    opacity: 0;
   }
 }
 

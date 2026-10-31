@@ -1,14 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
-import DataField from "./DataField";
+import Sprite from "./Sprite";
 
 /**
  * What a detail pane shows before anything is picked.
  *
- * The bits behind the words spell the title, which is why the title is also
- * written out in front of them. The field is decoration that happens to be
- * honest, not a second way of saying something.
+ * The sprite behind the words is decoration and nothing else, which is why
+ * it is aria-hidden and why anything worth knowing is written out.
  */
 export default function EmptyPane({
   title,
@@ -19,7 +18,7 @@ export default function EmptyPane({
 }) {
   return (
     <div className="char-nobody">
-      <DataField message={title} />
+      <Sprite />
       <div className="char-nobody-say">
         <h2>{title}</h2>
         <p>{children}</p>
