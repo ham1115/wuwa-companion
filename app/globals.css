@@ -911,6 +911,25 @@ details.more li {
 }
 
 /*
+ * Hover is on the toggle rather than the row, so an expanded row does not
+ * lift while you are reading its body or typing in its fields.
+ */
+.char-row {
+  transition:
+    transform var(--fast) var(--ease),
+    border-color var(--fast) var(--ease);
+}
+
+.char-row:has(> .char-toggle:hover) {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--glass-edge));
+}
+
+.char-row:has(> .char-toggle:hover)::before {
+  background: var(--accent);
+}
+
+/*
  * Built used to be marked by the same corner glow a learned term gets, which
  * the blade now does better: running the full height of the row, it is legible
  * scanning a list of 61 in a way a 13px corner never was.
@@ -2008,5 +2027,45 @@ details.more li {
     font-size: 16px;
     width: 44px;
     min-height: 32px;
+  }
+}
+
+/* ---------- motion between tabs ----------
+ *
+ * Smooth scrolling is for the jumps the page asks for itself — Back to top,
+ * and any anchor. It is deliberately NOT what returns you to a tab's
+ * remembered place: that one passes behavior:"instant", because animating
+ * 2400px on every tab change is worse than the jump it replaced.
+ *
+ * The panel animates on mount rather than cross-fading with the one it
+ * replaces. A view transition was the obvious way to get the cross-fade, but
+ * startViewTransition aborts with InvalidStateError on every tab of this page
+ * — 6 of 6 standalone probes and 6 of 6 real switches — while the same call
+ * succeeds on a plain page in the same browser. A mount animation needs no
+ * snapshot, so it cannot fail that way, and between two tabs holding entirely
+ * different content there was never much for a cross-fade to tie together.
+ *
+ * backwards, not both: the fill holds the start frame before the animation
+ * begins, and leaves no animated transform behind afterwards to become a
+ * containing block for anything fixed inside the panel.
+ */
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+}
+
+.panel {
+  animation: panel-in var(--med) var(--ease) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

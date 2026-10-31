@@ -2,6 +2,8 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
+import { reducedMotion } from "@/lib/motion";
+
 /**
  * Height animation for content that is conditionally rendered.
  *
@@ -27,10 +29,6 @@ import { useEffect, useState, type ReactNode } from "react";
 
 /** Must match --med in globals.css; the transition and the unmount share it. */
 const DURATION = 240;
-
-const reducedMotion = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 export default function Collapse({
   open,

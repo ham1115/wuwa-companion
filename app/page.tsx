@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Glossary from "@/components/Glossary";
 import Plan from "@/components/Plan";
 import Characters from "@/components/Characters";
@@ -14,6 +21,15 @@ import { Show, SignInButton, UserButton } from "@clerk/nextjs";
 import { usePersistentState } from "@/lib/storage";
 import { useTheme } from "@/lib/theme";
 import { SyncProvider } from "@/lib/sync";
+
+/*
+ * useLayoutEffect is the right hook for putting the scroll position back —
+ * it runs before the browser paints, so the new tab is never seen at the old
+ * tab's offset — but React warns about it on the server, where it cannot run.
+ * On the server there is nothing to lay out, so useEffect stands in.
+ */
+const useBeforePaint =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 /**
  * Eight flat tabs mixed reference data with personal tracking. Grouping them
@@ -134,11 +150,39 @@ function Codex() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /*
+   * Every tab change pushes history, so back returns to the previous tab
+   * rather than leaving the site. Guarded against pushing a duplicate when
+   * the change came from the URL in the first place.
+   *
+   * The incoming panel animates itself on mount — see .panel in globals.css.
+   * A view transition would have cross-faded the outgoing one as well, but
+   * startViewTransition aborts with InvalidStateError on every tab of this
+   * page, measured 6 times out of 6, while succeeding on a plain page in the
+   * same browser. Whatever the snapshot objects to, a mount animation needs
+   * no snapshot and cannot fail the same way.
+   */
+  const commitTab = useCallback(
+    (next: TabId, push: boolean) => {
+      setStoredTab(next);
+      if (push && tabFromUrl() !== next) {
+        window.history.pushState(null, "", `#${next}`);
+      }
+    },
+    [setStoredTab]
+  );
+
+  const setTab = useCallback(
+    (next: TabId) => commitTab(next, true),
+    [commitTab]
+  );
+
   /* Back and forward move between tabs, which is what the address bar implies. */
   useEffect(() => {
     const sync = () => {
       const fromUrl = tabFromUrl();
-      if (fromUrl) setStoredTab(fromUrl);
+      // No push: the history entry being moved to is already the current one.
+      if (fromUrl) commitTab(fromUrl, false);
     };
     window.addEventListener("popstate", sync);
     window.addEventListener("hashchange", sync);
@@ -146,22 +190,38 @@ function Codex() {
       window.removeEventListener("popstate", sync);
       window.removeEventListener("hashchange", sync);
     };
-  }, [setStoredTab]);
+  }, [commitTab]);
 
   /*
-   * Every tab change pushes history, so back returns to the previous tab
-   * rather than leaving the site. Guarded against pushing a duplicate when
-   * the change came from the URL in the first place.
+   * Where each tab was left.
+   *
+   * Switching tabs used to keep the window's scroll position, so leaving the
+   * Characters list 2400px down and opening the Glossary landed you 2400px
+   * into the glossary with the first term above the viewport. Each tab now
+   * keeps its own place: one you have not opened starts at the top, and one
+   * you come back to is where you left it.
    */
-  const setTab = useCallback(
-    (next: TabId) => {
-      setStoredTab(next);
-      if (tabFromUrl() !== next) {
-        window.history.pushState(null, "", `#${next}`);
-      }
-    },
-    [setStoredTab]
-  );
+  const scrollMemory = useRef<Partial<Record<TabId, number>>>({});
+  const shownTab = useRef(tab);
+
+  useEffect(() => {
+    // Bound once and reading the ref, so it always records against the tab
+    // actually on screen — including the scroll the restore below causes.
+    const record = () => {
+      scrollMemory.current[shownTab.current] = window.scrollY;
+    };
+    window.addEventListener("scroll", record, { passive: true });
+    return () => window.removeEventListener("scroll", record);
+  }, []);
+
+  useBeforePaint(() => {
+    const previous = shownTab.current;
+    shownTab.current = tab;
+    if (previous === tab) return;
+    // Explicitly instant. Scrolling is smooth now, and animating 2400px on
+    // every tab change would be worse than the jump it replaces.
+    window.scrollTo({ top: scrollMemory.current[tab] ?? 0, behavior: "instant" });
+  }, [tab]);
 
   // The open group follows the open tab, so a restored tab restores its group.
   const group = useMemo(
@@ -282,7 +342,9 @@ function Codex() {
       {!mounted ? (
         <p className="empty">Loading your saved progress…</p>
       ) : (
-        <>
+        /* Keyed on the tab so every switch mounts a fresh element, which is
+         * what gives the CSS something to animate in. */
+        <div className="panel" key={tab}>
           {tab === "characters" && <Characters />}
           {tab === "weapons" && <Weapons />}
           {tab === "echoes" && <Echoes />}
@@ -291,7 +353,7 @@ function Codex() {
           {tab === "quests" && <Quests />}
           {tab === "routine" && <Routine />}
           {tab === "settings" && <Settings />}
-        </>
+        </div>
       )}
 
       <BackToTop />
