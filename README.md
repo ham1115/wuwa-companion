@@ -4,7 +4,7 @@ A Wuthering Waves companion app. Pastel pink and yellow, light by default, with 
 
 ## Tabs
 
-Grouped three ways: **Reference** is game data that is the same for everyone, **Mine** is your own progress, **Setup** is the owned list, backup and reset. The nav stays pinned to the top as you scroll.
+Grouped three ways: **Reference** is game data that is the same for everyone, **Mine** is your own progress, **Setup** is the owned list, backup and reset. The nav stays pinned to the top as you scroll. Both rows are proper tab lists: one tab stop each, with the arrow keys, Home and End moving between them and wrapping at the ends.
 
 - **Characters** — all 61 Resonators. Search by name, weapon, echo or set. Filter by element, role, rarity, or "mine only". Expand any character for ranked weapons, Sonata sets, main Echo options, main stats per cost slot, substat priority and ascension materials. Each also carries a **My build** block — record the level they are at, their Resonance Chain (S0–S6), and their weapon's level and Syntonize rank (R1–R5), pick the weapon and Sonata set you actually run, and type your current stats in to see them checked against the targets. Those three turn a shortfall into a distance rather than a verdict: the targets assume Lv.90 with a Lv.90 weapon, at S0 for a 5-star and S6 for a 4-star, and the ranked weapon lists are all quoted at R1 — so the comparison says in words which of those you are not at yet, and which you are past — and **target stats at Lv.90** — what a finished build should read on the in-game stat screen. **Skill upgrade order** ranks the five fortes so the materials go to the right one first — with the playstyle named where a character has two different orders. **Recommended teams** lists the line-ups the guides put them in — each slot showing its pick and the listed substitutes, with characters you own highlighted — and **Wanted in teams for** answers the reverse. **Queue** adds them to My plan; also mark as built and add notes.
 - **Weapons** — 114 weapons, 3★ and up. Search name, stat or effect; filter by type, rarity, or "for my characters". Each entry opens to base ATK, substat, effect text, and **Wanted by** — every character that ranks it, with their ranking position, owned characters highlighted. Weapons nothing wants are labelled as fodder.
@@ -74,7 +74,7 @@ To move progress between devices: **Settings → Export to JSON**, then paste it
 
 ## Sharing it with other players
 
-Just send the URL. **The app ships blank** — no owned characters, no queue, no notes, no "Right now" list — so every visitor starts on an empty slate and nothing personal is baked into the code. Your ticks and notes are never visible to anyone else.
+Just send the URL — and the URL now says which tab you are on, so `#echoes` opens on Echoes rather than wherever the recipient happened to be last. A link beats whatever tab is stored in their browser, because someone following a link to a particular tab means it. Browser back and forward move between tabs. **The app ships blank** — no owned characters, no queue, no notes, no "Right now" list — so every visitor starts on an empty slate and nothing personal is baked into the code. Your ticks and notes are never visible to anyone else.
 
 Nothing in the repository describes any particular account.
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Glossary from "@/components/Glossary";
 import Plan from "@/components/Plan";
 import Characters from "@/components/Characters";
@@ -52,6 +52,53 @@ const GROUPS = [
 
 type TabId = (typeof GROUPS)[number]["tabs"][number]["id"];
 
+/**
+ * Which tab a URL is asking for, or null if it is not asking for one. The tab
+ * lives in the hash rather than the path so a link is a plain anchor into the
+ * same single page, with no routing and nothing for the server to resolve.
+ */
+function tabFromUrl(): TabId | null {
+  if (typeof window === "undefined") return null;
+  const id = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+  return GROUP_OF.has(id) ? (id as TabId) : null;
+}
+
+/**
+ * The index an arrow key moves to, or null for a key that is not navigation.
+ * Wraps at both ends, which is what a tablist is expected to do.
+ *
+ * Returns the index rather than the item because the two tab lists have
+ * different element types, and the index is what focusing needs anyway.
+ */
+function nextIndexByKey(
+  ids: readonly string[],
+  currentId: string,
+  key: string
+): number | null {
+  const i = ids.indexOf(currentId);
+  if (i < 0) return null;
+  const last = ids.length - 1;
+  switch (key) {
+    case "ArrowRight":
+    case "ArrowDown":
+      return i === last ? 0 : i + 1;
+    case "ArrowLeft":
+    case "ArrowUp":
+      return i === 0 ? last : i - 1;
+    case "Home":
+      return 0;
+    case "End":
+      return last;
+    default:
+      return null;
+  }
+}
+
+/** Moves focus to the nth tab button inside a tablist. */
+function focusTab(list: HTMLElement, index: number) {
+  list.querySelectorAll<HTMLButtonElement>('[role="tab"]')[index]?.focus();
+}
+
 const GROUP_OF = new Map<string, string>(
   GROUPS.flatMap((g) => g.tabs.map((t) => [t.id, g.id] as [string, string]))
 );
@@ -65,12 +112,56 @@ export default function Page() {
 }
 
 function Codex() {
-  const [tab, setTab] = usePersistentState<TabId>("tab", "characters");
+  const [tab, setStoredTab] = usePersistentState<TabId>("tab", "characters");
   const theme = useTheme();
 
   // Avoid rendering persisted UI state until after hydration.
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+
+  /*
+   * On load the URL beats the stored tab. Someone following a link to
+   * #weapons means it, and the tab they happened to leave open in this
+   * browser last time should not override them. With no tab in the URL we
+   * write the stored one in, so the address bar always says where you are and
+   * the page is linkable from the moment it opens.
+   */
+  useEffect(() => {
+    const fromUrl = tabFromUrl();
+    if (fromUrl) setStoredTab(fromUrl);
+    else window.history.replaceState(null, "", `#${tab}`);
+    setMounted(true);
+    // Deliberately once, on mount: this reconciles the two sources of truth.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* Back and forward move between tabs, which is what the address bar implies. */
+  useEffect(() => {
+    const sync = () => {
+      const fromUrl = tabFromUrl();
+      if (fromUrl) setStoredTab(fromUrl);
+    };
+    window.addEventListener("popstate", sync);
+    window.addEventListener("hashchange", sync);
+    return () => {
+      window.removeEventListener("popstate", sync);
+      window.removeEventListener("hashchange", sync);
+    };
+  }, [setStoredTab]);
+
+  /*
+   * Every tab change pushes history, so back returns to the previous tab
+   * rather than leaving the site. Guarded against pushing a duplicate when
+   * the change came from the URL in the first place.
+   */
+  const setTab = useCallback(
+    (next: TabId) => {
+      setStoredTab(next);
+      if (tabFromUrl() !== next) {
+        window.history.pushState(null, "", `#${next}`);
+      }
+    },
+    [setStoredTab]
+  );
 
   // The open group follows the open tab, so a restored tab restores its group.
   const group = useMemo(
@@ -119,6 +210,17 @@ function Codex() {
           className="groups"
           role="tablist"
           aria-label="Section groups"
+          onKeyDown={(e) => {
+            const i = nextIndexByKey(
+              GROUPS.map((g) => g.id),
+              group.id,
+              e.key
+            );
+            if (i === null) return;
+            e.preventDefault();
+            setTab(GROUPS[i].tabs[0].id);
+            focusTab(e.currentTarget, i);
+          }}
           style={
             {
               "--group-count": GROUPS.length,
@@ -136,6 +238,9 @@ function Codex() {
               className="group"
               role="tab"
               aria-selected={mounted && group.id === g.id}
+              /* Roving tabindex: a tablist is one tab stop, and the arrow keys
+               * move within it. Three separate stops is what it was before. */
+              tabIndex={mounted && group.id === g.id ? 0 : -1}
               title={g.hint}
               onClick={() => setTab(g.tabs[0].id)}
             >
@@ -145,13 +250,26 @@ function Codex() {
         </div>
 
         {group.tabs.length > 1 && (
-          <div className="tabs" role="tablist" aria-label={group.label}>
+          <div
+            className="tabs"
+            role="tablist"
+            aria-label={group.label}
+            onKeyDown={(e) => {
+              const ids = group.tabs.map((t) => t.id);
+              const i = nextIndexByKey(ids, tab, e.key);
+              if (i === null) return;
+              e.preventDefault();
+              setTab(ids[i]);
+              focusTab(e.currentTarget, i);
+            }}
+          >
             {group.tabs.map((t) => (
               <button
                 key={t.id}
                 className="tab"
                 role="tab"
                 aria-selected={mounted && tab === t.id}
+                tabIndex={mounted && tab === t.id ? 0 : -1}
                 onClick={() => setTab(t.id)}
               >
                 {t.label}
