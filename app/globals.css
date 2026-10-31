@@ -52,6 +52,9 @@
 
   /* One motion scale for the whole app. --fast is for a state that flips
    * under the cursor, --med for something that changes size or appears. */
+  /* How a tapped control reacts, now that the browser's own tap flash is off.
+   * Darkens on light, lightens on dark, so the press reads either way. */
+  --press: 0.94;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --fast: 140ms;
   --med: 240ms;
@@ -74,6 +77,7 @@
   --bg-sunken: #150c11;
   --border: #3b2630;
   --border-strong: #573a47;
+  --press: 1.18;
   --text: #fbeaf2;
   --text-dim: #d2aec0;
   --text-faint: #9c7b8b;
@@ -2064,8 +2068,108 @@ html {
   animation: panel-in var(--med) var(--ease) backwards;
 }
 
+/*
+ * Rows settle in as they scroll into view, driven by a view timeline rather
+ * than an observer: no JS, and the engine runs it off the main thread.
+ *
+ * Inside @supports because the fallback is dangerous, not merely plain. With
+ * no view timeline, `animation: row-rise both` is an animation of no duration
+ * filling backwards, so every row would hold the start frame and the whole
+ * list would be invisible.
+ *
+ * It animates `translate`, not `transform`, because the hover lift owns
+ * `transform`. They are separate properties that compose, so a row can be
+ * mid-reveal and lifted under the pointer at once; animating both through
+ * `transform` would have let the filled reveal win the cascade and swallow
+ * the lift.
+ *
+ * Measured over 80 scrolled frames on the 187-row Echoes list, visible and
+ * unthrottled, order alternated: 6.45ms median with against 6.35ms without,
+ * and 11.7ms against 9.8ms at p90. No dropped frames either way.
+ */
+@supports (animation-timeline: view()) {
+  @keyframes row-rise {
+    from {
+      opacity: 0;
+      translate: 0 10px;
+    }
+  }
+
+  .char-row {
+    animation-name: row-rise;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    /*
+     * Spelled out rather than using the shorthand, for this line. The
+     * shorthand defaults duration to 0s, which finishes the animation
+     * immediately and leaves the timeline nothing to drive: rows then snap
+     * between the two states at the range boundary instead of interpolating,
+     * and one scrolled in from below stays stuck at opacity 0. `auto` is what
+     * hands the duration to the timeline.
+     */
+    animation-duration: auto;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .char-row {
+      animation: none;
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 }
+
+/* ---------- touch ----------
+ *
+ * Mobile browsers paint their own translucent block over whatever you tap —
+ * the blue flash — sized to the element's box rather than to its shape. On a
+ * chamfered row with a blade down one edge it ignores both and squares the
+ * corner off, so the press looked like a rendering fault.
+ *
+ * Turning it off removes the only feedback a touch screen has, since there is
+ * no hover to fall back on, so :active replaces it with a press that follows
+ * the real shape. Deliberately a filter and not a transform: the rows already
+ * animate `translate` as they scroll in and `transform` on hover, and a third
+ * claim on either would have fought the other two.
+ */
+button,
+a,
+label,
+summary,
+[role="tab"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/*
+ * The other blue: a long press selects the label text of whatever it lands on.
+ * Buttons only — the content itself stays selectable, because a material name
+ * or an echo cost is worth being able to copy.
+ */
+button,
+[role="tab"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.char-toggle:active,
+.chip:active,
+.tab:active,
+.group:active,
+.mini:active,
+.check:active,
+.theme-toggle:active,
+.spoiler-reveal:active,
+.to-top:active {
+  filter: brightness(var(--press));
+}
+
+/*
+ * Keyboard focus is untouched by all of the above: the ring is the browser's
+ * own, and it is the only indicator a keyboard has.
+ */
