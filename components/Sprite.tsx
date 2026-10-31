@@ -16,45 +16,48 @@ import { useMemo } from "react";
  * tweened: there is no in-between state, because an 8-bit animation never had
  * one.
  *
- *   .  nothing      B  body        D  outline
- *   L  eye          N  nose        P  inner ear
+ *   .  nothing   B  body        D  outline     P  inner ear
+ *   L  eye       K  pupil       N  nose        R  blush
  */
 const CAT_OPEN = [
-  "................",
-  "..D..........D..",
   "..DD........DD..",
   "..DPD......DPD..",
   "..DPPD....DPPD..",
-  "..DBBBDDDDBBBD..",
+  "..DPPDDDDDDPPD..",
   ".DBBBBBBBBBBBBD.",
-  ".DBLLBBBBBBLLBD.",
-  ".DBLDBBBBBBDLBD.",
-  ".DBBBBBNNBBBBBD.",
+  ".DBBBBBBBBBBBBD.",
+  ".DBLKKBBBBKKLBD.",
+  ".DBKKKBBBBKKKBD.",
+  ".DBKKKBBBBKKKBD.",
+  ".DBRRBBNNBBRRBD.",
+  ".DBBBBBDDBBBBBD.",
   ".DBBBBDBBDBBBBD.",
-  ".DBBBBBBBBBBBBD.",
   "..DBBBBBBBBBBD..",
-  "...DBBBBBBBBD...",
-  "....DDDDDDDD....",
+  "..DLLBBBBBBLLD..",
+  "...DDDDDDDDDD...",
   "................",
 ];
 
-/** The same cat with its eyes shut. Two rows differ, which is the whole blink. */
+/**
+ * The same cat with its eyes shut. Three rows differ, which is the whole
+ * blink: the eye whites go, and a dark line is left where they were.
+ */
 const CAT_SHUT = [
-  "................",
-  "..D..........D..",
   "..DD........DD..",
   "..DPD......DPD..",
   "..DPPD....DPPD..",
-  "..DBBBDDDDBBBD..",
+  "..DPPDDDDDDPPD..",
   ".DBBBBBBBBBBBBD.",
   ".DBBBBBBBBBBBBD.",
-  ".DBDDBBBBBBDDBD.",
-  ".DBBBBBNNBBBBBD.",
+  ".DBBBBBBBBBBBBD.",
+  ".DBKKKBBBBKKKBD.",
+  ".DBBBBBBBBBBBBD.",
+  ".DBRRBBNNBBRRBD.",
+  ".DBBBBBDDBBBBBD.",
   ".DBBBBDBBDBBBBD.",
-  ".DBBBBBBBBBBBBD.",
   "..DBBBBBBBBBBD..",
-  "...DBBBBBBBBD...",
-  "....DDDDDDDD....",
+  "..DLLBBBBBBLLD..",
+  "...DDDDDDDDDD...",
   "................",
 ];
 

@@ -2791,6 +2791,20 @@ button,
   background: color-mix(in srgb, var(--accent) 12%, #fff);
 }
 
+/* The eye itself, darker than the outline. Big and dark with one light pixel
+ * in the corner is the whole trick: a 1px pupil in a white square reads as a
+ * blank stare, and the sparkle is what turns a dot into a look. */
+.sprite-frame i[data-c="K"] {
+  background: color-mix(in srgb, var(--accent) 28%, #000);
+}
+
+/* The cheeks. Lighter than the body rather than warmer: at half the
+ * secondary they came out yellow, which put three yellow marks on the face
+ * and left the nose with nothing to be the only one of. */
+.sprite-frame i[data-c="R"] {
+  background: color-mix(in srgb, var(--accent) 45%, #fff);
+}
+
 .sprite-frame i[data-c="N"] {
   background: var(--lemon);
 }
