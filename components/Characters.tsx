@@ -12,10 +12,9 @@ import {
 import { DEFAULT_PLAN } from "@/data/plan";
 import { useOwned } from "@/lib/owned";
 import Filters from "./Filters";
-import Collapse from "./Collapse";
+import Modal from "./Modal";
 import CharacterBody from "./CharacterBody";
 import EmptyPane from "./EmptyPane";
-import { holdInPlace } from "@/lib/anchor";
 import { useMediaQuery } from "@/lib/media";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
 
@@ -165,11 +164,11 @@ export default function Characters() {
       {results.length === 0 && <p className="empty">Nothing matches those filters.</p>}
 
       {/*
-        * Two layouts over one piece of state. Narrow, the build unfolds inside
-        * the row it belongs to, which is what this tab has always done. From
-        * 900px there is room to put it beside the list instead, where the
-        * names stay put while you read and opening a character stops pushing
-        * the other sixty down the page.
+        * Two layouts over one piece of state, and neither of them moves the
+        * list. Narrow, the build arrives in a sheet over it. From 900px there
+        * is room to put it beside the list instead. The build used to unfold
+        * inside its row, which pushed the other sixty characters down the
+        * page by about 2,000px to read one of them.
         */}
       {wide ? (
         <div className="char-split">
@@ -224,16 +223,40 @@ export default function Characters() {
           </aside>
         </div>
       ) : (
-        results.map((c) => (
-          <CharacterRow
-            key={c.id}
-            c={c}
-            isOpen={selected === c.id}
-            onToggle={() => setSelected(selected === c.id ? null : c.id)}
-            isOwned={owned.has(c.id)}
-            body={bodyProps(c)}
-          />
-        ))
+        <>
+          {results.map((c) => (
+            <CharacterRow
+              key={c.id}
+              c={c}
+              isSelected={selected === c.id}
+              onOpen={() => setSelected(c.id)}
+              isOwned={owned.has(c.id)}
+              isBuilt={built.has(c.id)}
+            />
+          ))}
+
+          <Modal
+            open={current !== null}
+            onClose={() => setSelected(null)}
+            label={current ? `${current.name} build` : "Build"}
+          >
+            {current && (
+              <>
+                <header className="sheet-head">
+                  <h2>{current.name}</h2>
+                  <span className="star" data-r={current.rarity}>
+                    {current.rarity}★
+                  </span>
+                  <span className="el" data-el={current.element}>
+                    {current.element}
+                  </span>
+                  <span className="term-cat">{current.role ?? "no build"}</span>
+                </header>
+                <CharacterBody {...bodyProps(current)} />
+              </>
+            )}
+          </Modal>
+        </>
       )}
 
       <p className="footnote">
@@ -251,27 +274,20 @@ export default function Characters() {
 
 function CharacterRow({
   c,
-  isOpen,
-  onToggle,
+  isSelected,
+  onOpen,
   isOwned,
-  body,
+  isBuilt,
 }: {
   c: Character;
-  isOpen: boolean;
-  onToggle: () => void;
+  isSelected: boolean;
+  onOpen: () => void;
   isOwned: boolean;
-  body: Parameters<typeof CharacterBody>[0];
+  isBuilt: boolean;
 }) {
   return (
-    <article className="char-row" data-built={body.isBuilt}>
-      <button
-        className="char-toggle"
-        onClick={(e) => {
-          holdInPlace(e.currentTarget);
-          onToggle();
-        }}
-        aria-expanded={isOpen}
-      >
+    <article className="char-row" data-built={isBuilt} data-sel={isSelected}>
+      <button className="char-toggle" onClick={onOpen} aria-haspopup="dialog">
         <span className="char-name">{c.name}</span>
         {isOwned && <span className="owned-dot">mine</span>}
         <span className="star" data-r={c.rarity}>
@@ -281,12 +297,8 @@ function CharacterRow({
           {c.element}
         </span>
         <span className="term-cat">{c.role ?? "no build"}</span>
-        <span className="term-cat">{isOpen ? "▾" : "▸"}</span>
+        <span className="term-cat">▸</span>
       </button>
-
-      <Collapse open={isOpen}>
-        <CharacterBody {...body} />
-      </Collapse>
     </article>
   );
 }

@@ -5,17 +5,21 @@ import { DURATION } from "@/components/Collapse";
 /**
  * Hold an element still on screen while the page re-lays-out around it.
  *
- * The lists are accordions, so opening a row closes the previous one — and
- * closing it takes its whole body, around 2,000px, out of the page above the
- * reader's scroll position. The browser leaves scrollY on the same number
- * regardless, so everything below slides up by that amount underneath the
- * viewport. Measured on Characters: tapping a header that sat at the top of
- * the screen left that header 1,807px above it, with a row two further down
- * the list on screen instead. The row you opened was not visible at all.
+ * The queue on My plan is an accordion — the only one left, now that
+ * Characters, Weapons and Echoes all open into a sheet instead — so opening
+ * a card closes the previous one, and closing it takes its whole body out of
+ * the page above the reader's scroll position. The browser leaves scrollY on
+ * the same number regardless, so everything below slides up by that amount
+ * underneath the viewport.
+ *
+ * Measured when Characters still worked this way: tapping a header that sat
+ * at the top of the screen left that header 1,807px above it, with a row two
+ * further down the list on screen instead. The row you had opened was not
+ * visible at all. My plan measured 1,971px.
  *
  * It only looked like it was remembering which section you were reading
- * because every character's body is the same shape, so the height that
- * vanished above was close to the height that appeared below.
+ * because every body is the same shape, so the height that vanished above
+ * was close to the height that appeared below.
  *
  * The correction runs for as long as the collapse animation does rather than
  * once at the end of it. Both bodies change height on every frame for the

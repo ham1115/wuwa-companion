@@ -5,9 +5,9 @@ import { CHARACTERS, WEAPON_TYPES, type WeaponType } from "@/data/characters";
 import { WEAPONS, baseWeaponName, type Weapon } from "@/data/weapons";
 import Filters from "./Filters";
 import EmptyPane from "./EmptyPane";
+import Modal from "./Modal";
 import { useOwned } from "@/lib/owned";
 import { useMediaQuery } from "@/lib/media";
-import { holdInPlace } from "@/lib/anchor";
 
 /** weapon name -> characters that list it, in the order they rank it. */
 const WANTED_BY = (() => {
@@ -174,15 +174,36 @@ export default function Weapons() {
           </aside>
         </div>
       ) : (
-        results.map((w) => (
-          <WeaponRow
-            key={w.name}
-            w={w}
-            isOpen={open === w.name}
-            onToggle={() => setOpen(open === w.name ? null : w.name)}
-            isOwned={owned.has}
-          />
-        ))
+        <>
+          {results.map((w) => (
+            <WeaponRow
+              key={w.name}
+              w={w}
+              isSelected={open === w.name}
+              onOpen={() => setOpen(w.name)}
+              isOwned={owned.has}
+            />
+          ))}
+
+          <Modal
+            open={current !== null}
+            onClose={() => setOpen(null)}
+            label={current ? `${current.name} weapon` : "Weapon"}
+          >
+            {current && (
+              <>
+                <header className="sheet-head">
+                  <h2>{current.name}</h2>
+                  <span className="star" data-r={current.rarity}>
+                    {current.rarity}★
+                  </span>
+                  <span className="term-cat">{current.type}</span>
+                </header>
+                <WeaponBody w={current} isOwned={owned.has} />
+              </>
+            )}
+          </Modal>
+        </>
       )}
 
       <p className="footnote">
@@ -199,38 +220,28 @@ export default function Weapons() {
 
 function WeaponRow({
   w,
-  isOpen,
-  onToggle,
+  isSelected,
+  onOpen,
   isOwned,
 }: {
   w: Weapon;
-  isOpen: boolean;
-  onToggle: () => void;
+  isSelected: boolean;
+  onOpen: () => void;
   isOwned: (id: string) => boolean;
 }) {
-  const wanted = WANTED_BY.get(w.name) ?? [];
-  const mine = wanted.filter((c) => isOwned(c.id));
+  const mine = (WANTED_BY.get(w.name) ?? []).filter((c) => isOwned(c.id));
 
   return (
-    <article className="char-row">
-      <button
-        className="char-toggle"
-        onClick={(e) => {
-          holdInPlace(e.currentTarget);
-          onToggle();
-        }}
-        aria-expanded={isOpen}
-      >
+    <article className="char-row" data-sel={isSelected}>
+      <button className="char-toggle" onClick={onOpen} aria-haspopup="dialog">
         <span className="char-name">{w.name}</span>
         {mine.length > 0 && <span className="owned-dot">{mine.length} of mine</span>}
         <span className="star" data-r={w.rarity}>
           {w.rarity}★
         </span>
         <span className="term-cat">{w.type}</span>
-        <span className="term-cat">{isOpen ? "▾" : "▸"}</span>
+        <span className="term-cat">▸</span>
       </button>
-
-      {isOpen && <WeaponBody w={w} isOwned={isOwned} />}
     </article>
   );
 }
