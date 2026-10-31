@@ -309,6 +309,17 @@ body {
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+  /*
+   * A row that scrolls sideways clips upwards and downwards as well: when one
+   * axis is not visible, the other computes to auto rather than staying
+   * visible. So the selected tab's glow was being sliced off flat at the top
+   * and bottom of this row, and what you saw around the pill was the straight
+   * edge of the clip rather than a glow. The padding gives the shadow room
+   * inside the clip and the margin takes the same space back out of the
+   * layout, so nothing moves.
+   */
+  padding-block: 9px;
+  margin-block: -9px;
 }
 
 .tabs::-webkit-scrollbar {
@@ -3026,6 +3037,10 @@ button,
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    /* Same clip as .tabs, same remedy: the active chip's glow needs room
+     * inside a box that scrolls. This bar has padding already, so the
+     * vertical part of it simply grows. */
+    padding-block: 12px;
   }
 
   .plan-nav::-webkit-scrollbar {
