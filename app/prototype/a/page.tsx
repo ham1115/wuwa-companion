@@ -1,12 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { CHARACTERS } from "@/data/characters";
 import { SyncProvider } from "@/lib/sync";
 import { useIdSet } from "@/lib/storage";
 import CharacterDetail from "../CharacterDetail";
+import Landing from "../Landing";
 import { ProtoFilters, ProtoHeader } from "../Chrome";
 import { useCharacterFilter } from "../filters";
 import "../prototype.css";
+
+const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
 
 export default function Page() {
   return (
@@ -28,10 +32,13 @@ function LayoutA() {
   const built = useIdSet("built");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // A selection that has been filtered out falls back to the top of the list,
-  // so the pane is never left showing someone the filters exclude.
-  const current =
-    f.results.find((c) => c.id === selectedId) ?? f.results[0] ?? null;
+  /*
+   * Looked up in the whole roster rather than in the filtered results, so
+   * typing a search does not close the character you are reading. Nothing is
+   * selected until you say so: the pane opens on Landing instead of on
+   * whoever the alphabet happens to put first.
+   */
+  const current = selectedId ? BY_ID.get(selectedId) ?? null : null;
 
   return (
     <main className="proto proto-a">
@@ -68,14 +75,14 @@ function LayoutA() {
 
         {/* On a phone this is a sheet over the list rather than a column
           * beside it, because there is no beside. */}
-        <section className="pa-detail" data-open={selectedId !== null}>
+        <section className="pa-detail" data-open={current !== null}>
           <button className="pa-back" onClick={() => setSelectedId(null)}>
             ← All characters
           </button>
           {current ? (
             <CharacterDetail c={current} />
           ) : (
-            <p className="empty">Nothing to show.</p>
+            <Landing onPick={setSelectedId} />
           )}
         </section>
       </div>

@@ -218,10 +218,50 @@
 
 .pb-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+  gap: 11px;
   align-content: start;
   padding-bottom: 20px;
+}
+
+/*
+ * The one thing a grid is worse at than a list is looking a name up, because
+ * there is no single edge for the eye to run down. This gives it one, and
+ * unlike a header per initial it adds no height to the grid: 20 headers and
+ * the partial row each one starts took the grid from 2.4 screens to 4.2.
+ */
+.pb-jump {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-bottom: 9px;
+  padding: 5px 0;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-edge);
+}
+
+.pb-jump button {
+  min-width: 25px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 3px 0;
+  font-family: inherit;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+
+.pb-jump button:hover {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  background: var(--accent-soft);
 }
 
 .pb-card {
@@ -426,4 +466,65 @@
   .pb-card {
     transition: none;
   }
+}
+
+/* ---------- A's landing pane ---------- */
+/*
+ * The pane used to open on whoever sorted first, so the app greeted you with
+ * Aalto whatever you had come for — a choice made by the alphabet and dressed
+ * up as yours. Nothing is selected now, and the space goes to the two lists
+ * that are about you instead.
+ */
+.pl {
+  max-width: 60ch;
+}
+
+.pl h2 {
+  margin: 0 0 4px;
+  font-size: 1.35rem;
+  color: var(--accent-ink);
+  letter-spacing: -0.015em;
+}
+
+.pl-lede {
+  margin: 0 0 20px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.pl-sec {
+  margin-bottom: 20px;
+}
+
+.pl-sec .section {
+  margin-top: 0;
+}
+
+.pl-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.pl-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--bg-raised);
+  border: 1px solid var(--glass-edge);
+  border-radius: 999px;
+  padding: 6px 13px 6px 9px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 2px 14px -10px var(--glow-soft);
+}
+
+.pl-pick:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 11px -3px var(--glow-mid);
 }
