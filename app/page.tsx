@@ -109,7 +109,27 @@ function Codex() {
       </header>
 
       <nav className="nav" aria-label="Sections">
-        <div className="groups" role="tablist" aria-label="Section groups">
+        {/*
+          * The selected group is painted by one sliding element rather than by
+          * each button's own background, so switching moves the indicator
+          * instead of cross-fading it out of one button and into another —
+          * which at this size read as the pill teleporting.
+          */}
+        <div
+          className="groups"
+          role="tablist"
+          aria-label="Section groups"
+          style={
+            {
+              "--group-count": GROUPS.length,
+              "--group-index": Math.max(
+                0,
+                GROUPS.findIndex((g) => g.id === group.id)
+              ),
+            } as React.CSSProperties
+          }
+          data-ready={mounted}
+        >
           {GROUPS.map((g) => (
             <button
               key={g.id}

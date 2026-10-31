@@ -205,16 +205,56 @@ body {
 }
 
 .groups {
+  --group-gap: 4px;
+  --group-pad: 3px;
+  position: relative;
   display: flex;
-  gap: 4px;
+  gap: var(--group-gap);
   background: var(--bg-sunken);
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 3px;
+  padding: var(--group-pad);
   margin-bottom: 8px;
 }
 
+/*
+ * One indicator that moves, instead of three backgrounds that cross-fade.
+ * Fading the old pill out while fading the new one in reads as the pill
+ * blinking from one place to another, because nothing ever travels between
+ * them — which is what made switching groups look wrong.
+ *
+ * Its width is a third of the track minus the gaps, and it steps by its own
+ * width plus one gap, so the arithmetic holds for any number of groups.
+ */
+.groups::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: var(--group-pad);
+  bottom: var(--group-pad);
+  left: var(--group-pad);
+  width: calc(
+    (100% - 2 * var(--group-pad) - (var(--group-count) - 1) * var(--group-gap)) /
+      var(--group-count)
+  );
+  border-radius: 999px;
+  background: var(--bg-raised);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+  transform: translateX(
+    calc(var(--group-index) * (100% + var(--group-gap)))
+  );
+  transition: transform var(--med) var(--ease);
+}
+
+/* Before hydration the index is whatever the server guessed, so the indicator
+ * must not slide from it once the real one arrives. */
+.groups[data-ready="false"]::before {
+  transition: none;
+}
+
 .group {
+  position: relative;
+  z-index: 1;
   flex: 1;
   background: transparent;
   border: none;
@@ -233,9 +273,7 @@ body {
 }
 
 .group[aria-selected="true"] {
-  background: var(--bg-raised);
   color: var(--accent-ink);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
 }
 
 .tabs {
