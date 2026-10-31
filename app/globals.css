@@ -1567,7 +1567,7 @@ details.more li {
   }
 }
 
-.char-body,
+/* .char-body is handled by Collapse now, which animates both directions. */
 .maxed-card {
   animation: body-in var(--med) var(--ease) both;
 }
@@ -1708,4 +1708,46 @@ details.more li {
   padding-inline: var(--shell-pad);
   border-bottom-left-radius: var(--radius);
   border-bottom-right-radius: var(--radius);
+}
+
+/*
+ * Height animation for Collapse. grid-template-rows going 0fr -> 1fr animates
+ * to the content's real height without anyone having to measure it, which is
+ * what makes this work for a body whose height nobody knows in advance.
+ * The inner element must hide its own overflow or the content spills out of
+ * the collapsing track instead of being clipped by it.
+ */
+.collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition:
+    grid-template-rows var(--med) var(--ease),
+    opacity var(--med) var(--ease);
+}
+
+/*
+ * The element mounts already open, and the browser supplies the collapsed
+ * state to animate out of. That is the whole reason for @starting-style here:
+ * it keeps the content's visibility off any JavaScript callback, so a throttled
+ * frame or timer can never leave the body stuck at zero height. A browser that
+ * does not support it ignores this block and the body just appears.
+ */
+@starting-style {
+  .collapse[data-open="true"] {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+.collapse[data-open="false"] {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+/* Without this the content spills out of the collapsing track instead of
+ * being clipped by it, and the row animates while the text stays put. */
+.collapse-inner {
+  overflow: hidden;
+  min-height: 0;
 }

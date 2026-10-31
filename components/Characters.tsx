@@ -16,6 +16,7 @@ import StatLine from "./StatLine";
 import MyBuild from "./MyBuild";
 import Targets from "./Targets";
 import Teams from "./Teams";
+import Collapse from "./Collapse";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
 
 export default function Characters() {
@@ -194,7 +195,7 @@ function CharacterRow({
         <span className="term-cat">{isOpen ? "▾" : "▸"}</span>
       </button>
 
-      {isOpen && (
+      <Collapse open={isOpen}>
         <div className="char-body">
           {c.role === null ? (
             <p className="term-def">{c.substats}</p>
@@ -281,7 +282,7 @@ function CharacterRow({
 
           {note && !noteOpen && <p className="check-detail">{note}</p>}
         </div>
-      )}
+      </Collapse>
     </article>
   );
 }
