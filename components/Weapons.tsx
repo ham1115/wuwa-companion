@@ -4,7 +4,9 @@ import { useMemo, useState } from "react";
 import { CHARACTERS, WEAPON_TYPES, type WeaponType } from "@/data/characters";
 import { WEAPONS, baseWeaponName, type Weapon } from "@/data/weapons";
 import Filters from "./Filters";
+import EmptyPane from "./EmptyPane";
 import { useOwned } from "@/lib/owned";
+import { useMediaQuery } from "@/lib/media";
 import { holdInPlace } from "@/lib/anchor";
 
 /** weapon name -> characters that list it, in the order they rank it. */
@@ -29,6 +31,11 @@ export default function Weapons() {
   const [mineOnly, setMineOnly] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
   const owned = useOwned();
+  const wide = useMediaQuery("(min-width: 900px)");
+
+  /* Looked up in the whole database rather than the filtered results, so
+   * narrowing the list does not close the weapon being read. */
+  const current = open ? WEAPONS.find((w) => w.name === open) ?? null : null;
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -48,6 +55,64 @@ export default function Weapons() {
     }).sort((a, b) => b.rarity - a.rarity || a.name.localeCompare(b.name));
   }, [query, type, rarity, mineOnly, owned.owned]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  /*
+   * Lifted into a variable so the split can put it over the column it
+   * filters, rather than leaving a window-wide search box above a 300px
+   * list. Same arrangement the Characters tab uses.
+   */
+  const controls = (
+    <>
+        {/* The longest list in the app at 114 rows, and the one that gains most
+          * from the search box staying put. */}
+        <div className="sticky-controls">
+          <div className="search-row">
+            <input
+              className="search"
+              type="search"
+              placeholder="Search name, stat or effect…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Search weapons"
+            />
+          </div>
+
+          <div className="chips">
+            <button
+              className="chip"
+              data-tone="lemon"
+              data-on={mineOnly}
+              onClick={() => setMineOnly(!mineOnly)}
+            >
+              {mineOnly ? "★ For my characters" : "For my characters"}
+            </button>
+            {([5, 4, 3] as const).map((r) => (
+              <button
+                key={r}
+                className="chip"
+                data-on={rarity === r}
+                onClick={() => setRarity(rarity === r ? "all" : r)}
+              >
+                {r}★
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <Filters active={type !== "all" ? 1 : 0} onClear={() => setType("all")}>
+          <div className="chips">
+            <button className="chip" data-on={type === "all"} onClick={() => setType("all")}>
+              All types
+            </button>
+            {WEAPON_TYPES.map((t) => (
+              <button key={t} className="chip" data-on={type === t} onClick={() => setType(t)}>
+                {t}
+              </button>
+            ))}
+          </div>
+        </Filters>
+    </>
+  );
+
   return (
     <section>
       <p className="panel-intro">
@@ -55,66 +120,70 @@ export default function Weapons() {
         to see who wants it.
       </p>
 
-      {/* The longest list in the app at 114 rows, and the one that gains most
-        * from the search box staying put. */}
-      <div className="sticky-controls">
-        <div className="search-row">
-          <input
-            className="search"
-            type="search"
-            placeholder="Search name, stat or effect…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            aria-label="Search weapons"
-          />
-        </div>
-
-        <div className="chips">
-          <button
-            className="chip"
-            data-tone="lemon"
-            data-on={mineOnly}
-            onClick={() => setMineOnly(!mineOnly)}
-          >
-            {mineOnly ? "★ For my characters" : "For my characters"}
-          </button>
-          {([5, 4, 3] as const).map((r) => (
-            <button
-              key={r}
-              className="chip"
-              data-on={rarity === r}
-              onClick={() => setRarity(rarity === r ? "all" : r)}
-            >
-              {r}★
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <Filters active={type !== "all" ? 1 : 0} onClear={() => setType("all")}>
-        <div className="chips">
-          <button className="chip" data-on={type === "all"} onClick={() => setType("all")}>
-            All types
-          </button>
-          {WEAPON_TYPES.map((t) => (
-            <button key={t} className="chip" data-on={type === t} onClick={() => setType(t)}>
-              {t}
-            </button>
-          ))}
-        </div>
-      </Filters>
+      {!wide && controls}
 
       {results.length === 0 && <p className="empty">Nothing matches those filters.</p>}
 
-      {results.map((w) => (
-        <WeaponRow
-          key={w.name}
-          w={w}
-          isOpen={open === w.name}
-          onToggle={() => setOpen(open === w.name ? null : w.name)}
-          isOwned={owned.has}
-        />
-      ))}
+      {/* The same split the Characters tab makes, for the same reason: 114
+        * rows is a long way to push down the page to read one effect. */}
+      {wide ? (
+        <div className="char-split">
+          <div className="char-list">
+            {controls}
+            {results.map((w) => {
+              const mine = (WANTED_BY.get(w.name) ?? []).filter((c) =>
+                owned.has(c.id)
+              );
+              return (
+                <button
+                  key={w.name}
+                  className="char-pick"
+                  data-sel={current?.name === w.name}
+                  onClick={() => setOpen(w.name)}
+                >
+                  <span className="char-name">{w.name}</span>
+                  {mine.length > 0 && (
+                    <span className="owned-dot">{mine.length}</span>
+                  )}
+                  <span className="star" data-r={w.rarity}>
+                    {w.rarity}★
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <aside className="char-detail">
+            {current ? (
+              <>
+                <header className="char-detail-head">
+                  <h2>{current.name}</h2>
+                  <span className="star" data-r={current.rarity}>
+                    {current.rarity}★
+                  </span>
+                  <span className="term-cat">{current.type}</span>
+                </header>
+                <WeaponBody w={current} isOwned={owned.has} />
+              </>
+            ) : (
+              <EmptyPane title="Pick a weapon">
+                {results.length} on the list beside this. Search takes the
+                effect text too, so a mechanic finds the weapons that have it.
+              </EmptyPane>
+            )}
+          </aside>
+        </div>
+      ) : (
+        results.map((w) => (
+          <WeaponRow
+            key={w.name}
+            w={w}
+            isOpen={open === w.name}
+            onToggle={() => setOpen(open === w.name ? null : w.name)}
+            isOwned={owned.has}
+          />
+        ))
+      )}
 
       <p className="footnote">
         Stats and effect text are Kuro Games&apos; in-game item data, collected
@@ -161,45 +230,57 @@ function WeaponRow({
         <span className="term-cat">{isOpen ? "▾" : "▸"}</span>
       </button>
 
-      {isOpen && (
-        <div className="char-body">
-          <div className="stat-grid">
-            <div className="stat-line">
-              <span className="stat-slot">ATK</span>
-              <span>{w.atk} at Lv.90</span>
-            </div>
-            <div className="stat-line">
-              <span className="stat-slot">Substat</span>
-              <span>{w.substat}</span>
-            </div>
-          </div>
-
-          <h2 className="section">Effect</h2>
-          <p className="term-def">{w.passive}</p>
-
-          <h2 className="section">
-            {wanted.length > 0 ? "Wanted by" : "Not listed in any build"}
-          </h2>
-          {wanted.length > 0 ? (
-            <div className="related">
-              {wanted.map((c) => (
-                <span
-                  key={c.id}
-                  className="wanted-pill"
-                  data-mine={isOwned(c.id)}
-                >
-                  {c.name} · #{c.rank}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p className="check-detail">
-              No character in the database ranks this in their top four. Safe to
-              treat as fodder.
-            </p>
-          )}
-        </div>
-      )}
+      {isOpen && <WeaponBody w={w} isOwned={isOwned} />}
     </article>
+  );
+}
+
+/**
+ * One weapon's stats, effect and the characters that rank it. Shared by the
+ * row it unfolds inside on a phone and the pane it fills on a desktop.
+ */
+function WeaponBody({
+  w,
+  isOwned,
+}: {
+  w: Weapon;
+  isOwned: (id: string) => boolean;
+}) {
+  const wanted = WANTED_BY.get(w.name) ?? [];
+
+  return (
+    <div className="char-body">
+      <div className="stat-grid">
+        <div className="stat-line">
+          <span className="stat-slot">ATK</span>
+          <span>{w.atk} at Lv.90</span>
+        </div>
+        <div className="stat-line">
+          <span className="stat-slot">Substat</span>
+          <span>{w.substat}</span>
+        </div>
+      </div>
+
+      <h2 className="section">Effect</h2>
+      <p className="term-def">{w.passive}</p>
+
+      <h2 className="section">
+        {wanted.length > 0 ? "Wanted by" : "Not listed in any build"}
+      </h2>
+      {wanted.length > 0 ? (
+        <div className="related">
+          {wanted.map((c) => (
+            <span key={c.id} className="wanted-pill" data-mine={isOwned(c.id)}>
+              {c.name} · #{c.rank}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <p className="check-detail">
+          No character in the database ranks this in their top four. Safe to
+          treat as fodder.
+        </p>
+      )}
+    </div>
   );
 }

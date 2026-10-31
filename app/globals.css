@@ -2796,3 +2796,148 @@ button,
     max-width: 980px;
   }
 }
+
+/* ---------- the sheet ---------- */
+/*
+ * Echoes open over the list instead of inside it. A sonata set is a couple of
+ * paragraphs and an Echo is a sentence, so unfolding one in place moved
+ * everything beneath it a long way for very little; a sheet moves nothing,
+ * and 187 rows keep their positions while you read four of them.
+ *
+ * Built on <dialog>, so Escape, the focus trap, the inert background and the
+ * backdrop are the browser's rather than ours.
+ */
+.sheet {
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(78dvh, 720px);
+  padding: 0;
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius);
+  border-top-left-radius: 20px;
+  corner-top-left-shape: bevel;
+  background: var(--bg-raised);
+  color: var(--text);
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 30px 70px -34px rgb(var(--glass-shadow) / 0.55),
+    0 0 44px -12px var(--glow-soft);
+}
+
+/* The UA sets display itself, so the column has to be asserted on [open]. */
+.sheet[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet::backdrop {
+  background: rgb(var(--glass-shadow) / 0.3);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+/* Dark mode's --glass-shadow is 0 0 0, which is exactly what a scrim wants. */
+.sheet-inner {
+  position: relative;
+  min-height: 0;
+  overflow: auto;
+  padding: 15px 18px 20px;
+}
+
+.sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-right: 34px;
+  margin-bottom: 4px;
+}
+
+.sheet-head h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--accent-ink);
+  letter-spacing: -0.015em;
+}
+
+.sheet-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.sheet-close:hover {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* The body is styled for the inside of a row; in here it needs neither the
+ * row's padding nor the dashed rule that separated it from the row's head. */
+.sheet .char-body {
+  padding: 0;
+  border-top: 0;
+}
+
+/*
+ * Entry and exit. display and overlay have to be transitioned as discrete
+ * properties or the sheet vanishes on close before anything can animate.
+ */
+.sheet {
+  opacity: 0;
+  translate: 0 10px;
+  transition:
+    opacity var(--med) var(--ease),
+    translate var(--med) var(--ease),
+    overlay var(--med) allow-discrete,
+    display var(--med) allow-discrete;
+}
+
+.sheet[open] {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@starting-style {
+  .sheet[open] {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+
+/* A row whose sheet is open stays marked, so closing it lands you back on
+ * the one you were reading rather than on an undifferentiated list. */
+.char-row[data-sel="true"] {
+  border-color: var(--accent);
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 6px 16px -12px rgb(var(--glass-shadow) / 0.3),
+    0 0 22px -7px var(--glow-hot);
+}
+
+.char-row[data-sel="true"]::before {
+  width: 4px;
+  background: var(--accent);
+}
+
+@media (max-width: 599px) {
+  .sheet {
+    width: calc(100vw - 20px);
+    max-height: 86dvh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    transition: none;
+  }
+}

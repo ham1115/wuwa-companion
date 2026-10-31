@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { CHARACTERS } from "@/data/characters";
 import { ECHOES, SONATA_SETS, type Echo, type SonataSet } from "@/data/echoes";
 import { useOwned } from "@/lib/owned";
-import { holdInPlace } from "@/lib/anchor";
+import Modal from "./Modal";
 
 /** Sonata name -> characters whose build lists it. */
 const RUN_BY = (() => {
@@ -67,6 +67,10 @@ function SetsView() {
   const [mineOnly, setMineOnly] = useState(false);
   const owned = useOwned();
 
+  /* Found in the whole list rather than the filtered one, so typing in the
+   * search box does not close the sheet that is already open. */
+  const current = open ? SONATA_SETS.find((s) => s.name === open) ?? null : null;
+
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     return SONATA_SETS.filter((s) => {
@@ -119,10 +123,31 @@ function SetsView() {
           key={s.name}
           s={s}
           isOpen={open === s.name}
-          onToggle={() => setOpen(open === s.name ? null : s.name)}
+          onToggle={() => setOpen(s.name)}
           isOwned={owned.has}
         />
       ))}
+
+      {/* One sheet for the whole list rather than a body per row: a set's
+        * bonuses are a paragraph, and 20 of them unfolding in place pushed
+        * the rest of the list a long way down to read one. */}
+      <Modal
+        open={current !== null}
+        onClose={() => setOpen(null)}
+        label={current ? `${current.name} sonata set` : "Sonata set"}
+      >
+        {current && (
+          <>
+            <header className="sheet-head">
+              <h2>{current.name}</h2>
+              <span className="pieces" data-p={current.pieces}>
+                {current.pieces}-pc
+              </span>
+            </header>
+            <SetBody s={current} isOwned={owned.has} />
+          </>
+        )}
+      </Modal>
     </>
   );
 }
@@ -141,6 +166,31 @@ function SetRow({
   const run = RUN_BY.get(s.name) ?? [];
   const mine = run.filter((c) => isOwned(c.id));
   const rolled = ROLLED_BY.get(s.name) ?? [];
+
+  return (
+    <article className="char-row" data-sel={isOpen}>
+      <button className="char-toggle" onClick={onToggle} aria-haspopup="dialog">
+        <span className="char-name">{s.name}</span>
+        {mine.length > 0 && <span className="owned-dot">{mine.length} of mine</span>}
+        <span className="pieces" data-p={s.pieces}>
+          {s.pieces}-pc
+        </span>
+        <span className="term-cat">{rolled.length} echoes</span>
+      </button>
+    </article>
+  );
+}
+
+/** A sonata set's bonuses, who runs it, and the Echoes that roll it. */
+function SetBody({
+  s,
+  isOwned,
+}: {
+  s: SonataSet;
+  isOwned: (id: string) => boolean;
+}) {
+  const run = RUN_BY.get(s.name) ?? [];
+  const rolled = ROLLED_BY.get(s.name) ?? [];
   const byCost = {
     4: rolled.filter((e) => e.cost === 4),
     3: rolled.filter((e) => e.cost === 3),
@@ -148,61 +198,41 @@ function SetRow({
   };
 
   return (
-    <article className="char-row">
-      <button
-        className="char-toggle"
-        onClick={(e) => {
-          holdInPlace(e.currentTarget);
-          onToggle();
-        }}
-        aria-expanded={isOpen}
-      >
-        <span className="char-name">{s.name}</span>
-        {mine.length > 0 && <span className="owned-dot">{mine.length} of mine</span>}
-        <span className="pieces" data-p={s.pieces}>
-          {s.pieces}-pc
-        </span>
-        <span className="term-cat">{isOpen ? "▾" : "▸"}</span>
-      </button>
+    <div className="char-body">
+      {s.two && (
+        <>
+          <h2 className="section">2-piece</h2>
+          <p className="term-def">{s.two}</p>
+        </>
+      )}
+      <h2 className="section">{s.pieces}-piece</h2>
+      <p className="term-def">{s.full}</p>
 
-      {isOpen && (
-        <div className="char-body">
-          {s.two && (
-            <>
-              <h2 className="section">2-piece</h2>
-              <p className="term-def">{s.two}</p>
-            </>
-          )}
-          <h2 className="section">{s.pieces}-piece</h2>
-          <p className="term-def">{s.full}</p>
-
-          <h2 className="section">
-            {run.length > 0 ? "Run by" : "Not listed in any build"}
-          </h2>
-          {run.length > 0 && (
-            <div className="related">
-              {run.map((c) => (
-                <span key={c.id} className="wanted-pill" data-mine={isOwned(c.id)}>
-                  {c.name}
-                </span>
-              ))}
-            </div>
-          )}
-
-          <h2 className="section">Echoes that roll it: {rolled.length}</h2>
-          {([4, 3, 1] as const).map((cost) =>
-            byCost[cost].length > 0 ? (
-              <div className="stat-line" key={cost}>
-                <span className="cost" data-cost={cost}>
-                  {cost} cost
-                </span>
-                <span>{byCost[cost].map((e) => e.name).join(", ")}</span>
-              </div>
-            ) : null
-          )}
+      <h2 className="section">
+        {run.length > 0 ? "Run by" : "Not listed in any build"}
+      </h2>
+      {run.length > 0 && (
+        <div className="related">
+          {run.map((c) => (
+            <span key={c.id} className="wanted-pill" data-mine={isOwned(c.id)}>
+              {c.name}
+            </span>
+          ))}
         </div>
       )}
-    </article>
+
+      <h2 className="section">Echoes that roll it: {rolled.length}</h2>
+      {([4, 3, 1] as const).map((cost) =>
+        byCost[cost].length > 0 ? (
+          <div className="stat-line" key={cost}>
+            <span className="cost" data-cost={cost}>
+              {cost} cost
+            </span>
+            <span>{byCost[cost].map((e) => e.name).join(", ")}</span>
+          </div>
+        ) : null
+      )}
+    </div>
   );
 }
 
@@ -210,6 +240,10 @@ function EchoesView() {
   const [query, setQuery] = useState("");
   const [cost, setCost] = useState<1 | 3 | 4 | "all">("all");
   const [open, setOpen] = useState<string | null>(null);
+
+  /* Found in the whole list rather than the filtered one, so typing in the
+   * search box does not close the sheet that is already open. */
+  const current = open ? ECHOES.find((e) => e.name === open) ?? null : null;
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -256,43 +290,58 @@ function EchoesView() {
       {results.length === 0 && <p className="empty">No Echo matches that.</p>}
 
       {results.map((e) => (
-        <article className="char-row" key={e.name}>
+        <article className="char-row" key={e.name} data-sel={open === e.name}>
           <button
             className="char-toggle"
-            onClick={(ev) => {
-              holdInPlace(ev.currentTarget);
-              setOpen(open === e.name ? null : e.name);
-            }}
-            aria-expanded={open === e.name}
+            onClick={() => setOpen(e.name)}
+            aria-haspopup="dialog"
           >
             <span className="char-name">{e.name}</span>
             <span className="cost" data-cost={e.cost}>
               {e.cost} cost
             </span>
             <span className="term-cat">{e.echoClass}</span>
-            <span className="term-cat">{open === e.name ? "▾" : "▸"}</span>
+            <span className="term-cat">{e.sets.length} sets</span>
           </button>
+        </article>
+      ))}
 
-          {open === e.name && (
+      {/* 187 rows, and an Echo is a sentence and a few pills. Unfolding one in
+        * place moved everything under it for very little; a sheet moves
+        * nothing. */}
+      <Modal
+        open={current !== null}
+        onClose={() => setOpen(null)}
+        label={current ? `${current.name} echo` : "Echo"}
+      >
+        {current && (
+          <>
+            <header className="sheet-head">
+              <h2>{current.name}</h2>
+              <span className="cost" data-cost={current.cost}>
+                {current.cost} cost
+              </span>
+              <span className="term-cat">{current.echoClass}</span>
+            </header>
             <div className="char-body">
-              {e.skill && (
+              {current.skill && (
                 <>
                   <h2 className="section">Echo skill</h2>
-                  <p className="term-def">{e.skill}</p>
+                  <p className="term-def">{current.skill}</p>
                 </>
               )}
               <h2 className="section">Rolls these sets</h2>
               <div className="related">
-                {e.sets.map((s) => (
+                {current.sets.map((s) => (
                   <span key={s} className="wanted-pill">
                     {s}
                   </span>
                 ))}
               </div>
             </div>
-          )}
-        </article>
-      ))}
+          </>
+        )}
+      </Modal>
     </>
   );
 }

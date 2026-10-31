@@ -14,7 +14,7 @@ import { useOwned } from "@/lib/owned";
 import Filters from "./Filters";
 import Collapse from "./Collapse";
 import CharacterBody from "./CharacterBody";
-import ResonanceField from "./ResonanceField";
+import EmptyPane from "./EmptyPane";
 import { holdInPlace } from "@/lib/anchor";
 import { useMediaQuery } from "@/lib/media";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
@@ -212,7 +212,14 @@ export default function Characters() {
                 <CharacterBody {...bodyProps(current)} />
               </>
             ) : (
-              <Nobody showing={results.length} built={built.ids.length} />
+              <EmptyPane title="Pick a Resonator">
+                {results.length} on the list
+                {results.length === 1 ? "" : " beside this"}
+                {built.ids.length > 0
+                  ? `, ${built.ids.length} of them marked as built`
+                  : ""}
+                . The search box takes weapon, echo and sonata names too.
+              </EmptyPane>
             )}
           </aside>
         </div>
@@ -239,27 +246,6 @@ export default function Characters() {
         rotations and tier-list commentary behind them, read their guides.
       </p>
     </section>
-  );
-}
-
-/**
- * The pane before a character is picked. The field behind the words is a
- * decoration and nothing else, which is why it is aria-hidden and why the
- * counts are written out rather than left for it to imply.
- */
-function Nobody({ showing, built }: { showing: number; built: number }) {
-  return (
-    <div className="char-nobody">
-      <ResonanceField />
-      <div className="char-nobody-say">
-        <h2>Pick a Resonator</h2>
-        <p>
-          {showing} on the list{showing === 1 ? "" : " beside this"}
-          {built > 0 ? `, ${built} of them marked as built` : ""}. The search
-          box takes weapon, echo and sonata names too.
-        </p>
-      </div>
-    </div>
   );
 }
 
