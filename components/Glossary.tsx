@@ -84,7 +84,7 @@ export default function Glossary() {
       {CATEGORIES.filter((c) => grouped.has(c.id)).map((cat) => (
         <div key={cat.id}>
           <h2 className="section">
-            {cat.label} — {cat.blurb}
+            {cat.label}: {cat.blurb}
           </h2>
           {grouped.get(cat.id)!.map((t) => {
             const isLearned = learned.has(t.id);
@@ -113,7 +113,7 @@ export default function Glossary() {
                     className="spoiler-reveal"
                     onClick={() => revealed.toggle(t.id)}
                   >
-                    Reveal — past Chapter 1
+                    Reveal: past Chapter 1
                   </button>
                 )}
 

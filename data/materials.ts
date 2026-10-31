@@ -140,7 +140,7 @@ export const MATERIALS: Record<string, Material> = {
   // ---------- Neither ----------
   "Mysterious Code": {
     kind: "quest",
-    detail: "Casket Delivery and main quests. Rover's own material — not farmable.",
+    detail: "Casket Delivery and main quests. Rover's own material, not farmable.",
   },
 };
 
@@ -200,4 +200,4 @@ export const WAVEPLATE_COSTS: Activity[] = [
 ];
 
 export const MATERIALS_NOTE =
-  "Gathered materials cost nothing but travel time — the catch is the region. Boss materials cost 60 Waveplate per claim; how many claims a quantity takes depends on the boss's level, which is not published, so nothing here guesses at run counts.";
+  "Gathered materials cost nothing but travel time: the catch is the region. Boss materials cost 60 Waveplate per claim; how many claims a quantity takes depends on the boss's level, which is not published, so nothing here guesses at run counts.";

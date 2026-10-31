@@ -86,7 +86,7 @@ function SetsView() {
     <>
       <p className="panel-intro">
         Showing {results.length} sets. Six of them are <strong>3-piece</strong>,
-        not 5 — check the badge before you commit five Echoes.
+        not 5. Check the badge before you commit five Echoes.
       </p>
 
       <div className="search-row">
@@ -181,7 +181,7 @@ function SetRow({
             </div>
           )}
 
-          <h2 className="section">Echoes that roll it — {rolled.length}</h2>
+          <h2 className="section">Echoes that roll it: {rolled.length}</h2>
           {([4, 3, 1] as const).map((cost) =>
             byCost[cost].length > 0 ? (
               <div className="stat-line" key={cost}>

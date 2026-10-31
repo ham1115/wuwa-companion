@@ -147,7 +147,7 @@ export default function Characters() {
           prydwen.gg
         </a>{" "}
         character guides, reviewed patch 3.6 and captured 22 October 2026. Only
-        the structured parameters are reproduced here — for the reasoning,
+        the structured parameters are reproduced here. For the reasoning,
         rotations and tier-list commentary behind them, read their guides.
       </p>
     </section>
@@ -202,7 +202,7 @@ function CharacterRow({
             <p className="term-def">{c.substats}</p>
           ) : (
             <>
-              <h2 className="section">Weapons — best first</h2>
+              <h2 className="section">Weapons: best first</h2>
               <ol className="ranked">
                 {c.weapons.map((w) => (
                   <li key={w}>{w}</li>

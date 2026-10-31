@@ -113,7 +113,7 @@ export default function Quests() {
             </div>
             <p className="build-role">
               {c.region}
-              {c.unlocks ? ` — unlocks ${c.unlocks.join(", ")}` : ""}
+              {c.unlocks ? `: unlocks ${c.unlocks.join(", ")}` : ""}
             </p>
             <p className="progress-line">
               {done} of {c.acts.length} entries

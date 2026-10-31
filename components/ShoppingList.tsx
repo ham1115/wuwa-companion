@@ -108,7 +108,7 @@ export default function ShoppingList({ plan }: { plan: string[] }) {
           <ul>
             {lockedRegions.map((r) => (
               <li key={r}>
-                <strong>{r}</strong> — {REGION_GATE[r]?.label}
+                <strong>{r}</strong>: {REGION_GATE[r]?.label}
               </li>
             ))}
           </ul>
@@ -128,7 +128,7 @@ export default function ShoppingList({ plan }: { plan: string[] }) {
           <p className="build-role">
             {bossCount === 1 ? "One boss" : `${bossCount} bosses`}, 60 Waveplate
             per claim. How many claims a quantity takes depends on the boss
-            level, so that figure is one claim each — not the cost of finishing.
+            level, so that figure is one claim each, not the cost of finishing.
           </p>
           {groups.bosses.map(([boss, b]) => (
             <div className="source" key={boss} data-locked={!reached(b.region)}>
@@ -137,7 +137,7 @@ export default function ShoppingList({ plan }: { plan: string[] }) {
                 {!reached(b.region) && <span className="side-pill">locked</span>}
               </div>
               <p className="check-detail">
-                {b.location} — {b.region}
+                {b.location}: {b.region}
               </p>
               <ul className="source-items">
                 {b.items.map((i) => (
@@ -175,7 +175,7 @@ export default function ShoppingList({ plan }: { plan: string[] }) {
                       {vendor && (
                         <span className="check-detail">
                           {" "}
-                          — also sold by {vendor}
+                          (also sold by {vendor})
                         </span>
                       )}
                     </li>
@@ -199,7 +199,7 @@ export default function ShoppingList({ plan }: { plan: string[] }) {
                 <li key={i.name}>
                   {i.qty}x {i.name}
                   {src?.kind === "quest" && (
-                    <span className="check-detail"> — {src.detail}</span>
+                    <span className="check-detail">: {src.detail}</span>
                   )}
                 </li>
               );
@@ -213,7 +213,7 @@ export default function ShoppingList({ plan }: { plan: string[] }) {
         <ul>
           {WAVEPLATE_COSTS.map((a) => (
             <li key={a.name}>
-              <strong>{a.name}</strong> — {a.waveplate} Waveplate · {a.gives}
+              <strong>{a.name}</strong>: {a.waveplate} Waveplate · {a.gives}
               {a.note ? ` (${a.note})` : ""}
             </li>
           ))}

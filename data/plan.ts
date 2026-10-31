@@ -26,7 +26,7 @@ export const DEFAULT_PLAN: string[] = [];
 export const BUILD_RULES = [
   "Build one character at a time. Shell Credits are the bottleneck, not EXP.",
   "A complete 5-piece Sonata with a mediocre 4-cost beats a perfect 4-cost with no set bonus.",
-  "An Echo Sonata is locked when it drops. There is no reroll — you re-farm the Echo instead.",
+  "An Echo Sonata is locked when it drops. There is no reroll: you re-farm the Echo instead.",
 ];
 
 /** "46x Truth in Lies" -> { qty: 46, name: "Truth in Lies" } */

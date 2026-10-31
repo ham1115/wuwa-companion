@@ -217,7 +217,7 @@ export default function MyBuild({
             : offMeta.weapon
               ? "That weapon is not on this character's recommended list."
               : "That set is not on this character's recommended list."}{" "}
-          Fine if it is what you have — a complete off-meta set still beats an
+          Fine if it is what you have: a complete off-meta set still beats an
           incomplete recommended one.
         </p>
       )}

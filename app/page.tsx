@@ -24,7 +24,7 @@ const GROUPS = [
   {
     id: "reference",
     label: "Reference",
-    hint: "Game data — the same for everyone",
+    hint: "Game data, the same for everyone",
     tabs: [
       { id: "characters", label: "Characters" },
       { id: "weapons", label: "Weapons" },
@@ -175,7 +175,7 @@ function Codex() {
         <div>
           <h1>Resonance Codex</h1>
           <p>
-            Wuthering Waves companion — 61 character builds, glossary, story,
+            Wuthering Waves companion: 61 character builds, glossary, story,
             routine.
           </p>
         </div>

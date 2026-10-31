@@ -144,13 +144,13 @@ export default function Plan() {
               <div className="card maxed-card">
                 <strong>{c.name} is Lv.90. Finished with them?</strong>
                 <p className="check-detail">
-                  Levelling is done, but the build may not be — echoes, weapon
+                  Levelling is done, but the build may not be: echoes, weapon
                   and skills all carry on past 90. Taking them off the queue
                   keeps everything you have filled in here.
                 </p>
                 <div className="queue-controls">
                   <button className="mini" data-on onClick={() => remove(c.id)}>
-                    Built — take them off
+                    Built, take them off
                   </button>
                   <button className="mini" onClick={() => setMaxed(null)}>
                     Still building

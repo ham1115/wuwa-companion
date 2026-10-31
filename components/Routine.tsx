@@ -70,9 +70,9 @@ export default function Routine() {
       <div className="callout" style={{ marginTop: 20 }}>
         <strong>Combat keys</strong>
         <ul>
-          <li>Basic Attack / Parry — left click</li>
-          <li>Dodge — right click (left shift also works)</li>
-          <li>Resonance Skill — E · Resonance Liberation — R · Echo Skill — Q</li>
+          <li>Basic Attack / Parry: left click</li>
+          <li>Dodge: right click (left shift also works)</li>
+          <li>Resonance Skill: E · Resonance Liberation: R · Echo Skill: Q</li>
           <li>Flash orange or yellow means attack it. No flash means dodge it.</li>
         </ul>
       </div>

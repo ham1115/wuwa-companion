@@ -86,8 +86,8 @@ export default function Settings() {
   return (
     <section>
       <p className="panel-intro">
-        Everything here affects only this browser. The app ships blank — no
-        owned characters, no queue, no progress — so sharing the URL gives each
+        Everything here affects only this browser. The app ships blank: no
+        owned characters, no queue, no progress, so sharing the URL gives each
         player an empty slate. Nothing you tick is visible to anyone else.
       </p>
 
@@ -222,7 +222,7 @@ export default function Settings() {
           />
           <span className="check-detail">
             The page, the cards above it, the wells below, and both border
-            weights — spaced as the built-in themes space them.
+            weights, spaced as the built-in themes space them.
           </span>
         </label>
 
@@ -260,7 +260,7 @@ export default function Settings() {
             aria-label="Custom secondary colour"
           />
           <span className="check-detail">
-            Callouts and the second pill colour — the one the presets pair
+            Callouts and the second pill colour: the one the presets pair
             against the accent.
           </span>
         </label>
@@ -272,7 +272,7 @@ export default function Settings() {
           Its hue is yours, but {theme.mode} mode was kept {theme.mode}. Every
           pill, tint and soft accent in this mode is built to sit on a{" "}
           {theme.mode === "light" ? "pale" : "dark"} page, and they are not
-          re-derived from your pick — so a{" "}
+          re-derived from your pick, so a{" "}
           {theme.mode === "light" ? "dark" : "pale"} background here would make
           them vanish rather than invert. Switch to{" "}
           {theme.mode === "light" ? "dark" : "light"} mode for that.
@@ -326,7 +326,7 @@ export default function Settings() {
       <p className="check-detail">
         Saves the four colours above under that name, in this browser. Reusing
         a name overwrites that preset, so you can tweak and re-save it. Light
-        and dark are not stored — each saved preset works in both, because the
+        and dark are not stored: each saved preset works in both, because the
         colours are re-derived per mode.
       </p>
 
@@ -364,7 +364,7 @@ export default function Settings() {
         <p className="panel-intro">
           Everything above is stored in this browser only. Signing in copies it
           to your account so the same progress shows up on your phone and your
-          desktop. It is entirely optional — the app works exactly as it does
+          desktop. It is entirely optional: the app works exactly as it does
           now without it, and anyone you share the URL with still gets a blank
           slate.
         </p>
@@ -439,7 +439,7 @@ export default function Settings() {
 
       <h2 className="section">Back up or move your progress</h2>
       <p className="panel-intro">
-        Works signed out, and gives you a copy you hold yourself — export here,
+        Works signed out, and gives you a copy you hold yourself: export here,
         paste it there.
       </p>
       <div className="chips">
@@ -489,7 +489,7 @@ export default function Settings() {
           <h3>Everything</h3>
         </div>
         <p className="build-role">
-          Clears all of the above. Cannot be undone — export first if you want it
+          Clears all of the above. Cannot be undone, so export first if you want it
           back.
         </p>
         {confirming === "all" ? (
@@ -512,7 +512,7 @@ export default function Settings() {
 
       <p className="footnote">
         To share it, just send the URL. Visitors start blank and never load
-        your data — nothing personal is baked into the app itself.
+        your data. Nothing personal is baked into the app itself.
       </p>
     </section>
   );

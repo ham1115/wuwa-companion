@@ -467,17 +467,45 @@ h2.section {
 }
 
 /* ---------- glossary term ---------- */
+/*
+ * Glossary terms take the glass vocabulary without the glass: the chamfered
+ * corner, the lit top edge and the layered shadow, but no backdrop-filter.
+ * There are 61 of these on one scrolling page, and blurring a list that long
+ * is the thing the cards deliberately avoid.
+ */
 .term {
   background: var(--bg-raised);
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-edge);
   border-radius: var(--radius);
+  border-top-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+  corner-top-left-shape: bevel;
+  corner-bottom-right-shape: bevel;
   padding: 13px 16px;
   margin-bottom: 8px;
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 6px 16px -12px rgb(var(--glass-shadow) / 0.22);
 }
 
+/*
+ * Learned used to be a full-height gradient from accent to surface, which
+ * read as a filled panel rather than a marked one. The game marks state with
+ * a lit edge, so this does too: the cut corner glows, the border takes the
+ * accent, and the surface stays flat enough to read a definition off.
+ */
 .term[data-learned="true"] {
   border-color: var(--accent);
-  background: linear-gradient(0deg, var(--accent-soft) 0%, var(--bg-raised) 60%);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent-soft) 70%, transparent) 0,
+      transparent 86px
+    ),
+    var(--bg-raised);
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 6px 16px -12px rgb(var(--glass-shadow) / 0.3);
 }
 
 .term-head {

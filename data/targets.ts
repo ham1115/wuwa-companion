@@ -794,4 +794,4 @@ export function targetFloor(
 }
 
 export const TARGETS_DISCLAIMER =
-  "A good endgame build to aim for, not a pass mark. Ranges reflect different teams and Resonance Chains — 5-stars are quoted at S0, 4-stars and free characters at S6.";
+  "A good endgame build to aim for, not a pass mark. Ranges reflect different teams and Resonance Chains: 5-stars are quoted at S0, 4-stars and free characters at S6.";

@@ -114,4 +114,4 @@ export const SKILL_PRIORITY: Record<string, SkillOrder[]> = Object.fromEntries(
 );
 
 export const SKILL_PRIORITY_DISCLAIMER =
-  "Upgrade order from prydwen.gg, captured 31 October 2026. Spend on the first before the second — the last in the list is the one to leave alone.";
+  "Upgrade order from prydwen.gg, captured 31 October 2026. Spend on the first before the second. The last in the list is the one to leave alone.";
