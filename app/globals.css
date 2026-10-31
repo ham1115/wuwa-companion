@@ -30,6 +30,7 @@
 
   --radius: 14px;
   --maxw: 900px;
+  --shell-pad: 16px;
 
   /* How strongly each of the three page-background washes tints the base.
    * Kept as numbers rather than colours so the wash is mixed from whatever
@@ -143,7 +144,7 @@ body {
 .shell {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 0 16px 96px;
+  padding: 0 var(--shell-pad) 96px;
 }
 
 /* ---------- header ---------- */
@@ -1688,4 +1689,23 @@ details.more li {
   border-bottom-right-radius: var(--chamfer);
   corner-top-left-shape: bevel;
   corner-bottom-right-shape: bevel;
+}
+
+/*
+ * The nav sits inside .shell, so once it stopped being the same colour as the
+ * page it stopped looking like part of it: a frosted bar 32px narrower than
+ * the content area, with a lit edge and a shadow, reads as a panel someone
+ * mis-sized rather than as a header. It now cancels the shell's gutter and
+ * puts it back as padding, so the glass runs the full width while the tabs
+ * stay lined up with everything below them.
+ *
+ * The bottom corners are rounded because on a screen wider than --maxw the bar
+ * is centred and cannot reach the edges — rounding makes that read as a
+ * deliberate floating bar instead of one clipped off.
+ */
+.nav {
+  margin-inline: calc(-1 * var(--shell-pad));
+  padding-inline: var(--shell-pad);
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
 }
