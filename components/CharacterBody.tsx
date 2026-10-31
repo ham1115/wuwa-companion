@@ -41,6 +41,36 @@ export default function CharacterBody({
 }) {
   return (
     <div className="char-body">
+      {/*
+        * First, not last. These three are the only things in here you act on
+        * rather than read, and a character's build runs to about 3,000px —
+        * queueing someone meant scrolling past every weapon, stat, team and
+        * material to reach the button for it.
+        */}
+      <div className="term-actions">
+        <button className="mini" data-on={isQueued} onClick={onQueue}>
+          {isQueued ? "✓ In plan" : "+ Queue"}
+        </button>
+        <button className="mini" data-on={isBuilt} onClick={onBuilt}>
+          {isBuilt ? "✓ Built" : "Mark built"}
+        </button>
+        <button className="mini" data-on={Boolean(note)} onClick={onNoteToggle}>
+          {note ? "Note ✎" : "Add note"}
+        </button>
+      </div>
+
+      {noteOpen && (
+        <textarea
+          className="note-area"
+          placeholder="Current level, what is missing, which echoes you have…"
+          value={note}
+          onChange={(e) => onNote(e.target.value)}
+          autoFocus
+        />
+      )}
+
+      {note && !noteOpen && <p className="check-detail">{note}</p>}
+
       {c.role === null ? (
         <p className="term-def">{c.substats}</p>
       ) : (
@@ -115,30 +145,6 @@ export default function CharacterBody({
           </dl>
         </>
       )}
-
-      <div className="term-actions">
-        <button className="mini" data-on={isQueued} onClick={onQueue}>
-          {isQueued ? "✓ In plan" : "+ Queue"}
-        </button>
-        <button className="mini" data-on={isBuilt} onClick={onBuilt}>
-          {isBuilt ? "✓ Built" : "Mark built"}
-        </button>
-        <button className="mini" data-on={Boolean(note)} onClick={onNoteToggle}>
-          {note ? "Note ✎" : "Add note"}
-        </button>
-      </div>
-
-      {noteOpen && (
-        <textarea
-          className="note-area"
-          placeholder="Current level, what is missing, which echoes you have…"
-          value={note}
-          onChange={(e) => onNote(e.target.value)}
-          autoFocus
-        />
-      )}
-
-      {note && !noteOpen && <p className="check-detail">{note}</p>}
     </div>
   );
 }
