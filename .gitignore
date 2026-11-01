@@ -5,3 +5,7 @@ out
 .env*
 *.tsbuildinfo
 next-env.d.ts
+
+# Third-party sprite packs dropped in for evaluation. Not ours to ship:
+# none of them carries a licence file, and two are stock footage.
+cat sprites/

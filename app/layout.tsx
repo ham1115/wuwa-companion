@@ -11,7 +11,15 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0b0f14",
+  /*
+   * What the phone paints around the page: the status bar on iOS, the
+   * address bar on Android. It was a single dark navy, which belongs to
+   * neither theme and matched nothing in the app. These are --bg from each.
+   */
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fff6fa" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c1118" },
+  ],
 };
 
 export default function RootLayout({

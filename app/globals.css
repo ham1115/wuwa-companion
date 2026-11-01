@@ -1,6 +1,15 @@
 /* ---------- theme: pastel pink + pastel yellow ---------- */
 :root,
 :root[data-theme="light"] {
+  /*
+   * Tells the browser which way round the page is, which it cannot infer
+   * from our colours. Without it every UA surface stays light whatever the
+   * toggle says: the scrollbars, the number spinners and select menus in My
+   * build, the search field's clear button, and the chrome a <dialog> paints
+   * before our own background reaches it. That last one is why the sheet
+   * came up light on a dark phone.
+   */
+  color-scheme: light;
   --bg: #fff6fa;
   --bg-raised: #ffffff;
   --bg-sunken: #fdecf3;
@@ -85,6 +94,7 @@
 }
 
 :root[data-theme="dark"] {
+  color-scheme: dark;
   --bg: #1c1118;
   --bg-raised: #271a22;
   --bg-sunken: #150c11;
@@ -2715,23 +2725,28 @@ button,
 
 .char-nobody {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 22px;
+  display: grid;
+  place-items: center;
   min-height: 320px;
   height: 100%;
   padding: 24px;
   overflow: hidden;
 }
 
-/* No backdrop any more. The sprite used to sit behind these words and had to
- * be bleached out from under them; it stands above them now, so the words
- * need nothing to win against. */
+/* The words sit over the field, so they need a hole burned under them. The
+ * alternative is dimming the whole field far enough to guarantee it, which
+ * leaves nothing to look at. */
 .char-nobody-say {
+  position: relative;
+  z-index: 1;
   text-align: center;
   max-width: 44ch;
+  padding: 20px 26px;
+  background: radial-gradient(
+    62% 72% at 50% 50%,
+    color-mix(in srgb, var(--bg-raised) 94%, transparent) 0 52%,
+    transparent 100%
+  );
 }
 
 .char-nobody-say h2 {
@@ -2747,124 +2762,354 @@ button,
   font-size: 0.88rem;
 }
 
-/* ---------- the sprite ---------- */
 /*
- * A grid of cells rather than an image, so the colours come from the palette.
- * Every cell is given a role and the role is resolved here, which is why the
- * cat is pink under Pink and lemon and blue under Sky and lemon with no
- * second asset in the repository.
- *
- * The outline and the eye are mixed against black and white rather than taken
- * from --accent-ink and --bg-raised. Those two swap relative lightness
- * between the themes, which would have put a lighter outline around a darker
- * body every time the lights went out.
+ * The field. One pulse on one loop, held back per cell in proportion to its
+ * distance from the focus, which is what turns 220 identical animations into
+ * a ring travelling outward. Only opacity changes, so none of it leaves the
+ * compositor.
  */
-.sprite {
+.field {
+  position: absolute;
+  inset: 0;
   display: grid;
-  flex: none;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: 6px;
+  padding: 18px;
+  align-content: center;
   pointer-events: none;
-  /* Two positions, not a glide. */
-  animation: sprite-bob 2.6s steps(2, jump-none) infinite alternate;
 }
 
-.sprite-frame {
-  grid-area: 1 / 1;
-  display: grid;
-  grid-template-columns: repeat(var(--sprite-size), var(--px));
-  grid-auto-rows: var(--px);
-  /* Smaller cells than the first draft, because there are far more of them.
-   * 28 across at 12px is 336, which is the size the sprite wants to be in a
-   * pane this wide; the earlier 16-across sprite needed 13px to fill it and
-   * looked coarse doing it. */
-  --px: 12px;
+.field i {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.05;
+  animation: field-pulse 3.4s linear infinite;
+  /* The extra cycle subtracted puts every cell mid-animation on the first
+   * frame. Without it the far corners sit dark while the first ring crawls
+   * out to them. */
+  animation-delay: calc(var(--d) * 0.14s - 4s);
+}
+
+@keyframes field-pulse {
+  0% { opacity: 0.05; }
+  7% { opacity: 0.44; }
+  24% { opacity: 0.05; }
+  100% { opacity: 0.05; }
 }
 
 /*
- * A pale coat with a near-black outline and the palette's colour kept for
- * the ears and the toe beans. The cat is not made of the accent any more:
- * saturating the whole body in it made a pink cat rather than a cat, and the
- * pink reads far better as the two or three places it actually belongs.
+ * Still a field, just a still one: the same falloff the wave would leave
+ * behind, drawn once. Switching the animation off without this would leave
+ * every cell at 0.05 and the pane looking empty rather than calm.
  */
-.sprite-frame i[data-c="W"] {
-  background: color-mix(in srgb, var(--accent) 7%, #fff);
+@media (prefers-reduced-motion: reduce) {
+  .field i {
+    animation: none;
+    opacity: calc(0.34 - var(--d) * 0.022);
+  }
 }
 
-/* Under the chin and between the paws. Enough to sit the loaf on the ground
- * without becoming a second colour. */
-.sprite-frame i[data-c="S"] {
-  background: color-mix(in srgb, var(--accent) 22%, #fff);
+
+/* ---------- long lists on a wide window ---------- */
+/*
+ * At 1240px a term ran its name along the left and its two buttons along the
+ * right with eleven hundred pixels of nothing between them, which reads as
+ * two unrelated things rather than one row. Two columns put that width to
+ * work instead, and halve how far the glossary runs.
+ */
+@media (min-width: 1100px) {
+  .term-group {
+    columns: 2;
+    column-gap: 14px;
+  }
+
+  .term {
+    break-inside: avoid;
+  }
 }
 
-/* Ears and toe beans, and the only place the palette shows. */
-.sprite-frame i[data-c="P"] {
+/*
+ * Weapons and Echoes still expand in place, so they cannot take columns —
+ * a row growing by 2,000px would drag half its column with it. Until they
+ * get the same split the Characters tab now has, they keep a width a row
+ * can actually span.
+ */
+@media (min-width: 1000px) {
+  .char-row {
+    max-width: 980px;
+  }
+}
+
+/* ---------- the sheet ---------- */
+/*
+ * Echoes open over the list instead of inside it. A sonata set is a couple of
+ * paragraphs and an Echo is a sentence, so unfolding one in place moved
+ * everything beneath it a long way for very little; a sheet moves nothing,
+ * and 187 rows keep their positions while you read four of them.
+ *
+ * Built on <dialog>, so Escape, the focus trap, the inert background and the
+ * backdrop are the browser's rather than ours.
+ */
+.sheet {
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(78dvh, 720px);
+  padding: 0;
+  border: 1px solid var(--glass-edge);
+  border-radius: var(--radius);
+  border-top-left-radius: 20px;
+  corner-top-left-shape: bevel;
+  background: var(--bg-raised);
+  color: var(--text);
+  overflow: hidden;
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 30px 70px -34px rgb(var(--glass-shadow) / 0.55),
+    0 0 44px -12px var(--glow-soft);
+}
+
+/* The UA sets display itself, so the column has to be asserted on [open]. */
+.sheet[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet::backdrop {
+  background: rgb(var(--glass-shadow) / 0.3);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+/* Dark mode's --glass-shadow is 0 0 0, which is exactly what a scrim wants. */
+.sheet-inner {
+  position: relative;
+  min-height: 0;
+  overflow: auto;
+  padding: 15px 18px 20px;
+}
+
+.sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-right: 34px;
+  margin-bottom: 4px;
+}
+
+.sheet-head h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--accent-ink);
+  letter-spacing: -0.015em;
+}
+
+.sheet-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.sheet-close:hover {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* The body is styled for the inside of a row; in here it needs neither the
+ * row's padding nor the dashed rule that separated it from the row's head. */
+.sheet .char-body {
+  padding: 0;
+  border-top: 0;
+}
+
+/*
+ * Entry and exit. display and overlay have to be transitioned as discrete
+ * properties or the sheet vanishes on close before anything can animate.
+ */
+.sheet {
+  opacity: 0;
+  translate: 0 10px;
+  transition:
+    opacity var(--med) var(--ease),
+    translate var(--med) var(--ease),
+    overlay var(--med) allow-discrete,
+    display var(--med) allow-discrete;
+}
+
+.sheet[open] {
+  opacity: 1;
+  translate: 0 0;
+}
+
+@starting-style {
+  .sheet[open] {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+
+/* A row whose sheet is open stays marked, so closing it lands you back on
+ * the one you were reading rather than on an undifferentiated list. */
+.char-row[data-sel="true"] {
+  border-color: var(--accent);
+  box-shadow:
+    0 1px 0 var(--glass-sheen) inset,
+    0 6px 16px -12px rgb(var(--glass-shadow) / 0.3),
+    0 0 9px -3px var(--glow-mid),
+    0 0 30px -6px var(--glow-soft);
+}
+
+.char-row[data-sel="true"]::before {
+  width: 4px;
   background: var(--accent);
 }
 
-/*
- * Near-black rather than a darker tint of the coat. A pale cat wants a hard
- * line around it, and because the coat is almost white the same outline
- * works on a light page and a dark one without being swapped.
- */
-.sprite-frame i[data-c="D"] {
-  background: color-mix(in srgb, var(--accent) 14%, #141014);
-}
-
-/*
- * The blink. Each frame cuts to the other with no interpolation at all,
- * because an 8-bit animation never had an in-between, and tweening one is the
- * single thing that would stop this reading as a sprite.
- */
-.sprite-open {
-  animation: sprite-awake 4.4s infinite;
-}
-
-.sprite-shut {
-  animation: sprite-blink 4.4s infinite;
-}
-
-@keyframes sprite-awake {
-  0%,
-  93% {
-    opacity: 1;
-  }
-  93.01%,
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes sprite-blink {
-  0%,
-  93% {
-    opacity: 0;
-  }
-  93.01%,
-  100% {
-    opacity: 1;
-  }
-}
-
-/* One pixel up and back, landing on the grid rather than between it. */
-@keyframes sprite-bob {
-  from {
-    translate: 0 0;
-  }
-  to {
-    translate: 0 -12px;
+@media (max-width: 599px) {
+  .sheet {
+    width: calc(100vw - 20px);
+    max-height: 86dvh;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sprite,
-  .sprite-open,
-  .sprite-shut {
-    animation: none;
-  }
-
-  .sprite-shut {
-    opacity: 0;
+  .sheet {
+    transition: none;
   }
 }
+
+
+/*
+ * The cost rows in a sonata set's sheet. Wider than .stat-grid's 5px because
+ * these rows wrap to two and three lines each — at the tighter gap the wrap
+ * inside a row and the gap between two of them were the same distance, so
+ * where one row ended and the next began stopped being readable.
+ */
+.cost-rows {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.cost-rows .stat-line {
+  align-items: baseline;
+  line-height: 1.5;
+}
+
+/*
+ * Queue, Built and Note now lead the body rather than closing it, and a
+ * heading pressed straight up against them read as their caption. The first
+ * block in the pane also has its own top margin removed so the columns line
+ * up, which left nothing at all between the two.
+ */
+.char-body > .term-actions:first-child {
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+/* ---------- My plan: the jump bar ---------- */
+/*
+ * Sticky under the tab row, like the search box on the long lists, because
+ * the question it answers — which part of this am I reading — is one you ask
+ * part of the way down rather than at the top.
+ */
+.plan-nav {
+  position: sticky;
+  top: calc(var(--nav-h, 98px) - 1px);
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-inline: calc(-1 * var(--shell-pad));
+  padding: 9px var(--shell-pad);
+  margin-bottom: 16px;
+  /* Same as the controls bar: the page's own background rather than a tint,
+   * so a second band does not appear welded under the tab row. */
+  background: var(--page-bg);
+  background-attachment: fixed;
+}
+
+.plan-nav .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+/*
+ * The four labels measure 363px plus their gaps against 343px of phone, so
+ * they wrapped to a second line and the bar became 82px — nearly a quarter
+ * of the screen held permanently for a signpost. One row that scrolls
+ * sideways instead, with the same self-cancelling fade the tab row uses to
+ * admit there is more to the right.
+ */
+@media (max-width: 599px) {
+  .plan-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    /* Same clip as .tabs, same remedy: the active chip's glow needs room
+     * inside a box that scrolls. This bar has padding already, so the
+     * vertical part of it simply grows. */
+    padding-block: 12px;
+  }
+
+  .plan-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .plan-nav {
+      animation-name: tabs-fade;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-duration: auto;
+      animation-timeline: scroll(self inline);
+      -webkit-mask-image: linear-gradient(
+        to right, #000 calc(100% - var(--tabs-fade)), transparent 100%);
+      mask-image: linear-gradient(
+        to right, #000 calc(100% - var(--tabs-fade)), transparent 100%);
+    }
+  }
+}
+
+/* The count is the one number worth carrying in the bar: how many characters
+ * are queued is the answer to "is there anything to do". */
+.plan-nav-count {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.72rem;
+  font-weight: 700;
+  min-width: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--bg-sunken);
+  color: var(--text-dim);
+}
+
+.plan-nav .chip[data-on="true"] .plan-nav-count {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent-ink);
+}
+
+/* Headings the bar jumps to need to clear the chrome above them when the
+ * browser scrolls there by itself — a hash link, or find-in-page. */
+#plan-materials,
+#plan-costs,
+#plan-rules,
+#plan-queue {
+  scroll-margin-top: calc(var(--nav-h, 98px) + 62px);
+}
+
 
 /* ---------- a weapon against its own class ---------- */
 /*

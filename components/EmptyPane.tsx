@@ -1,13 +1,14 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Sprite from "./Sprite";
+import ResonanceField from "./ResonanceField";
 
 /**
  * What a detail pane shows before anything is picked.
  *
- * The sprite behind the words is decoration and nothing else, which is why
- * it is aria-hidden and why anything worth knowing is written out.
+ * The field behind the words is decoration and nothing else, which is why it
+ * is aria-hidden and why anything worth knowing is written out rather than
+ * left for it to imply. A cat sprite is meant to replace it; see BACKLOG.
  */
 export default function EmptyPane({
   title,
@@ -18,7 +19,7 @@ export default function EmptyPane({
 }) {
   return (
     <div className="char-nobody">
-      <Sprite />
+      <ResonanceField />
       <div className="char-nobody-say">
         <h2>{title}</h2>
         <p>{children}</p>
