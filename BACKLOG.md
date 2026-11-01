@@ -1,8 +1,9 @@
 # Backlog
 
-Captured 30 October 2026. Items 1–12 are done, sync included. Item 13 — moving Clerk onto a real
-domain — is the only thing in flight: decided on 31 October 2026 and waiting on the claim, since
-most of its steps need your accounts rather than code.
+Captured 30 October 2026. Items 1–12 are done, sync included. Two things are in flight: item 13,
+moving Clerk onto a real domain, decided on 31 October 2026 and waiting on the claim because most
+of its steps need your accounts rather than code; and item 14, a cat sprite for the empty pane,
+parked on 1 November 2026 until the asset licensing is checked.
 
 ---
 
@@ -213,6 +214,36 @@ now sit with the rest of My build, because the stat targets are quoted at a fini
 at S0 for a 5-star and S6 for a 4-star — without those three a shortfall cannot be read. Reaching
 Lv.90 asks once whether the character is finished; nothing else ever removes them from the queue.
 
+## In flight, continued
+
+### 14. A cat for the empty pane
+Decided 1 November 2026, parked until the licensing is settled.
+
+The Characters and Weapons panes show a field of pixels before anything is picked. A cat sprite
+would suit it better, and five asset packs now sit in `cat sprites/` for the purpose. The
+**Free pack** is the one: a 16x16 cat on a 352x1696 sheet with dozens of animations — idle, sit,
+walk, run, sleep — plus two recoloured variants, a frame index and a `.gpl` palette. It is far
+better than anything drawn by hand here, and several rounds were spent proving that.
+
+Three things to settle before it ships.
+
+**Licensing is unverified.** None of the five packs carries a licence file, so the terms live on
+the pages they were downloaded from rather than in the folder. "Free" usually means free with
+attribution, which the app would need to honour somewhere — the footnotes already credit
+prydwen.gg and Kuro Games, so there is a place for it. Two of the files are stock footage
+(`stock-footage-…green-screen.webm`), which is rarely free at all and probably cannot be used.
+
+**A sheet is a fixed-colour image.** The hand-drawn sprite took its colours from the palette: the
+coat was mixed from `--accent`, so the cat changed with the preset. A PNG cannot do that. Either
+the cat stops following the theme, or the pack's palette gets remapped per preset, which is more
+work than the result is likely worth.
+
+**`cat sprites/` is gitignored** so none of it reaches the repository meanwhile. That line comes
+out when a pack is cleared for use and its files move into `public/`.
+
+Until then the pane keeps the pixel field it started with — `components/ResonanceField.tsx`, a
+ring travelling out through a grid, which is also what the reduced-motion path falls back to.
+
 ## Suggested order
 
 1. ~~Items 1–4 (quick wins)~~ — done
@@ -222,3 +253,4 @@ Lv.90 asks once whether the character is finished; nothing else ever removes the
 5. ~~Item 12 (sync)~~ — done
 6. ~~Item 6 (materials)~~ — done
 7. Item 13 (Clerk on a real domain) — in flight, see [docs/custom-domain.md](docs/custom-domain.md)
+8. Item 14 (a cat for the empty pane) — parked on licensing
