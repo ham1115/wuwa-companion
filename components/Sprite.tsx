@@ -25,10 +25,10 @@ const CAT_OPEN = [
   "...DPD....DPD...",
   "..DPPDDDDDDPPD..",
   "..DWWWWWWWWWWD..",
+  "..DWWDWWWWDWWD..",
   "..DWWWWWWWWWWD..",
-  "..DWDWWWWWWDWD..",
+  "..DWWWDWDWDWWD..",
   "..DWWWWDWDWWWD..",
-  "..DWWWWWDWWWWD..",
   ".DWWWWWWWWWWWWD.",
   "DWPPWWWWWWWWPPWD",
   "DWPPWSSSSSSWPPWD",
@@ -37,8 +37,8 @@ const CAT_OPEN = [
 ];
 
 /**
- * The same cat with its eyes shut. One row differs: the two dots become two
- * dashes, which is all a blink is at this size.
+ * The same cat, happy. The dots become carets and the mouth stays put, which
+ * is the whole of an uwu face: it is the eyes that do it, not the mouth.
  */
 const CAT_SHUT = [
   "...D........D...",
@@ -46,10 +46,10 @@ const CAT_SHUT = [
   "...DPD....DPD...",
   "..DPPDDDDDDPPD..",
   "..DWWWWWWWWWWD..",
-  "..DWWWWWWWWWWD..",
-  "..DWDDWWWWDDWD..",
+  "..DWWDWWWWDWWD..",
+  "..DWDWDWWDWDWD..",
+  "..DWWWDWDWDWWD..",
   "..DWWWWDWDWWWD..",
-  "..DWWWWWDWWWWD..",
   ".DWWWWWWWWWWWWD.",
   "DWPPWWWWWWWWPPWD",
   "DWPPWSSSSSSWPPWD",
