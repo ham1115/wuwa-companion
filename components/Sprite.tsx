@@ -17,7 +17,12 @@ import { useMemo } from "react";
  * one.
  *
  *   .  nothing   D  outline     W  coat
- *   S  shade     P  pink        (ears and toe beans)
+ *   S  shade     P  pink        (ear linings and toe beans)
+ *
+ * The paws are outlined in their own right rather than being pink squares
+ * sunk into the body: their outer edge is the body's own line, their inner
+ * edge is a line of their own, and the beans sit inside that. Without it
+ * there was nothing to say where the paw ended and the cat began.
  */
 const CAT_OPEN = [
   ".......D............D.......",
@@ -36,9 +41,9 @@ const CAT_OPEN = [
   ".....DWWWWWWWWWWWWWWWWD.....",
   "....DWWWWWWWWWWWWWWWWWWD....",
   "...DWWWWWWWWWWWWWWWWWWWWD...",
-  "..DWPPWWWWWWWWWWWWWWWWPPWD..",
-  "..DWPPWWSSSSSSSSSSSSWWPPWD..",
-  "..DWWWWWSSSSSSSSSSSSWWWWWD..",
+  "..DDDDDWWWWWWWWWWWWWWDDDDD..",
+  "..DPWPDWWWWWWWWWWWWWWDPWPD..",
+  "..DPPPDSSSSSSSSSSSSSSDPPPD..",
   "..DDDDDDDDDDDDDDDDDDDDDDDD..",
 ];
 
@@ -64,9 +69,9 @@ const CAT_SHUT = [
   ".....DWWWWWWWWWWWWWWWWD.....",
   "....DWWWWWWWWWWWWWWWWWWD....",
   "...DWWWWWWWWWWWWWWWWWWWWD...",
-  "..DWPPWWWWWWWWWWWWWWWWPPWD..",
-  "..DWPPWWSSSSSSSSSSSSWWPPWD..",
-  "..DWWWWWSSSSSSSSSSSSWWWWWD..",
+  "..DDDDDWWWWWWWWWWWWWWDDDDD..",
+  "..DPWPDWWWWWWWWWWWWWWDPWPD..",
+  "..DPPPDSSSSSSSSSSSSSSDPPPD..",
   "..DDDDDDDDDDDDDDDDDDDDDDDD..",
 ];
 
