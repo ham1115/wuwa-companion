@@ -2772,7 +2772,11 @@ button,
   display: grid;
   grid-template-columns: repeat(var(--sprite-size), var(--px));
   grid-auto-rows: var(--px);
-  --px: 13px;
+  /* Smaller cells than the first draft, because there are far more of them.
+   * 28 across at 12px is 336, which is the size the sprite wants to be in a
+   * pane this wide; the earlier 16-across sprite needed 13px to fill it and
+   * looked coarse doing it. */
+  --px: 12px;
 }
 
 /*
@@ -2846,7 +2850,7 @@ button,
     translate: 0 0;
   }
   to {
-    translate: 0 -13px;
+    translate: 0 -12px;
   }
 }
 

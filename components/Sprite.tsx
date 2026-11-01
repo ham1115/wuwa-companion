@@ -20,41 +20,54 @@ import { useMemo } from "react";
  *   S  shade     P  pink        (ears and toe beans)
  */
 const CAT_OPEN = [
-  "...D........D...",
-  "...DD......DD...",
-  "...DPD....DPD...",
-  "..DPPDDDDDDPPD..",
-  "..DWWWWWWWWWWD..",
-  "..DWWDWWWWDWWD..",
-  "..DWWWWWWWWWWD..",
-  "..DWWWDWDWDWWD..",
-  "..DWWWWDWDWWWD..",
-  ".DWWWWWWWWWWWWD.",
-  "DWPPWWWWWWWWPPWD",
-  "DWPPWSSSSSSWPPWD",
-  ".DDWWSSSSSSWWDD.",
-  "..DDDDDDDDDDDD..",
+  ".......D............D.......",
+  "......DPD..........DPD......",
+  "......DPPD........DPPD......",
+  "......DPPPD......DPPPD......",
+  "......DDDDDDDDDDDDDDDD......",
+  ".....DWWWWWWWWWWWWWWWWD.....",
+  ".....DWWWWWWWWWWWWWWWWD.....",
+  ".....DWWWWWWWWWWWWWWWWD.....",
+  ".....DWWDDWWWWWWWWDDWWD.....",
+  ".....DWWDDWWWWWWWWDDWWD.....",
+  ".....DWWWWWWWWWWWWWWWWD.....",
+  ".....DWWWWWDWWDWWDWWWWD.....",
+  ".....DWWWWWWDDWDDWWWWWD.....",
+  ".....DWWWWWWWWWWWWWWWWD.....",
+  "....DWWWWWWWWWWWWWWWWWWD....",
+  "...DWWWWWWWWWWWWWWWWWWWWD...",
+  "..DWPPWWWWWWWWWWWWWWWWPPWD..",
+  "..DWPPWWSSSSSSSSSSSSWWPPWD..",
+  "..DWWWWWSSSSSSSSSSSSWWWWWD..",
+  "..DDDDDDDDDDDDDDDDDDDDDDDD..",
 ];
 
 /**
- * The same cat, happy. The dots become carets and the mouth stays put, which
- * is the whole of an uwu face: it is the eyes that do it, not the mouth.
+ * The same cat, happy. The lower half of each eye opens out into the arms of
+ * a caret, which is the whole of an uwu face: it is the eyes that do it, not
+ * the mouth. One row differs.
  */
 const CAT_SHUT = [
-  "...D........D...",
-  "...DD......DD...",
-  "...DPD....DPD...",
-  "..DPPDDDDDDPPD..",
-  "..DWWWWWWWWWWD..",
-  "..DWWDWWWWDWWD..",
-  "..DWDWDWWDWDWD..",
-  "..DWWWDWDWDWWD..",
-  "..DWWWWDWDWWWD..",
-  ".DWWWWWWWWWWWWD.",
-  "DWPPWWWWWWWWPPWD",
-  "DWPPWSSSSSSWPPWD",
-  ".DDWWSSSSSSWWDD.",
-  "..DDDDDDDDDDDD..",
+  ".......D............D.......",
+  "......DPD..........DPD......",
+  "......DPPD........DPPD......",
+  "......DPPPD......DPPPD......",
+  "......DDDDDDDDDDDDDDDD......",
+  ".....DWWWWWWWWWWWWWWWWD.....",
+  ".....DWWWWWWWWWWWWWWWWD.....",
+  ".....DWWWWWWWWWWWWWWWWD.....",
+  ".....DWWDDWWWWWWWWDDWWD.....",
+  ".....DWDWWDWWWWWWDWWDWD.....",
+  ".....DWWWWWWWWWWWWWWWWD.....",
+  ".....DWWWWWDWWDWWDWWWWD.....",
+  ".....DWWWWWWDDWDDWWWWWD.....",
+  ".....DWWWWWWWWWWWWWWWWD.....",
+  "....DWWWWWWWWWWWWWWWWWWD....",
+  "...DWWWWWWWWWWWWWWWWWWWWD...",
+  "..DWPPWWWWWWWWWWWWWWWWPPWD..",
+  "..DWPPWWSSSSSSSSSSSSWWPPWD..",
+  "..DWWWWWSSSSSSSSSSSSWWWWWD..",
+  "..DDDDDDDDDDDDDDDDDDDDDDDD..",
 ];
 
 /* The sprite is wider than it is tall, so the grid is told the row
