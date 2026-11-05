@@ -15,9 +15,23 @@
   --bg-sunken: #fdecf3;
   --border: #f8d7e4;
   --border-strong: #efb3cc;
-  --text: #3f2733;
-  --text-dim: #7d5c6b;
-  --text-faint: #a9879a;
+  /*
+   * Near-neutral, carrying a tenth of the accent so it belongs to whichever
+   * preset is on. Two things wrong with what was here: it was a literal plum
+   * that no preset could reach, so every word stayed pink on a teal page;
+   * and at #3f2733 it was plum enough to read as a second accent, which is
+   * what made headings, labels and body blur into one another. A tenth is
+   * enough to feel related and not enough to compete.
+   *
+   * Dim and faint are mixed from the text toward the page rather than being
+   * three unrelated values, so the ramp holds whatever the other two become.
+   */
+  --text: color-mix(in srgb, var(--accent) 10%, #171318);
+  --text-dim: color-mix(in srgb, var(--text) 70%, var(--bg));
+  /* 50% put this at 3.4:1, and it carries real words — the role on every
+   * row, the weapon type, the label over each picker. 62% clears 4.5 while
+   * staying clearly the quietest of the three. */
+  --text-faint: color-mix(in srgb, var(--text) 62%, var(--bg));
   --accent: #c43f7a;
   --accent-soft: #ffd9e8;
   --accent-ink: #8e2a56;
@@ -61,7 +75,15 @@
   --glass-blur: 14px;
   --glass-edge: color-mix(in srgb, var(--border-strong) 70%, transparent);
   --glass-sheen: rgba(255, 255, 255, 0.9);
-  --glass-shadow: 142 42 86;
+  /*
+   * Every shadow in the app, and the scrim behind a popup. It used to be a
+   * literal "142 42 86" — the plum of the default accent — which no preset
+   * could reach, so a teal page dimmed to pink when a sheet opened and every
+   * card cast a pink shadow. Mixed from the accent it follows whatever is
+   * picked, and for the default preset it lands on 137 44 85, which is where
+   * it already was.
+   */
+  --shadow: color-mix(in srgb, var(--accent) 70%, #000);
 
   /* Glow. Mixed out of --accent rather than written as a fixed colour, so a
    * custom palette lights the app in its own colour instead of in pink.
@@ -101,9 +123,9 @@
   --border: #3b2630;
   --border-strong: #573a47;
   --press: 1.18;
-  --text: #fbeaf2;
-  --text-dim: #d2aec0;
-  --text-faint: #9c7b8b;
+  --text: color-mix(in srgb, var(--accent) 8%, #fff);
+  --text-dim: color-mix(in srgb, var(--text) 72%, var(--bg));
+  --text-faint: color-mix(in srgb, var(--text) 62%, var(--bg));
   --accent: #ff9ac6;
   --accent-soft: #4a2435;
   --accent-ink: #ffc2dd;
@@ -135,7 +157,10 @@
   --glass-blur: 16px;
   --glass-edge: color-mix(in srgb, var(--border-strong) 90%, transparent);
   --glass-sheen: rgba(255, 214, 233, 0.09);
-  --glass-shadow: 0 0 0;
+  /* Dark keeps a true black. A shadow here is doing almost nothing anyway —
+   * see the glow tokens below, which are what actually separates a surface
+   * from the page in this mode. */
+  --shadow: #000;
 
   /* Dark carries the glow much further, because the shadow above is pure
    * black: on a #1c1118 page it draws nothing, so until now the only thing
@@ -582,7 +607,7 @@ h2.section {
   border: 1px solid var(--glass-edge);
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
-    0 6px 16px -12px rgb(var(--glass-shadow) / 0.22);
+    0 6px 16px -12px color-mix(in srgb, var(--shadow) 22%, transparent);
 }
 
 /*
@@ -628,7 +653,7 @@ h2.section {
     var(--bg-raised);
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
-    0 6px 16px -12px rgb(var(--glass-shadow) / 0.3);
+    0 6px 16px -12px color-mix(in srgb, var(--shadow) 30%, transparent);
 }
 
 .term-head {
@@ -1874,7 +1899,7 @@ details.more li {
   border-bottom-color: var(--glass-edge);
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
-    0 6px 18px -14px rgb(var(--glass-shadow) / 0.5);
+    0 6px 18px -14px color-mix(in srgb, var(--shadow) 50%, transparent);
 }
 
 .card,
@@ -1886,8 +1911,8 @@ details.more li {
   border-color: var(--glass-edge);
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
-    0 8px 24px -12px rgb(var(--glass-shadow) / 0.28),
-    0 2px 6px -3px rgb(var(--glass-shadow) / 0.18);
+    0 8px 24px -12px color-mix(in srgb, var(--shadow) 28%, transparent),
+    0 2px 6px -3px color-mix(in srgb, var(--shadow) 18%, transparent);
 }
 
 /*
@@ -2436,7 +2461,7 @@ button,
 .char-row {
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
-    0 6px 16px -12px rgb(var(--glass-shadow) / 0.22),
+    0 6px 16px -12px color-mix(in srgb, var(--shadow) 22%, transparent),
     0 2px 18px -10px var(--glow-soft);
 }
 
@@ -2444,15 +2469,15 @@ button,
 .callout {
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
-    0 8px 24px -12px rgb(var(--glass-shadow) / 0.28),
-    0 2px 6px -3px rgb(var(--glass-shadow) / 0.18),
+    0 8px 24px -12px color-mix(in srgb, var(--shadow) 28%, transparent),
+    0 2px 6px -3px color-mix(in srgb, var(--shadow) 18%, transparent),
     0 0 30px -8px var(--glow-soft);
 }
 
 .nav {
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
-    0 6px 18px -14px rgb(var(--glass-shadow) / 0.5),
+    0 6px 18px -14px color-mix(in srgb, var(--shadow) 50%, transparent),
     0 0 26px -10px var(--glow-soft);
 }
 
@@ -2496,7 +2521,7 @@ button,
 .char-row[data-built="true"] {
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
-    0 6px 16px -12px rgb(var(--glass-shadow) / 0.3),
+    0 6px 16px -12px color-mix(in srgb, var(--shadow) 30%, transparent),
     0 0 9px -3px var(--glow-mid),
     0 0 30px -6px var(--glow-soft);
 }
@@ -2864,7 +2889,7 @@ button,
   overflow: hidden;
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
-    0 30px 70px -34px rgb(var(--glass-shadow) / 0.55),
+    0 30px 70px -34px color-mix(in srgb, var(--shadow) 55%, transparent),
     0 0 44px -12px var(--glow-soft);
 }
 
@@ -2875,12 +2900,12 @@ button,
 }
 
 .sheet::backdrop {
-  background: rgb(var(--glass-shadow) / 0.3);
+  background: color-mix(in srgb, var(--shadow) 30%, transparent);
   -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
 }
 
-/* Dark mode's --glass-shadow is 0 0 0, which is exactly what a scrim wants. */
+/* Dark mode's --shadow is a true black, which is what a scrim wants. */
 .sheet-inner {
   position: relative;
   min-height: 0;
@@ -2964,7 +2989,7 @@ button,
   border-color: var(--accent);
   box-shadow:
     0 1px 0 var(--glass-sheen) inset,
-    0 6px 16px -12px rgb(var(--glass-shadow) / 0.3),
+    0 6px 16px -12px color-mix(in srgb, var(--shadow) 30%, transparent),
     0 0 9px -3px var(--glow-mid),
     0 0 30px -6px var(--glow-soft);
 }
