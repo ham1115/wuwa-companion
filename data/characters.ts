@@ -2,8 +2,15 @@
  * Build parameters for every Resonator.
  *
  * Source: prydwen.gg character build guides (reviewed patch 3.6, captured
- * 22 October 2026). Only the structured build parameters are reproduced —
- * weapon/echo/set rankings, main-stat slots and substat order. Prydwen's
+ * 22 October 2026; weapon rankings recaptured in full 6 November 2026). Only
+ * the structured build parameters are reproduced — weapon/echo/set rankings,
+ * main-stat slots and substat order.
+ *
+ * The weapon lists are each character's complete ranking, not a top four. The
+ * earlier capture stopped at four, which cut the 4-star options off every
+ * character whose first four picks are all 5-star: only 18 of 60 carried a
+ * cheaper alternative, against 56 now. Entries keep prydwen's order, which is
+ * by damage and not by rarity, so a 4-star above a 5-star is deliberate. Prydwen's
  * written guides, reviews and tier-list commentary are their own work and
  * are not included here; go read them at prydwen.gg.
  */
@@ -75,7 +82,7 @@ export const OWNED: string[] = [];
 export const CHARACTERS: Character[] = [
   {
     id: "aalto", name: "Aalto", rarity: 4, element: "Aero", weaponType: "Pistols", role: "Hybrid",
-    weapons: ["The Last Dance (R1)", "Woodland Aria (R1)", "Static Mist (R1)", "Relativistic Jet (R5)"],
+    weapons: ["The Last Dance (R1)", "Woodland Aria (R1)", "Static Mist (R1)", "Relativistic Jet (R5)", "Undying Flame (R5)", "Thunderbolt (R5)", "Solar Flame (R5)", "Romance in Farewell (R5)", "Novaburst (R5)"],
     sets: ["Sierra Gale", "Windward Pilgrimage", "Moonlit Clouds"],
     echoes: ["Nightmare: Feilian Beringal", "Nightmare: Kelpie", "Impermanence Heron"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Aero DMG", "3 cost: Aero DMG > Energy Regen", "1 cost: ATK%", "1 cost: ATK%"],
@@ -84,7 +91,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "aemeath", name: "Aemeath", rarity: 5, element: "Fusion", weaponType: "Sword", role: "DPS",
-    weapons: ["Everbright Polestar (R1)", "Emerald of Genesis (R1)", "Red Spring (R1)", "Emerald Sentence (R1)"],
+    weapons: ["Everbright Polestar (R1)", "Emerald of Genesis (R1)", "Red Spring (R1)", "Emerald Sentence (R1)", "Blazing Brilliance (R1)", "Feather Edge (R5)", "Somnoire Anchor (R5)", "Endless Collapse (R5)", "Commando of Conviction (R5)"],
     sets: ["Trailblazing Star"],
     echoes: ["Hyvatia", "Reactor Husk", "Reminiscence: Denia"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Fusion DMG", "3 cost: ATK% = Fusion DMG", "1 cost: ATK%", "1 cost: ATK%"],
@@ -93,7 +100,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "augusta", name: "Augusta", rarity: 5, element: "Electro", weaponType: "Broadblade", role: "DPS",
-    weapons: ["Thunderflare Dominion (R1)", "Verdant Summit (R1)", "Ages of Harvest (R1)", "Wildfire Mark (R1)"],
+    weapons: ["Thunderflare Dominion (R1)", "Verdant Summit (R1)", "Ages of Harvest (R1)", "Wildfire Mark (R1)", "Radiance Cleaver (R1)", "Kumokiri (R1)", "Aureate Zenith (R5)", "Lustrous Razor (R1)", "Autumntrace (R5)", "Waning Redshift (R5)", "Helios Cleaver (R5)", "Meditations on Mercy (R5)"],
     sets: ["Crown of Valor"],
     echoes: ["Lady of the Sea", "Fallacy of No Return", "The False Sovereign"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Electro DMG", "3 cost: Electro DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -102,7 +109,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "baizhi", name: "Baizhi", rarity: 4, element: "Glacio", weaponType: "Rectifier", role: "Support",
-    weapons: ["Stellar Symphony (R1)", "Variation (R5)", "Call of the Abyss (R5)", "Rectifier of Voyager (R5)"],
+    weapons: ["Stellar Symphony (R1)", "Variation (R5)", "Call of the Abyss (R5)", "Rectifier of Voyager (R5)", "Rectifier#25 (R5)"],
     sets: ["Rejuvenating Glow", "Moonlit Clouds"],
     echoes: ["Fallacy of No Return", "Impermanence Heron"],
     stats: ["4 cost: HP% / CRIT Rate", "3 cost: Energy Regen", "3 cost: Energy Regen", "1 cost: HP%", "1 cost: HP%"],
@@ -111,7 +118,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "brant", name: "Brant", rarity: 5, element: "Fusion", weaponType: "Sword", role: "DPS",
-    weapons: ["Unflickering Valor (R1)", "Laser Shearer (R1)", "Bloodpact's Pledge (R5)", "Red Spring (R1)"],
+    weapons: ["Unflickering Valor (R1)", "Laser Shearer (R1)", "Bloodpact's Pledge (R5)", "Red Spring (R1)", "Emerald of Genesis (R1)"],
     sets: ["Molten Rift", "Tidebreaking Courage"],
     echoes: ["Lioness of Glory", "Myriad Snare: Rustfire Chassis", "Nightmare: Inferno Rider"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Energy Regen", "3 cost: Energy Regen / Fusion DMG", "1 cost: ATK%", "1 cost: ATK%"],
@@ -120,7 +127,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "buling", name: "Buling", rarity: 4, element: "Electro", weaponType: "Rectifier", role: "Support",
-    weapons: ["Stringmaster (R1)", "Lethean Elegy (R1)", "Rime-Draped Sprouts (R1)", "Luminous Hymn (R1)"],
+    weapons: ["Stringmaster (R1)", "Lethean Elegy (R1)", "Rime-Draped Sprouts (R1)", "Luminous Hymn (R1)", "Cosmic Ripples (R1)", "Waltz in Masquerade (R5)"],
     sets: ["Rejuvenating Glow"],
     echoes: ["Fallacy of No Return"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Electro DMG", "3 cost: Electro DMG > Energy Regen", "1 cost: ATK%", "1 cost: ATK%"],
@@ -129,7 +136,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "calcharo", name: "Calcharo", rarity: 5, element: "Electro", weaponType: "Broadblade", role: "DPS",
-    weapons: ["Wildfire Mark (R1)", "Lustrous Razor (R1)", "Ages of Harvest (R1)", "Verdant Summit (R1)"],
+    weapons: ["Wildfire Mark (R1)", "Lustrous Razor (R1)", "Ages of Harvest (R1)", "Verdant Summit (R1)", "Autumntrace (R5)", "Aureate Zenith (R5)", "Waning Redshift (R5)", "Helios Cleaver (R5)", "Broadblade#41 (R5)"],
     sets: ["Void Thunder", "Endless Resonance"],
     echoes: ["Nightmare: Thundering Mephis", "Nightmare: Tempest Mephis", "Mech Abomination"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Electro DMG", "3 cost: Electro DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -138,7 +145,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "camellya", name: "Camellya", rarity: 5, element: "Havoc", weaponType: "Sword", role: "DPS",
-    weapons: ["Red Spring (R1)", "Emerald Sentence (R1)", "Frostburn (R1)", "Everbright Polestar (R1)"],
+    weapons: ["Red Spring (R1)", "Emerald Sentence (R1)", "Frostburn (R1)", "Everbright Polestar (R1)", "Emerald of Genesis (R1)", "Blazing Brilliance (R1)", "Feather Edge (R5)", "Lumingloss (R5)", "Somnoire Anchor (R5)", "Commando of Conviction (R5)"],
     sets: ["Havoc Eclipse", "Endless Resonance"],
     echoes: ["Hyvatia", "Reactor Husk", "Nightmare: Crownless"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Havoc DMG", "3 cost: ATK% ≥ Havoc DMG", "1 cost: ATK%", "1 cost: ATK%"],
@@ -147,7 +154,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "cantarella", name: "Cantarella", rarity: 5, element: "Havoc", weaponType: "Rectifier", role: "Hybrid",
-    weapons: ["Whispers of Sirens (R1)", "Rime-Draped Sprouts (R1)", "Stringmaster (R1)", "Lethean Elegy (R1)"],
+    weapons: ["Whispers of Sirens (R1)", "Rime-Draped Sprouts (R1)", "Stringmaster (R1)", "Lethean Elegy (R1)", "Luminous Hymn (R1)", "Cosmic Ripples (R1)", "Radiant Dawn (R5)", "Augment (R5)", "Fusion Accretion (R5)", "Jinzhou Keeper (R5)"],
     sets: ["Midnight Veil", "Moonlit Clouds"],
     echoes: ["Nightmare: Hecate", "Bell-Borne Geochelone", "Lorelei"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Havoc DMG", "3 cost: Havoc DMG > Energy Regen", "1 cost: ATK%", "1 cost: ATK%"],
@@ -156,7 +163,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "carlotta", name: "Carlotta", rarity: 5, element: "Glacio", weaponType: "Pistols", role: "DPS",
-    weapons: ["The Last Dance (R1)", "Phasic Homogenizer (R1)", "Woodland Aria (R1)", "Spectrum Blaster (R1)"],
+    weapons: ["The Last Dance (R1)", "Phasic Homogenizer (R1)", "Woodland Aria (R1)", "Spectrum Blaster (R1)", "Lux & Umbra (R1)", "Static Mist (R1)", "Undying Flame (R5)", "Relativistic Jet (R5)", "Pistols#26 (R5)"],
     sets: ["Frosty Resolve"],
     echoes: ["Hyvatia", "Reactor Husk", "Sentry Construct"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Glacio DMG", "3 cost: Glacio DMG ≥ ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -165,7 +172,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "cartethyia", name: "Cartethyia", rarity: 5, element: "Aero", weaponType: "Sword", role: "DPS",
-    weapons: ["Defier's Thorn (R1)", "Red Spring (R1)", "Blazing Brilliance (R1)", "Feather Edge (R5)"],
+    weapons: ["Defier's Thorn (R1)", "Red Spring (R1)", "Blazing Brilliance (R1)", "Feather Edge (R5)", "Emerald Sentence (R1)", "Emerald of Genesis (R1)", "Guardian Sword (R5)"],
     sets: ["Windward Pilgrimage"],
     echoes: ["Nightmare: Kelpie", "Reminiscence: Threnodian - Leviathan", "Reminiscence: Fleurdelys"],
     stats: ["4 cost: CRIT Rate", "4 cost: CRIT DMG", "1 cost: HP%", "1 cost: HP%", "1 cost: HP%"],
@@ -174,7 +181,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "changli", name: "Changli", rarity: 5, element: "Fusion", weaponType: "Sword", role: "Hybrid",
-    weapons: ["Blazing Brilliance (R1)", "Emerald of Genesis (R1)", "Emerald Sentence (R1)", "Frostburn (R1)"],
+    weapons: ["Blazing Brilliance (R1)", "Emerald of Genesis (R1)", "Emerald Sentence (R1)", "Frostburn (R1)", "Red Spring (R1)", "Everbright Polestar (R1)", "Somnoire Anchor (R5)", "Commando of Conviction (R5)"],
     sets: ["Molten Rift"],
     echoes: ["Dragon of Dirge", "Lioness of Glory", "Nightmare: Inferno Rider"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Fusion DMG", "3 cost: ATK% ≥ Fusion DMG", "1 cost: ATK%", "1 cost: ATK%"],
@@ -183,7 +190,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "chisa", name: "Chisa", rarity: 5, element: "Havoc", weaponType: "Broadblade", role: "Support",
-    weapons: ["Kumokiri (R1)", "Wildfire Mark (R1)", "Ages of Harvest (R1)", "Verdant Summit (R1)"],
+    weapons: ["Kumokiri (R1)", "Wildfire Mark (R1)", "Ages of Harvest (R1)", "Verdant Summit (R1)", "Radiance Cleaver (R1)", "Thunderflare Dominion (R1)", "Lustrous Razor (R1)", "Autumntrace (R5)", "Meditations on Mercy (R5)"],
     sets: ["Rejuvenating Glow", "Moonlit Clouds", "Thread of Severed Fate"],
     echoes: ["Sigillum", "Reminiscence: Denia", "Fallacy of No Return"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Havoc DMG", "3 cost: Havoc DMG ≥ ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -192,7 +199,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "chixia", name: "Chixia", rarity: 4, element: "Fusion", weaponType: "Pistols", role: "DPS",
-    weapons: ["The Last Dance (R1)", "Static Mist (R1)", "Thunderbolt (R5)", "Relativistic Jet (R5)"],
+    weapons: ["The Last Dance (R1)", "Static Mist (R1)", "Thunderbolt (R5)", "Relativistic Jet (R5)", "Novaburst (R5)", "Undying Flame (R5)", "Pistols#26 (R5)"],
     sets: ["Molten Rift"],
     echoes: ["Nightmare: Inferno Rider", "Inferno Rider"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Fusion DMG", "3 cost: Fusion DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -201,7 +208,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "ciaccona", name: "Ciaccona", rarity: 5, element: "Aero", weaponType: "Pistols", role: "Hybrid",
-    weapons: ["Woodland Aria (R1)", "Phasic Homogenizer (R1)", "Spectrum Blaster (R1)", "Lux & Umbra (R1)"],
+    weapons: ["Woodland Aria (R1)", "Phasic Homogenizer (R1)", "Spectrum Blaster (R1)", "Lux & Umbra (R1)", "The Last Dance (R1)", "Static Mist (R1)", "Romance in Farewell (R5)"],
     sets: ["Gusts of Welkin", "Moonlit Clouds", "Windward Pilgrimage"],
     echoes: ["Reminiscence: Fleurdelys", "Reminiscence: Threnodian - Leviathan", "Nightmare: Kelpie"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Aero DMG", "3 cost: Aero DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -210,7 +217,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "danjin", name: "Danjin", rarity: 4, element: "Havoc", weaponType: "Sword", role: "Hybrid",
-    weapons: ["Blazing Brilliance (R1)", "Red Spring (R1)", "Emerald of Genesis (R1)", "Commando of Conviction (R5)"],
+    weapons: ["Blazing Brilliance (R1)", "Red Spring (R1)", "Emerald of Genesis (R1)", "Commando of Conviction (R5)", "Endless Collapse (R5)", "Somnoire Anchor (R5)", "Lunar Cutter (R5)", "Lumingloss (R5)"],
     sets: ["Moonlit Clouds", "Midnight Veil", "Havoc Eclipse"],
     echoes: ["Impermanence Heron", "Lorelei", "Nightmare: Impermanence Heron"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Havoc DMG", "3 cost: Havoc DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -219,7 +226,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "denia", name: "Denia", rarity: 5, element: "Fusion", weaponType: "Rectifier", role: "Hybrid",
-    weapons: ["Forged Dwarf Star (R1)", "Stringmaster (R1)", "Lethean Elegy (R1)", "Luminous Hymn (R1)"],
+    weapons: ["Forged Dwarf Star (R1)", "Stringmaster (R1)", "Lethean Elegy (R1)", "Luminous Hymn (R1)", "Whispers of Sirens (R1)", "Rime-Draped Sprouts (R1)", "Cosmic Ripples (R1)", "Augment (R5)", "Radiant Dawn (R5)", "Waltz in Masquerade (R5)", "Fusion Accretion (R5)", "Jinzhou Keeper (R5)"],
     sets: ["Chromatic Foam", "Reel of Spliced Memories", "Flaming Clawprint"],
     echoes: ["Sigillum", "Fallacy of No Return", "Twin Nova: Nebulous Cannon"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Fusion DMG", "3 cost: Fusion DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -228,7 +235,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "encore", name: "Encore", rarity: 5, element: "Fusion", weaponType: "Rectifier", role: "DPS",
-    weapons: ["Stringmaster (R1)", "Rime-Draped Sprouts (R1)", "Whispers of Sirens (R1)", "Lethean Elegy (R1)"],
+    weapons: ["Stringmaster (R1)", "Rime-Draped Sprouts (R1)", "Whispers of Sirens (R1)", "Lethean Elegy (R1)", "Luminous Hymn (R1)", "Cosmic Ripples (R1)", "Radiant Dawn (R5)", "Augment (R5)", "Fusion Accretion (R5)", "Jinzhou Keeper (R5)", "Waltz in Masquerade (R5)"],
     sets: ["Molten Rift", "Flaming Clawprint"],
     echoes: ["Nightmare: Inferno Rider", "Inferno Rider", "Lioness of Glory"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Fusion DMG", "3 cost: Fusion DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -237,7 +244,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "galbrena", name: "Galbrena", rarity: 5, element: "Fusion", weaponType: "Pistols", role: "DPS",
-    weapons: ["Lux & Umbra (R1)", "Phasic Homogenizer (R1)", "Spectrum Blaster (R1)", "The Last Dance (R1)"],
+    weapons: ["Lux & Umbra (R1)", "Phasic Homogenizer (R1)", "Spectrum Blaster (R1)", "The Last Dance (R1)", "Static Mist (R1)", "Woodland Aria (R1)", "Solar Flame (R5)", "Relativistic Jet (R5)", "Pistols#26 (R5)"],
     sets: ["Flamewing's Shadow"],
     echoes: ["Lioness of Glory", "Reactor Husk", "Corrosaurus"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Fusion DMG", "3 cost: Fusion DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -246,7 +253,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "hiyuki", name: "Hiyuki", rarity: 5, element: "Glacio", weaponType: "Sword", role: "DPS",
-    weapons: ["Frostburn (R1)", "Blazing Brilliance (R1)", "Emerald of Genesis (R1)", "Emerald Sentence (R1)"],
+    weapons: ["Frostburn (R1)", "Blazing Brilliance (R1)", "Emerald of Genesis (R1)", "Emerald Sentence (R1)", "Red Spring (R1)", "Everbright Polestar (R1)", "Feather Edge (R5)", "Fables of Wisdom (R5)"],
     sets: ["Wishes of Quiet Snowfall"],
     echoes: ["Glommoth", "Forbidden Bastion", "Reminiscence: Threnodian - Voidborne Construct"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Glacio DMG", "3 cost: Glacio DMG ≥ ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -255,7 +262,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "hsin", name: "Hsin", rarity: 5, element: "Electro", weaponType: "Rectifier", role: "DPS",
-    weapons: ["Blooming Jadehaven (R1)", "Lethean Elegy (R1)", "Stringmaster (R1)", "Whispers of Sirens (R1)"],
+    weapons: ["Blooming Jadehaven (R1)", "Lethean Elegy (R1)", "Stringmaster (R1)", "Whispers of Sirens (R1)", "Freeze Frame (R1)", "Luminous Hymn (R1)", "Forged Dwarf Star (R1)", "Cosmic Ripples (R1)", "Augment (R5)", "Fusion Accretion (R5)", "Radiant Dawn (R5)", "Jinzhou Keeper (R5)"],
     sets: ["Heart of Sworn Vigil"],
     echoes: ["Impermanence Heron", "Fallacy of No Return", "Soulfrayer"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Electro DMG", "3 cost: Electro DMG ≥ ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -264,7 +271,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "iuno", name: "Iuno", rarity: 5, element: "Aero", weaponType: "Gauntlets", role: "DPS",
-    weapons: ["Moongazer's Sigil (R1)", "Verity's Handle (R1)", "Blazing Justice (R1)", "Aether Strike (R5)"],
+    weapons: ["Moongazer's Sigil (R1)", "Verity's Handle (R1)", "Blazing Justice (R1)", "Aether Strike (R5)", "Stonard (R5)", "Tragicomedy (R1)", "Pulsation Bracer (R1)", "Abyss Surges (R1)", "Celestial Spiral (R5)", "Hollow Mirage (R5)", "Legend of Drunken Hero (R5)"],
     sets: ["Crown of Valor", "Moonlit Clouds"],
     echoes: ["Hyvatia", "Reactor Husk", "Fallacy of No Return"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Aero DMG", "3 cost: Aero DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -273,7 +280,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "jianxin", name: "Jianxin", rarity: 5, element: "Aero", weaponType: "Gauntlets", role: "Hybrid",
-    weapons: ["Verity's Handle (R1)", "Moongazer's Sigil (R1)", "Blazing Justice (R1)", "Tragicomedy (R1)"],
+    weapons: ["Verity's Handle (R1)", "Moongazer's Sigil (R1)", "Blazing Justice (R1)", "Tragicomedy (R1)", "Abyss Surges (R1)", "Aether Strike (R5)", "Celestial Spiral (R5)", "Stonard (R5)", "Hollow Mirage (R5)", "Legend of Drunken Hero (R5)", "Marcato (R5)", "Originite: Type IV (R5)"],
     sets: ["Moonlit Clouds"],
     echoes: ["Impermanence Heron"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Aero DMG", "3 cost: Aero DMG / Energy Regen", "1 cost: ATK%", "1 cost: ATK%"],
@@ -282,7 +289,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "jingran", name: "Jingran", rarity: 5, element: "Fusion", weaponType: "Broadblade", role: "DPS",
-    weapons: ["Thousandfold Deliverance (R1)", "Thunderflare Dominion (R1)", "Verdant Summit (R1)", "Wildfire Mark (R1)"],
+    weapons: ["Thousandfold Deliverance (R1)", "Thunderflare Dominion (R1)", "Verdant Summit (R1)", "Wildfire Mark (R1)", "Radiance Cleaver (R1)", "Aureate Zenith (R5)", "Ages of Harvest (R1)", "Kumokiri (R1)", "Autumntrace (R5)", "Lustrous Razor (R1)", "Helios Cleaver (R5)", "Waning Redshift (R5)", "Meditations on Mercy (R5)"],
     sets: ["Lamp of Nether Road"],
     echoes: ["Bell-Borne Geochelone", "Fallacy of No Return", "Myriad Snare: Rustfire Chassis"],
     stats: ["4 cost: CRIT DMG / HP%", "4 cost: CRIT DMG / HP%", "1 cost: HP%", "1 cost: HP%", "1 cost: HP%"],
@@ -291,7 +298,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "jinhsi", name: "Jinhsi", rarity: 5, element: "Spectro", weaponType: "Broadblade", role: "DPS",
-    weapons: ["Ages of Harvest (R1)", "Kumokiri (R1)", "Wildfire Mark (R1)", "Verdant Summit (R1)"],
+    weapons: ["Ages of Harvest (R1)", "Kumokiri (R1)", "Wildfire Mark (R1)", "Verdant Summit (R1)", "Radiance Cleaver (R1)", "Thunderflare Dominion (R1)", "Lustrous Razor (R1)", "Aureate Zenith (R5)", "Waning Redshift (R5)", "Helios Cleaver (R5)"],
     sets: ["Celestial Light"],
     echoes: ["Reminiscence: Suhsin the Inevitable", "Fallacy of No Return", "Jué"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Spectro DMG", "3 cost: Spectro DMG ≥ ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -300,7 +307,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "jiyan", name: "Jiyan", rarity: 5, element: "Aero", weaponType: "Broadblade", role: "DPS",
-    weapons: ["Verdant Summit (R1)", "Thunderflare Dominion (R1)", "Ages of Harvest (R1)", "Kumokiri (R1)"],
+    weapons: ["Verdant Summit (R1)", "Thunderflare Dominion (R1)", "Ages of Harvest (R1)", "Kumokiri (R1)", "Wildfire Mark (R1)", "Radiance Cleaver (R1)", "Aureate Zenith (R5)", "Lustrous Razor (R1)", "Autumntrace (R5)", "Meditations on Mercy (R5)"],
     sets: ["Windward Pilgrimage", "Sierra Gale"],
     echoes: ["Lady of the Sea", "Nightmare: Kelpie", "Nightmare: Feilian Beringal"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Aero DMG", "3 cost: ATK% ≥ Aero DMG", "1 cost: ATK%", "1 cost: ATK%"],
@@ -315,7 +322,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "lingyang", name: "Lingyang", rarity: 5, element: "Glacio", weaponType: "Gauntlets", role: "DPS",
-    weapons: ["Moongazer's Sigil (R1)", "Blazing Justice (R1)", "Verity's Handle (R1)", "Tragicomedy (R1)"],
+    weapons: ["Moongazer's Sigil (R1)", "Blazing Justice (R1)", "Verity's Handle (R1)", "Tragicomedy (R1)", "Abyss Surges (R1)", "Aether Strike (R5)", "Celestial Spiral (R5)", "Hollow Mirage (R5)", "Stonard (R5)", "Legend of Drunken Hero (R5)"],
     sets: ["Endless Resonance", "Frosty Resolve", "Freezing Frost"],
     echoes: ["Mech Abomination", "Sentry Construct", "Lampylumen Myriad"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Glacio DMG", "3 cost: Glacio DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -324,7 +331,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "lucilla", name: "Lucilla", rarity: 5, element: "Glacio", weaponType: "Rectifier", role: "Hybrid",
-    weapons: ["Freeze Frame (R1)", "Whispers of Sirens (R1)", "Stringmaster (R1)", "Lethean Elegy (R1)"],
+    weapons: ["Freeze Frame (R1)", "Whispers of Sirens (R1)", "Stringmaster (R1)", "Lethean Elegy (R1)", "Rime-Draped Sprouts (R1)", "Forged Dwarf Star (R1)", "Luminous Hymn (R1)", "Radiant Dawn (R5)", "Cosmic Ripples (R1)", "Augment (R5)", "Waltz in Masquerade (R5)"],
     sets: ["Wishes of Quiet Snowfall", "Moonlit Clouds", "Dream of the Lost"],
     echoes: ["Reminiscence: Threnodian - Voidborne Construct", "Forbidden Bastion", "Nameless Explorer"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Glacio DMG", "3 cost: Glacio DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -333,7 +340,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "lucy", name: "Lucy", rarity: 5, element: "Spectro", weaponType: "Pistols", role: "DPS",
-    weapons: ["Spectral Trigger (R1)", "Lux & Umbra (R1)", "Skull Thrasher (R1)", "Phasic Homogenizer (R1)"],
+    weapons: ["Spectral Trigger (R1)", "Lux & Umbra (R1)", "Skull Thrasher (R1)", "Phasic Homogenizer (R1)", "Spectrum Blaster (R1)", "The Last Dance (R1)", "Static Mist (R1)", "Woodland Aria (R1)", "Solar Flame (R5)", "Relativistic Jet (R5)", "Pistols#26 (R5)"],
     sets: ["Shadow of Shattered Dreams"],
     echoes: ["Bell-Borne Geochelone", "Reactor Husk", "Reminiscence - Nightmare: Adam Smasher"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Spectro DMG", "3 cost: Spectro DMG ≥ ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -342,7 +349,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "lumi", name: "Lumi", rarity: 4, element: "Electro", weaponType: "Broadblade", role: "Hybrid",
-    weapons: ["Ages of Harvest (R1)", "Verdant Summit (R1)", "Lustrous Razor (R1)", "Autumntrace (R5)"],
+    weapons: ["Ages of Harvest (R1)", "Verdant Summit (R1)", "Lustrous Razor (R1)", "Autumntrace (R5)", "Waning Redshift (R5)", "Helios Cleaver (R5)", "Broadblade#41 (R5)", "Discord (R5)"],
     sets: ["Moonlit Clouds", "Void Thunder"],
     echoes: ["Impermanence Heron", "Nightmare: Thundering Mephis"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Electro DMG", "3 cost: Electro DMG > Energy Regen", "1 cost: ATK%", "1 cost: ATK%"],
@@ -351,7 +358,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "lupa", name: "Lupa", rarity: 5, element: "Fusion", weaponType: "Broadblade", role: "Hybrid",
-    weapons: ["Wildfire Mark (R1)", "Ages of Harvest (R1)", "Kumokiri (R1)", "Verdant Summit (R1)"],
+    weapons: ["Wildfire Mark (R1)", "Ages of Harvest (R1)", "Kumokiri (R1)", "Verdant Summit (R1)", "Radiance Cleaver (R1)", "Thunderflare Dominion (R1)", "Lustrous Razor (R1)", "Waning Redshift (R5)", "Aureate Zenith (R5)", "Autumntrace (R5)", "Helios Cleaver (R5)", "Meditations on Mercy (R5)"],
     sets: ["Flaming Clawprint"],
     echoes: ["Sigillum", "Reactor Husk", "Lioness of Glory"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Fusion DMG", "3 cost: Fusion DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -360,7 +367,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "luuk-herssen", name: "Luuk Herssen", rarity: 5, element: "Spectro", weaponType: "Gauntlets", role: "DPS",
-    weapons: ["Daybreaker's Spine (R1)", "Pulsation Bracer (R1)", "Blazing Justice (R1)", "Moongazer's Sigil (R1)"],
+    weapons: ["Daybreaker's Spine (R1)", "Pulsation Bracer (R1)", "Blazing Justice (R1)", "Moongazer's Sigil (R1)", "Verity's Handle (R1)", "Tragicomedy (R1)", "Abyss Surges (R1)", "Celestial Spiral (R5)", "Aether Strike (R5)", "Stonard (R5)", "Hollow Mirage (R5)", "Legend of Drunken Hero (R5)"],
     sets: ["Rite of Gilded Revelation"],
     echoes: ["Voidwing Moth", "Reactor Husk", "Twin Nova: Nebulous Cannon"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Spectro DMG", "3 cost: ATK% = Spectro DMG", "1 cost: ATK%", "1 cost: ATK%"],
@@ -369,7 +376,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "lynae", name: "Lynae", rarity: 5, element: "Spectro", weaponType: "Pistols", role: "Hybrid",
-    weapons: ["Spectrum Blaster (R1)", "Static Mist (R1)", "Phasic Homogenizer (R1)", "Woodland Aria (R1)"],
+    weapons: ["Spectrum Blaster (R1)", "Static Mist (R1)", "Phasic Homogenizer (R1)", "Woodland Aria (R1)", "Lux & Umbra (R1)", "The Last Dance (R1)", "Solar Flame (R5)", "Pistols#26 (R5)"],
     sets: ["Pact of Neonlight Leap"],
     echoes: ["Sigillum", "Reactor Husk", "Hyvatia"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Spectro DMG", "3 cost: Spectro DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -387,7 +394,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "mortefi", name: "Mortefi", rarity: 4, element: "Fusion", weaponType: "Pistols", role: "Hybrid",
-    weapons: ["Static Mist (R1)", "Spectrum Blaster (R1)", "The Last Dance (R1)", "Woodland Aria (R1)"],
+    weapons: ["Static Mist (R1)", "Spectrum Blaster (R1)", "The Last Dance (R1)", "Woodland Aria (R1)", "Lux & Umbra (R1)", "Spectral Trigger (R1)", "Skull Thrasher (R1)", "Solar Flame (R5)", "Relativistic Jet (R5)", "Pistols#26 (R5)"],
     sets: ["Moonlit Clouds", "Empyrean Anthem"],
     echoes: ["Myriad Snare: Rustfire Chassis", "Lioness of Glory", "Impermanence Heron"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Fusion DMG", "3 cost: Fusion DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -396,7 +403,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "phoebe", name: "Phoebe", rarity: 5, element: "Spectro", weaponType: "Rectifier", role: "DPS",
-    weapons: ["Luminous Hymn (R1)", "Lethean Elegy (R1)", "Stringmaster (R1)", "Whispers of Sirens (R1)"],
+    weapons: ["Luminous Hymn (R1)", "Lethean Elegy (R1)", "Stringmaster (R1)", "Whispers of Sirens (R1)", "Rime-Draped Sprouts (R1)", "Augment (R5)", "Cosmic Ripples (R1)", "Ocean's Gift (R5)", "Radiant Dawn (R5)", "Waltz in Masquerade (R5)"],
     sets: ["Eternal Radiance", "Moonlit Clouds"],
     echoes: ["Hyvatia", "Fallacy of No Return", "Capitaneus"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Spectro DMG", "3 cost: Spectro DMG = ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -405,7 +412,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "phrolova", name: "Phrolova", rarity: 5, element: "Havoc", weaponType: "Rectifier", role: "DPS",
-    weapons: ["Lethean Elegy (R1)", "Stringmaster (R1)", "Whispers of Sirens (R1)", "Rime-Draped Sprouts (R1)"],
+    weapons: ["Lethean Elegy (R1)", "Stringmaster (R1)", "Whispers of Sirens (R1)", "Rime-Draped Sprouts (R1)", "Luminous Hymn (R1)", "Cosmic Ripples (R1)", "Augment (R5)", "Radiant Dawn (R5)", "Fusion Accretion (R5)", "Jinzhou Keeper (R5)"],
     sets: ["Dream of the Lost"],
     echoes: ["Voidwing Moth", "Bell-Borne Geochelone", "Nightmare: Hecate"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Havoc DMG", "3 cost: Havoc DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -414,7 +421,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "qingxiao", name: "Qingxiao", rarity: 5, element: "Aero", weaponType: "Sword", role: "DPS",
-    weapons: ["Glint of Clouds (R1)", "Red Spring (R1)", "Azure Oath (R1)", "Everbright Polestar (R1)"],
+    weapons: ["Glint of Clouds (R1)", "Red Spring (R1)", "Azure Oath (R1)", "Everbright Polestar (R1)", "Emerald Sentence (R1)", "Frostburn (R1)", "Emerald of Genesis (R1)", "Blazing Brilliance (R1)", "Feather Edge (R5)", "Lumingloss (R5)", "Commando of Conviction (R5)"],
     sets: ["Heart of Evil's Purge"],
     echoes: ["Voidwing Moth", "Reactor Husk", "Calamity Effigy"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Aero DMG", "3 cost: ATK% ≥ Aero DMG", "1 cost: ATK%", "1 cost: ATK%"],
@@ -423,7 +430,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "qiuyuan", name: "Qiuyuan", rarity: 5, element: "Aero", weaponType: "Sword", role: "Hybrid",
-    weapons: ["Emerald Sentence (R1)", "Red Spring (R1)", "Blazing Brilliance (R1)", "Feather Edge (R5)"],
+    weapons: ["Emerald Sentence (R1)", "Red Spring (R1)", "Blazing Brilliance (R1)", "Feather Edge (R5)", "Emerald of Genesis (R1)", "Commando of Conviction (R5)", "Bloodpact's Pledge (R1)"],
     sets: ["Law of Harmony", "Moonlit Clouds"],
     echoes: ["Nameless Explorer", "Nightmare: Kelpie", "Reminiscence: Fenrico"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Aero DMG", "3 cost: Aero DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -432,7 +439,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "rebecca", name: "Rebecca", rarity: 5, element: "Electro", weaponType: "Pistols", role: "Hybrid",
-    weapons: ["Skull Thrasher (R1)", "Spectrum Blaster (R1)", "Static Mist (R1)", "Phasic Homogenizer (R1)"],
+    weapons: ["Skull Thrasher (R1)", "Spectrum Blaster (R1)", "Static Mist (R1)", "Phasic Homogenizer (R1)", "Woodland Aria (R1)", "The Last Dance (R1)", "Spectral Trigger (R1)", "Lux & Umbra (R1)", "Solar Flame (R5)", "Pistols#26 (R5)"],
     sets: ["Moonlit Clouds", "Shadow of Shattered Dreams", "Pact of Neonlight Leap"],
     echoes: ["Thousand-Puppet Pavilion", "Forbidden Bastion", "Bell-Borne Geochelone"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Electro DMG", "3 cost: Electro DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -441,7 +448,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "roccia", name: "Roccia", rarity: 5, element: "Havoc", weaponType: "Gauntlets", role: "Hybrid",
-    weapons: ["Tragicomedy (R1)", "Solsworn Ciphers (R1)", "Blazing Justice (R1)", "Verity's Handle (R1)"],
+    weapons: ["Tragicomedy (R1)", "Solsworn Ciphers (R1)", "Blazing Justice (R1)", "Verity's Handle (R1)", "Pulsation Bracer (R1)", "Moongazer's Sigil (R1)", "Abyss Surges (R1)", "Aether Strike (R5)", "Celestial Spiral (R5)", "Stonard (R5)", "Hollow Mirage (R5)", "Legend of Drunken Hero (R5)"],
     sets: ["Midnight Veil", "Moonlit Clouds"],
     echoes: ["Nightmare: Hecate", "Lorelei", "Nightmare: Impermanence Heron"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Havoc DMG", "3 cost: Havoc DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -459,7 +466,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "rover-electro", name: "Rover (Electro)", rarity: 5, element: "Electro", weaponType: "Sword", role: "Hybrid",
-    weapons: ["Blazing Brilliance (R1)", "Red Spring (R1)", "Azure Oath (R1)", "Everbright Polestar (R1)"],
+    weapons: ["Blazing Brilliance (R1)", "Red Spring (R1)", "Azure Oath (R1)", "Everbright Polestar (R1)", "Emerald Sentence (R1)", "Frostburn (R1)", "Emerald of Genesis (R1)", "Feather Edge (R5)", "Fables of Wisdom (R5)"],
     sets: ["Flash of Electric Reflection"],
     echoes: ["Reminiscence: Suhsin the Inevitable", "Forbidden Bastion", "Soulfrayer"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Electro DMG", "3 cost: Electro DMG", "1 cost: ATK%", "1 cost: ATK%"],
@@ -468,7 +475,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "rover-havoc", name: "Rover (Havoc)", rarity: 5, element: "Havoc", weaponType: "Sword", role: "DPS",
-    weapons: ["Red Spring (R1)", "Blazing Brilliance (R1)", "Emerald of Genesis (R1)", "Somnoire Anchor (R5)"],
+    weapons: ["Red Spring (R1)", "Blazing Brilliance (R1)", "Emerald of Genesis (R1)", "Somnoire Anchor (R5)", "Commando of Conviction (R5)", "Lumingloss (R5)", "Endless Collapse (R5)", "Lunar Cutter (R5)"],
     sets: ["Havoc Eclipse"],
     echoes: ["Dreamless"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Havoc DMG", "3 cost: Havoc DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -477,7 +484,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "rover-spectro", name: "Rover (Spectro)", rarity: 5, element: "Spectro", weaponType: "Sword", role: "Support",
-    weapons: ["Blazing Brilliance (R1)", "Emerald of Genesis (R1)", "Lunar Cutter (R5)", "Endless Collapse (R5)"],
+    weapons: ["Blazing Brilliance (R1)", "Emerald of Genesis (R1)", "Lunar Cutter (R5)", "Endless Collapse (R5)", "Commando of Conviction (R5)", "Lumingloss (R5)"],
     sets: ["Moonlit Clouds", "Rejuvenating Glow", "Eternal Radiance"],
     echoes: ["Impermanence Heron", "Fallacy of No Return", "Nightmare: Mourning Aix"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Spectro DMG", "3 cost: Spectro DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -486,7 +493,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "sanhua", name: "Sanhua", rarity: 4, element: "Glacio", weaponType: "Sword", role: "Hybrid",
-    weapons: ["Blazing Brilliance (R1)", "Red Spring (R1)", "Emerald Sentence (R1)", "Azure Oath (R1)"],
+    weapons: ["Blazing Brilliance (R1)", "Red Spring (R1)", "Emerald Sentence (R1)", "Azure Oath (R1)", "Everbright Polestar (R1)", "Unspoken Rue (R1)", "Frostburn (R1)", "Glint of Clouds (R1)", "Emerald of Genesis (R1)", "Feather Edge (R5)", "Commando of Conviction (R5)"],
     sets: ["Moonlit Clouds"],
     echoes: ["Reminiscence: Suhsin the Inevitable", "Fallacy of No Return", "Impermanence Heron"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Glacio DMG", "3 cost: Glacio DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -495,7 +502,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "sigrika", name: "Sigrika", rarity: 5, element: "Aero", weaponType: "Gauntlets", role: "DPS",
-    weapons: ["Solsworn Ciphers (R1)", "Blazing Justice (R1)", "Pulsation Bracer (R1)", "Verity's Handle (R1)"],
+    weapons: ["Solsworn Ciphers (R1)", "Blazing Justice (R1)", "Pulsation Bracer (R1)", "Verity's Handle (R1)", "Moongazer's Sigil (R1)", "Abyss Surges (R1)", "Aether Strike (R5)", "Legend of Drunken Hero (R5)"],
     sets: ["Sound of True Name"],
     echoes: ["Impermanence Heron", "Nightmare: Kelpie", "Nameless Explorer"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: ATK%", "3 cost: ATK% / Energy Regen", "1 cost: ATK%", "1 cost: ATK%"],
@@ -513,7 +520,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "suoming", name: "Suoming", rarity: 5, element: "Electro", weaponType: "Sword", role: "DPS",
-    weapons: ["Unspoken Rue (R1)", "Red Spring (R1)", "Emerald Sentence (R1)", "Azure Oath (R1)"],
+    weapons: ["Unspoken Rue (R1)", "Red Spring (R1)", "Emerald Sentence (R1)", "Azure Oath (R1)", "Everbright Polestar (R1)", "Frostburn (R1)", "Blazing Brilliance (R1)", "Glint of Clouds (R1)", "Emerald of Genesis (R1)", "Feather Edge (R5)", "Lumingloss (R5)", "Commando of Conviction (R5)"],
     sets: ["Heart of Sworn Vigil", "Moonlit Clouds"],
     echoes: ["Reminiscence: Suhsin the Inevitable", "Fallacy of No Return", "Hyvatia"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Electro DMG", "3 cost: Electro DMG ≥ ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -549,7 +556,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "xiangli-yao", name: "Xiangli Yao", rarity: 5, element: "Electro", weaponType: "Gauntlets", role: "DPS",
-    weapons: ["Moongazer's Sigil (R1)", "Verity's Handle (R1)", "Blazing Justice (R1)", "Tragicomedy (R1)"],
+    weapons: ["Moongazer's Sigil (R1)", "Verity's Handle (R1)", "Blazing Justice (R1)", "Tragicomedy (R1)", "Pulsation Bracer (R1)", "Solsworn Ciphers (R1)", "Abyss Surges (R1)", "Aether Strike (R5)", "Stonard (R5)", "Celestial Spiral (R5)", "Hollow Mirage (R5)", "Legend of Drunken Hero (R5)"],
     sets: ["Void Thunder", "Endless Resonance"],
     echoes: ["Hyvatia", "Reactor Husk", "Nightmare: Thundering Mephis"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Electro DMG", "3 cost: ATK% ≥ Electro DMG", "1 cost: ATK%", "1 cost: ATK%"],
@@ -558,7 +565,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "yangyang", name: "Yangyang", rarity: 4, element: "Aero", weaponType: "Sword", role: "Hybrid",
-    weapons: ["Blazing Brilliance (R1)", "Emerald of Genesis (R1)", "Lumingloss (R5)", "Endless Collapse (R5)"],
+    weapons: ["Blazing Brilliance (R1)", "Emerald of Genesis (R1)", "Lumingloss (R5)", "Endless Collapse (R5)", "Lunar Cutter (R5)"],
     sets: ["Moonlit Clouds", "Sierra Gale"],
     echoes: ["Impermanence Heron", "Nightmare: Feilian Beringal", "Feilian Beringal"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Aero DMG", "3 cost: Aero DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -567,7 +574,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "yangyang-xuanling", name: "Yangyang Xuanling", rarity: 5, element: "Havoc", weaponType: "Sword", role: "DPS",
-    weapons: ["Azure Oath (R1)", "Emerald Sentence (R1)", "Everbright Polestar (R1)", "Red Spring (R1)"],
+    weapons: ["Azure Oath (R1)", "Emerald Sentence (R1)", "Everbright Polestar (R1)", "Red Spring (R1)", "Frostburn (R1)", "Blazing Brilliance (R1)", "Emerald of Genesis (R1)", "Lumingloss (R5)", "Fables of Wisdom (R5)"],
     sets: ["Song of Feathered Trace"],
     echoes: ["Impermanence Heron", "Forbidden Bastion", "Thousand-Puppet Pavilion"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Havoc DMG", "3 cost: ATK% = Havoc DMG", "1 cost: ATK%", "1 cost: ATK%"],
@@ -576,7 +583,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "yinlin", name: "Yinlin", rarity: 5, element: "Electro", weaponType: "Rectifier", role: "Hybrid",
-    weapons: ["Stringmaster (R1)", "Whispers of Sirens (R1)", "Rime-Draped Sprouts (R1)", "Lethean Elegy (R1)"],
+    weapons: ["Stringmaster (R1)", "Whispers of Sirens (R1)", "Rime-Draped Sprouts (R1)", "Lethean Elegy (R1)", "Cosmic Ripples (R1)", "Luminous Hymn (R1)", "Augment (R5)", "Radiant Dawn (R5)", "Jinzhou Keeper (R5)"],
     sets: ["Moonlit Clouds", "Empyrean Anthem"],
     echoes: ["Fallacy of No Return", "Impermanence Heron", "Nightmare: Tempest Mephis"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Electro DMG", "3 cost: Electro DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -594,7 +601,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "yuanwu", name: "Yuanwu", rarity: 4, element: "Electro", weaponType: "Gauntlets", role: "Support",
-    weapons: ["Verity's Handle (R1)", "Amity Accord (R5)", "Stonard (R5)", "Guardian Gauntlets (R5)"],
+    weapons: ["Verity's Handle (R1)", "Amity Accord (R5)", "Stonard (R5)", "Guardian Gauntlets (R5)", "Originite: Type IV (R5)", "Gauntlets of Voyager (R5)", "Abyss Surges (R1)"],
     sets: ["Rejuvenating Glow", "Moonlit Clouds", "Empyrean Anthem"],
     echoes: ["Fallacy of No Return", "Impermanence Heron", "Nightmare: Tempest Mephis"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Electro DMG", "3 cost: Electro DMG > DEF%", "1 cost: DEF%", "1 cost: DEF%"],
@@ -603,7 +610,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "zani", name: "Zani", rarity: 5, element: "Spectro", weaponType: "Gauntlets", role: "DPS",
-    weapons: ["Blazing Justice (R1)", "Tragicomedy (R1)", "Verity's Handle (R1)", "Pulsation Bracer (R1)"],
+    weapons: ["Blazing Justice (R1)", "Tragicomedy (R1)", "Verity's Handle (R1)", "Pulsation Bracer (R1)", "Moongazer's Sigil (R1)", "Abyss Surges (R1)", "Aether Strike (R5)", "Celestial Spiral (R5)", "Stonard (R5)", "Hollow Mirage (R5)", "Legend of Drunken Hero (R5)"],
     sets: ["Eternal Radiance"],
     echoes: ["Impermanence Heron", "Fallacy of No Return", "Capitaneus"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Spectro DMG", "3 cost: Spectro DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],
@@ -612,7 +619,7 @@ export const CHARACTERS: Character[] = [
   },
   {
     id: "zhezhi", name: "Zhezhi", rarity: 5, element: "Glacio", weaponType: "Rectifier", role: "Hybrid",
-    weapons: ["Rime-Draped Sprouts (R1)", "Whispers of Sirens (R1)", "Lethean Elegy (R1)", "Stringmaster (R1)"],
+    weapons: ["Rime-Draped Sprouts (R1)", "Whispers of Sirens (R1)", "Lethean Elegy (R1)", "Stringmaster (R1)", "Forged Dwarf Star (R1)", "Cosmic Ripples (R1)", "Augment (R5)", "Radiant Dawn (R5)", "Fusion Accretion (R5)", "Jinzhou Keeper (R5)"],
     sets: ["Empyrean Anthem", "Moonlit Clouds"],
     echoes: ["Sentry Construct", "Fallacy of No Return", "Nightmare: Lampylumen Myriad"],
     stats: ["4 cost: CRIT Rate / CRIT DMG", "3 cost: Glacio DMG", "3 cost: Glacio DMG > ATK%", "1 cost: ATK%", "1 cost: ATK%"],

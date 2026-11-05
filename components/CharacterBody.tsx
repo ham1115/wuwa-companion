@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { Character } from "@/data/characters";
 import { resolveRanked } from "@/data/weapons";
 import StatLine from "./StatLine";
@@ -41,9 +42,6 @@ export default function CharacterBody({
   onNoteToggle: () => void;
   onNote: (t: string) => void;
 }) {
-  const ranked = resolveRanked(c.weapons);
-  const hasBudget = ranked.some((w) => w.budget);
-
   return (
     <div className="char-body">
       {/*
@@ -87,33 +85,7 @@ export default function CharacterBody({
           <div className="char-quick">
             <section className="char-blk">
               <h2 className="section">Weapons: best first</h2>
-              {/* Rarity carried on the row rather than left for the Weapons
-                * tab to answer. Reading "Thunderbolt" tells you nothing about
-                * whether it is the one you can actually afford. */}
-              <ol className="ranked">
-                {ranked.map((w) => (
-                  <li key={w.raw}>
-                    <span className="star" data-r={w.rarity}>
-                      {w.rarity}★
-                    </span>{" "}
-                    {w.name}
-                    {/* Glued on, so a row that has to wrap breaks before the
-                      * tag rather than stranding "(R5)" on a line of its own. */}
-                    {w.refine && (
-                      <span className="ranked-refine">&nbsp;({w.refine})</span>
-                    )}
-                    {w.budget && (
-                      <span className="ranked-tag">cheapest that works</span>
-                    )}
-                  </li>
-                ))}
-              </ol>
-              {!hasBudget && (
-                <p className="check-detail">
-                  All {ranked.length} are 5★. Only the top {ranked.length} are
-                  recorded here, so prydwen may rank a 4★ below them.
-                </p>
-              )}
+              <RankedWeapons key={c.id} entries={c.weapons} />
             </section>
 
             <section className="char-blk">
@@ -177,5 +149,80 @@ export default function CharacterBody({
         </>
       )}
     </div>
+  );
+}
+
+/** How many weapons to show before the list folds. */
+const SHOWN = 5;
+
+/**
+ * A character's ranked weapons, with rarity on every row.
+ *
+ * Reading "Thunderbolt" told you nothing about whether it was the 5★ you do
+ * not have or the 4★ you do, which is the whole question when you are picking
+ * one. The best entry below 5★ is tagged, and when it falls outside the fold
+ * it gets a line of its own rather than being hidden behind the toggle — it is
+ * the row most people open this block for.
+ *
+ * Prydwen ranks up to thirteen weapons per character and the list is ordered
+ * by damage, not by rarity, so a 4★ can legitimately outrank a 5★ (Youhu's
+ * does). Nothing is tagged in a list with no 5★ above it, because there the
+ * cheap option is simply the best one.
+ */
+function RankedWeapons({ entries }: { entries: string[] }) {
+  const [open, setOpen] = useState(false);
+
+  const ranked = resolveRanked(entries);
+  const budgetAt = ranked.findIndex((w) => w.budget);
+  const shown = open ? ranked : ranked.slice(0, SHOWN);
+  const budgetHidden = budgetAt >= SHOWN && !open;
+  const allFive = ranked.every((w) => w.rarity === 5);
+
+  return (
+    <>
+      <ol className="ranked">
+        {shown.map((w) => (
+          <li key={w.raw}>
+            <span className="star" data-r={w.rarity}>
+              {w.rarity}★
+            </span>{" "}
+            {w.name}
+            {/* Glued on, so a row that has to wrap breaks before the tag
+              * rather than stranding "(R5)" on a line of its own. */}
+            {w.refine && <span className="ranked-refine">&nbsp;({w.refine})</span>}
+            {w.budget && <span className="ranked-tag">cheapest that works</span>}
+          </li>
+        ))}
+      </ol>
+
+      {budgetHidden && (
+        <p className="budget-hint">
+          <span className="ranked-tag">cheapest that works</span>{" "}
+          <span className="star" data-r={ranked[budgetAt].rarity}>
+            {ranked[budgetAt].rarity}★
+          </span>{" "}
+          {ranked[budgetAt].name}
+          {ranked[budgetAt].refine && (
+            <span className="ranked-refine">
+              &nbsp;({ranked[budgetAt].refine})
+            </span>
+          )}
+          <span className="ranked-refine"> — ranked #{budgetAt + 1}</span>
+        </p>
+      )}
+
+      {ranked.length > SHOWN && (
+        <button className="mini" onClick={() => setOpen(!open)}>
+          {open ? `Show top ${SHOWN}` : `Show all ${ranked.length}`}
+        </button>
+      )}
+
+      {allFive && (
+        <p className="check-detail">
+          Every weapon prydwen ranks for them is 5★ — there is no cheaper
+          option to fall back on.
+        </p>
+      )}
+    </>
   );
 }

@@ -157,9 +157,12 @@ export type RankedWeapon = {
    * 4★ ranked at R5 is five copies of it, not one. */
   refine: string | null;
   rarity: 3 | 4 | 5;
-  /** The best entry in this list that is not 5★, when a 5★ outranks it.
-   * Nothing is flagged in a list that has no 5★ at the top, because then the
-   * cheap option is simply the best option and calling it a fallback lies. */
+  /** The best entry below 5★, flagged only when the top pick is a 5★.
+   *
+   * If a character's best weapon is already a 4★ — Youhu's is — there is no
+   * expensive first choice to fall back from, so nothing is tagged. Tagging
+   * the next 4★ down in that case would invent a trade-off that is not there.
+   */
   budget: boolean;
 };
 
@@ -173,19 +176,23 @@ export type RankedWeapon = {
  * does not render.
  */
 export function resolveRanked(entries: string[]): RankedWeapon[] {
-  let seenFive = false;
-  let flagged = false;
-
-  return entries.map((raw) => {
+  const rows = entries.map((raw) => {
     const name = baseWeaponName(raw);
     const w = BY_NAME.get(name.toLowerCase());
-    const rarity = w?.rarity ?? 5;
-    const refine = raw.match(/\((R\d)\)\s*$/)?.[1] ?? null;
-
-    if (rarity === 5) seenFive = true;
-    const budget = rarity < 5 && seenFive && !flagged;
-    if (budget) flagged = true;
-
-    return { raw, name, refine, rarity, budget };
+    return {
+      raw,
+      name,
+      refine: raw.match(/\((R\d)\)\s*$/)?.[1] ?? null,
+      rarity: w?.rarity ?? 5,
+      budget: false,
+    };
   });
+
+  // Only worth a tag when the top pick is the expensive one.
+  if (rows[0]?.rarity === 5) {
+    const at = rows.findIndex((r) => r.rarity < 5);
+    if (at !== -1) rows[at].budget = true;
+  }
+
+  return rows;
 }

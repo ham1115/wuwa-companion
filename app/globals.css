@@ -3364,3 +3364,22 @@ button,
     text-align: left;
   }
 }
+
+/*
+ * The cheapest option when it ranks below the fold.
+ *
+ * Pulled out rather than left inside the collapsed tail: prydwen ranks up to
+ * thirteen weapons and the budget pick sits near the bottom of the strong
+ * characters' lists, which is exactly the row someone on a budget opened the
+ * block to find. Hiding it behind "Show all 13" would bury the answer.
+ */
+.budget-hint {
+  margin: 7px 0 0;
+  font-size: 0.86rem;
+  color: var(--text-dim);
+  line-height: 1.75;
+}
+
+.budget-hint .ranked-tag {
+  margin-left: 0;
+}
