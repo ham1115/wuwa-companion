@@ -30,12 +30,23 @@ export default function MyBuild({
 
   const targets = TARGETS[c.id] ?? [];
 
-  // Recommended options first, then everything else that fits the character.
+  /*
+   * Recommended options first, then everything else that fits the character.
+   *
+   * The ranked list is deduplicated because prydwen can rank two refinements
+   * of one weapon separately — Rover (Aero) is ranked on Bloodpact's Pledge at
+   * both R5 and R1 — while this picker records which weapon you own, which
+   * has no refinement in it. Rarity rides along for the option labels.
+   */
   const weaponChoices = useMemo(() => {
-    const ranked = c.weapons.map(baseWeaponName);
-    const fits = WEAPONS.filter((w) => w.type === c.weaponType).map((w) => w.name);
-    const rest = fits.filter((n) => !ranked.includes(n)).sort();
-    return { ranked: ranked.filter((n) => fits.includes(n)), rest };
+    const fits = new Map(
+      WEAPONS.filter((w) => w.type === c.weaponType).map((w) => [w.name, w.rarity])
+    );
+    const ranked = [...new Set(c.weapons.map(baseWeaponName))].filter((n) =>
+      fits.has(n)
+    );
+    const rest = [...fits.keys()].filter((n) => !ranked.includes(n)).sort();
+    return { ranked, rest, rarityOf: fits };
   }, [c]);
 
   const setChoices = useMemo(() => {
@@ -167,7 +178,7 @@ export default function MyBuild({
               <optgroup label="Recommended">
                 {weaponChoices.ranked.map((n) => (
                   <option key={n} value={n}>
-                    {n}
+                    {weaponChoices.rarityOf.get(n)}★ {n}
                   </option>
                 ))}
               </optgroup>
@@ -175,7 +186,7 @@ export default function MyBuild({
             <optgroup label={`Other ${c.weaponType}`}>
               {weaponChoices.rest.map((n) => (
                 <option key={n} value={n}>
-                  {n}
+                  {weaponChoices.rarityOf.get(n)}★ {n}
                 </option>
               ))}
             </optgroup>

@@ -3383,3 +3383,10 @@ button,
 .budget-hint .ranked-tag {
   margin-left: 0;
 }
+
+/* The fallback weapon on a queued character, under the one to aim for. */
+.plan-alt {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-faint);
+}

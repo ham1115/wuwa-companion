@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CHARACTERS } from "@/data/characters";
 import { BUILD_RULES, DEFAULT_PLAN, PLAN_STEPS } from "@/data/plan";
+import { resolveRanked } from "@/data/weapons";
 import { useIdSet, useNotes, usePersistentState } from "@/lib/storage";
 import { MAX_LEVEL, useLoadout } from "@/lib/loadout";
 import ShoppingList from "./ShoppingList";
@@ -167,7 +168,9 @@ export default function Plan() {
 
               <dl className="kv">
                 <dt>Weapon</dt>
-                <dd>{c.weapons[0] ?? "—"}</dd>
+                <dd>
+                  <PlanWeapon entries={c.weapons} />
+                </dd>
                 <dt>Sonata</dt>
                 <dd>{c.sets.join(" / ") || "—"}</dd>
                 <dt>Main echo</dt>
@@ -278,5 +281,44 @@ export default function Plan() {
         </ul>
       </div>
     </section>
+  );
+}
+
+/**
+ * The weapon line on a queued character: what to aim for, and what to settle
+ * for.
+ *
+ * The queue is where the decision actually gets made — whether this character
+ * needs a banner pull or whether a 4-star you already own will carry them — so
+ * the top pick alone was the wrong half of the answer. The alternative is the
+ * same one the build sheet tags, named here rather than left a tab away.
+ */
+function PlanWeapon({ entries }: { entries: string[] }) {
+  const ranked = resolveRanked(entries);
+  if (ranked.length === 0) return <>&mdash;</>;
+
+  const top = ranked[0];
+  const at = ranked.findIndex((w) => w.budget);
+  const alt = at === -1 ? null : ranked[at];
+
+  return (
+    <>
+      <span className="star" data-r={top.rarity}>
+        {top.rarity}&#9733;
+      </span>{" "}
+      {top.name}
+      {top.refine && <span className="ranked-refine">&nbsp;({top.refine})</span>}
+      {alt && (
+        <span className="plan-alt">
+          or{" "}
+          <span className="star" data-r={alt.rarity}>
+            {alt.rarity}&#9733;
+          </span>{" "}
+          {alt.name}
+          {alt.refine && <span className="ranked-refine">&nbsp;({alt.refine})</span>}
+          <span className="ranked-refine"> &mdash; ranked #{at + 1}</span>
+        </span>
+      )}
+    </>
   );
 }
