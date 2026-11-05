@@ -1,6 +1,7 @@
 "use client";
 
 import type { Character } from "@/data/characters";
+import { resolveRanked } from "@/data/weapons";
 import StatLine from "./StatLine";
 import MyBuild from "./MyBuild";
 import Targets from "./Targets";
@@ -40,6 +41,9 @@ export default function CharacterBody({
   onNoteToggle: () => void;
   onNote: (t: string) => void;
 }) {
+  const ranked = resolveRanked(c.weapons);
+  const hasBudget = ranked.some((w) => w.budget);
+
   return (
     <div className="char-body">
       {/*
@@ -83,11 +87,33 @@ export default function CharacterBody({
           <div className="char-quick">
             <section className="char-blk">
               <h2 className="section">Weapons: best first</h2>
+              {/* Rarity carried on the row rather than left for the Weapons
+                * tab to answer. Reading "Thunderbolt" tells you nothing about
+                * whether it is the one you can actually afford. */}
               <ol className="ranked">
-                {c.weapons.map((w) => (
-                  <li key={w}>{w}</li>
+                {ranked.map((w) => (
+                  <li key={w.raw}>
+                    <span className="star" data-r={w.rarity}>
+                      {w.rarity}★
+                    </span>{" "}
+                    {w.name}
+                    {/* Glued on, so a row that has to wrap breaks before the
+                      * tag rather than stranding "(R5)" on a line of its own. */}
+                    {w.refine && (
+                      <span className="ranked-refine">&nbsp;({w.refine})</span>
+                    )}
+                    {w.budget && (
+                      <span className="ranked-tag">cheapest that works</span>
+                    )}
+                  </li>
                 ))}
               </ol>
+              {!hasBudget && (
+                <p className="check-detail">
+                  All {ranked.length} are 5★. Only the top {ranked.length} are
+                  recorded here, so prydwen may rank a 4★ below them.
+                </p>
+              )}
             </section>
 
             <section className="char-blk">

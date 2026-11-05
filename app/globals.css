@@ -3253,3 +3253,114 @@ button,
   color: var(--accent);
   flex: none;
 }
+
+/* ---------- rarity on a character's ranked weapons ---------- */
+
+/*
+ * The pills sit inline in the list text rather than turning the row into a
+ * flex container, because .ranked is also the sets and main-echo lists and
+ * those are plain strings. A taller line is the whole cost of it.
+ */
+.ranked li {
+  line-height: 1.75;
+}
+
+.ranked-refine {
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Reads as a note on the row above it, not a third pill competing with the
+ * rarity: no fill, accent text, and the same uppercase as .owned-dot. */
+.ranked-tag {
+  margin-left: 7px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+
+/* ---------- who wants an Echo in their main slot ---------- */
+
+.echo-wants {
+  display: grid;
+  gap: 5px;
+  margin: 8px 0;
+}
+
+/*
+ * Three columns on anything wide enough: who, what they roll, which Sonata.
+ * The stat is the column you scan, so it is the one that keeps the accent and
+ * the weight — the name beside it is only there to tell you whose roll it is.
+ *
+ * Both coloured columns take the -ink and -dim ends of the palette rather than
+ * --accent and --text-faint. Measured on .echo-want's own sunken background in
+ * light mode, those two gave 3.57:1 for the stat on Amber & slate and 4.2:1
+ * for the 11.8px Sonata name across every preset, which is under 4.5:1 on text
+ * this small.
+ */
+.echo-want {
+  display: grid;
+  grid-template-columns: minmax(92px, auto) 1fr auto;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: 0.85rem;
+  background: var(--bg-sunken);
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 6px 11px;
+}
+
+.echo-want[data-mine="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.echo-want-who {
+  color: var(--text-dim);
+}
+
+.echo-want[data-mine="true"] .echo-want-who {
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+.echo-want-stat {
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+.echo-want[data-mine="true"] .echo-want-stat {
+  color: var(--accent-ink);
+}
+
+.echo-want-set {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+.echo-want[data-mine="true"] .echo-want-set {
+  color: var(--accent-ink);
+  opacity: 0.8;
+}
+
+/* Below that the three columns stop fitting: the Sonata names run to
+ * "Tidebreaking Courage" and the stats to "CRIT Rate / CRIT DMG", which at
+ * 380px leaves the middle column about nine characters. Stack instead. */
+@media (max-width: 460px) {
+  .echo-want {
+    grid-template-columns: 1fr;
+    gap: 1px;
+  }
+
+  .echo-want-set {
+    text-align: left;
+  }
+}

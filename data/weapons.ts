@@ -145,3 +145,47 @@ export const WEAPONS: Weapon[] = [
 export function baseWeaponName(s: string): string {
   return s.replace(/\s*\(R\d\)\s*$/, "").trim();
 }
+
+/** Lower-cased name -> record, for resolving the ranked lists in characters.ts. */
+const BY_NAME = new Map(WEAPONS.map((w) => [w.name.toLowerCase(), w]));
+
+export type RankedWeapon = {
+  /** The entry exactly as characters.ts writes it, suffix and all. */
+  raw: string;
+  name: string;
+  /** The "(R5)" the ranking assumes, kept because it changes the advice: a
+   * 4★ ranked at R5 is five copies of it, not one. */
+  refine: string | null;
+  rarity: 3 | 4 | 5;
+  /** The best entry in this list that is not 5★, when a 5★ outranks it.
+   * Nothing is flagged in a list that has no 5★ at the top, because then the
+   * cheap option is simply the best option and calling it a fallback lies. */
+  budget: boolean;
+};
+
+/**
+ * Resolves one character's ranked weapon list against the weapon database.
+ *
+ * Every one of the 234 entries across the roster matches a record, so an
+ * unresolved name means the two files have drifted; scripts/check-data.mjs
+ * fails on exactly that. Here it degrades to 5★ rather than throwing, since
+ * a build sheet that renders without a star pill is better than one that
+ * does not render.
+ */
+export function resolveRanked(entries: string[]): RankedWeapon[] {
+  let seenFive = false;
+  let flagged = false;
+
+  return entries.map((raw) => {
+    const name = baseWeaponName(raw);
+    const w = BY_NAME.get(name.toLowerCase());
+    const rarity = w?.rarity ?? 5;
+    const refine = raw.match(/\((R\d)\)\s*$/)?.[1] ?? null;
+
+    if (rarity === 5) seenFive = true;
+    const budget = rarity < 5 && seenFive && !flagged;
+    if (budget) flagged = true;
+
+    return { raw, name, refine, rarity, budget };
+  });
+}

@@ -33,6 +33,40 @@ const ROLLED_BY = (() => {
   return map;
 })();
 
+/**
+ * Echo name -> the builds that put it in the main slot, each carrying the main
+ * stat that build rolls at this Echo's cost and the Sonata it pairs with.
+ *
+ * The stat is matched on the Echo's own cost, not assumed to be 4: sixteen of
+ * the references are to cost-3 Echoes, and a cost-3 main slot wants the 3-cost
+ * line. Characters are kept in roster order, which is alphabetical.
+ */
+const MAIN_FOR = (() => {
+  const costOf = new Map(ECHOES.map((e) => [e.name, e.cost]));
+  const map = new Map<
+    string,
+    { id: string; name: string; stat: string | null; set: string | null }[]
+  >();
+
+  for (const c of CHARACTERS) {
+    for (const n of c.echoes) {
+      const cost = costOf.get(n);
+      const line = cost
+        ? c.stats.find((s) => s.startsWith(`${cost} cost:`))
+        : undefined;
+      const list = map.get(n) ?? [];
+      list.push({
+        id: c.id,
+        name: c.name,
+        stat: line ? line.slice(line.indexOf(":") + 1).trim() : null,
+        set: c.sets[0] ?? null,
+      });
+      map.set(n, list);
+    }
+  }
+  return map;
+})();
+
 export default function Echoes() {
   const [view, setView] = useState<"sets" | "echoes">("sets");
 
@@ -55,7 +89,9 @@ export default function Echoes() {
           prydwen.gg echo database
         </a>
         , captured 22 October 2026. Skill text is kept for cost-4 Echoes, the
-        ones you choose for the main slot.
+        ones you choose for the main slot. Who wants an Echo in that slot, and
+        the main stat beside each name, are read off the character build sheets
+        rather than the Echo database.
       </p>
     </section>
   );
@@ -244,7 +280,10 @@ function SetBody({
 function EchoesView() {
   const [query, setQuery] = useState("");
   const [cost, setCost] = useState<1 | 3 | 4 | "all">("all");
+  const [mainOnly, setMainOnly] = useState(false);
+  const [mineOnly, setMineOnly] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
+  const owned = useOwned();
 
   /* Found in the whole list rather than the filtered one, so typing in the
    * search box does not close the sheet that is already open. */
@@ -254,6 +293,9 @@ function EchoesView() {
     const q = query.trim().toLowerCase();
     return ECHOES.filter((e) => {
       if (cost !== "all" && e.cost !== cost) return false;
+      const wants = MAIN_FOR.get(e.name) ?? [];
+      if (mainOnly && wants.length === 0) return false;
+      if (mineOnly && !wants.some((c) => owned.has(c.id))) return false;
       if (!q) return true;
       return (
         e.name.toLowerCase().includes(q) ||
@@ -261,13 +303,14 @@ function EchoesView() {
         (e.skill ?? "").toLowerCase().includes(q)
       );
     });
-  }, [query, cost]);
+  }, [query, cost, mainOnly, mineOnly, owned.owned]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
       <p className="panel-intro">
         Showing {results.length} Echoes. Search matches set names too, so typing
-        a Sonata lists every Echo that rolls it.
+        a Sonata lists every Echo that rolls it. Only {MAIN_FOR.size} are picked
+        for anyone&apos;s main slot, which is the filter below.
       </p>
 
       <div className="search-row">
@@ -292,24 +335,53 @@ function EchoesView() {
         ))}
       </div>
 
+      {/* The two that answer "which one do I actually go and farm". Separated
+        * from the cost row above because they cut the list by a different
+        * question: cost is what an Echo is, these are whether you want it. */}
+      <div className="chips">
+        <button
+          className="chip"
+          data-on={mainOnly}
+          onClick={() => setMainOnly(!mainOnly)}
+        >
+          {mainOnly ? "★ Main-slot picks" : "Main-slot picks"}
+        </button>
+        <button
+          className="chip"
+          data-tone="lemon"
+          data-on={mineOnly}
+          onClick={() => setMineOnly(!mineOnly)}
+        >
+          {mineOnly ? "★ For my characters" : "For my characters"}
+        </button>
+      </div>
+
       {results.length === 0 && <p className="empty">No Echo matches that.</p>}
 
-      {results.map((e) => (
-        <article className="char-row" key={e.name} data-sel={open === e.name}>
-          <button
-            className="char-toggle"
-            onClick={() => setOpen(e.name)}
-            aria-haspopup="dialog"
-          >
-            <span className="char-name">{e.name}</span>
-            <span className="cost" data-cost={e.cost}>
-              {e.cost} cost
-            </span>
-            <span className="term-cat">{e.echoClass}</span>
-            <span className="term-cat">{e.sets.length} sets</span>
-          </button>
-        </article>
-      ))}
+      {results.map((e) => {
+        const mine = (MAIN_FOR.get(e.name) ?? []).filter((c) =>
+          owned.has(c.id)
+        );
+        return (
+          <article className="char-row" key={e.name} data-sel={open === e.name}>
+            <button
+              className="char-toggle"
+              onClick={() => setOpen(e.name)}
+              aria-haspopup="dialog"
+            >
+              <span className="char-name">{e.name}</span>
+              {mine.length > 0 && (
+                <span className="owned-dot">{mine.length} of mine</span>
+              )}
+              <span className="cost" data-cost={e.cost}>
+                {e.cost} cost
+              </span>
+              <span className="term-cat">{e.echoClass}</span>
+              <span className="term-cat">{e.sets.length} sets</span>
+            </button>
+          </article>
+        );
+      })}
 
       {/* 187 rows, and an Echo is a sentence and a few pills. Unfolding one in
         * place moved everything under it for very little; a sheet moves
@@ -335,6 +407,9 @@ function EchoesView() {
                   <p className="term-def">{current.skill}</p>
                 </>
               )}
+
+              <EchoWants e={current} isOwned={owned.has} />
+
               <h2 className="section">Rolls these sets</h2>
               <div className="related">
                 {current.sets.map((s) => (
@@ -347,6 +422,62 @@ function EchoesView() {
           </>
         )}
       </Modal>
+    </>
+  );
+}
+
+/**
+ * Who puts this Echo in their main slot, and what each of them rolls on it.
+ *
+ * The main stat is the thing you need before you start farming, and until now
+ * it lived only on the character's own build sheet — so working out what to
+ * roll meant knowing who wanted the Echo first, which is backwards from how
+ * you actually use the tab. Owned characters are floated to the top, since
+ * those are the rolls that decide whether you keep a drop.
+ */
+function EchoWants({ e, isOwned }: { e: Echo; isOwned: (id: string) => boolean }) {
+  const wants = MAIN_FOR.get(e.name) ?? [];
+
+  const sorted = useMemo(() => {
+    const mine = wants.filter((c) => isOwned(c.id));
+    const rest = wants.filter((c) => !isOwned(c.id));
+    return [...mine, ...rest];
+  }, [wants, isOwned]);
+
+  if (wants.length === 0) {
+    return (
+      <>
+        <h2 className="section">Not a main-slot pick</h2>
+        <p className="check-detail">
+          No build in the database chooses this one for the main slot. It is
+          still worth keeping for its Sonata below, where only the set matters
+          and the Echo itself does not.
+        </p>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <h2 className="section">
+        Main slot for {wants.length}
+        {wants.length === 1 ? " build" : " builds"}
+      </h2>
+      <p className="check-detail">
+        The {e.cost}-cost main stat each of them rolls on it, and the Sonata
+        they pair it with.
+      </p>
+      <div className="echo-wants">
+        {sorted.map((c) => (
+          <div className="echo-want" key={c.id} data-mine={isOwned(c.id)}>
+            <span className="echo-want-who">{c.name}</span>
+            <span className="echo-want-stat">
+              {c.stat ?? "no main stat recorded"}
+            </span>
+            {c.set && <span className="echo-want-set">{c.set}</span>}
+          </div>
+        ))}
+      </div>
     </>
   );
 }
