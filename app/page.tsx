@@ -11,6 +11,7 @@ import {
 } from "react";
 import Glossary from "@/components/Glossary";
 import Plan from "@/components/Plan";
+import Now from "@/components/Now";
 import Characters from "@/components/Characters";
 import Weapons from "@/components/Weapons";
 import Echoes from "@/components/Echoes";
@@ -19,10 +20,13 @@ import Routine from "@/components/Routine";
 import Settings from "@/components/Settings";
 import BackToTop from "@/components/BackToTop";
 import Logo from "@/components/Logo";
+import { CHARACTERS } from "@/data/characters";
 import { Show, SignInButton, UserButton } from "@clerk/nextjs";
-import { usePersistentState } from "@/lib/storage";
+import { PREFIX, usePersistentState } from "@/lib/storage";
 import { useTheme } from "@/lib/theme";
 import { SyncProvider } from "@/lib/sync";
+import SyncBadge from "@/components/SyncBadge";
+import MineNote from "@/components/MineNote";
 
 /*
  * useLayoutEffect is the right hook for putting the scroll position back —
@@ -55,6 +59,7 @@ const GROUPS = [
     label: "Mine",
     hint: "Your progress, stored in this browser",
     tabs: [
+      { id: "now", label: "Now" },
       { id: "builds", label: "My plan" },
       { id: "quests", label: "Story" },
       { id: "routine", label: "Routine" },
@@ -79,6 +84,20 @@ function tabFromUrl(): TabId | null {
   if (typeof window === "undefined") return null;
   const id = decodeURIComponent(window.location.hash.replace(/^#/, ""));
   return GROUP_OF.has(id) ? (id as TabId) : null;
+}
+
+/** True once the player has a build queued or a routine tick to come back to. */
+function hasProgress(): boolean {
+  try {
+    const nonEmpty = (key: string) => {
+      const raw = window.localStorage.getItem(`${PREFIX}${key}`);
+      const v = raw ? JSON.parse(raw) : null;
+      return Array.isArray(v) && v.length > 0;
+    };
+    return nonEmpty("plan") || nonEmpty("routine");
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -156,7 +175,13 @@ function Codex() {
   useEffect(() => {
     const fromUrl = tabFromUrl();
     if (fromUrl) setStoredTab(fromUrl);
-    else window.history.replaceState(null, "", `#${tab}`);
+    else {
+      // Opened with no tab in the address: someone with a queue or a routine
+      // started wants to know what is next, not where they last browsed.
+      const start: TabId = hasProgress() ? "now" : tab;
+      setStoredTab(start);
+      window.history.replaceState(null, "", `#${start}`);
+    }
     setMounted(true);
     // Deliberately once, on mount: this reconciles the two sources of truth.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -244,6 +269,16 @@ function Codex() {
    */
   const navRef = useRef<HTMLElement>(null);
 
+  // On a phone the tab row scrolls sideways, and arriving on a tab by link or
+  // by a group switch left it half off the right edge. Bring it into view
+  // along the row only: block "nearest" never scrolls the page itself.
+  useEffect(() => {
+    if (!mounted) return;
+    navRef.current
+      ?.querySelector<HTMLElement>('.tabs [aria-selected="true"]')
+      ?.scrollIntoView({ inline: "center", block: "nearest" });
+  }, [tab, mounted]);
+
   useEffect(() => {
     const el = navRef.current;
     if (!el) return;
@@ -271,15 +306,16 @@ function Codex() {
           <Logo className="logo" />
           <h1>Resonance Codex</h1>
           <p>
-            Wuthering Waves companion: 61 character builds, glossary, story,
-            routine.
+            Wuthering Waves companion: {CHARACTERS.length} character builds,
+            glossary, story, routine.
           </p>
         </div>
         <div className="masthead-controls">
+          <SyncBadge />
           <button
             className="theme-toggle"
             onClick={theme.toggleMode}
-            aria-label="Toggle colour theme"
+            aria-label={theme.mode === "dark" ? "Switch to light theme" : "Switch to dark theme"}
           >
             {theme.mode === "dark" ? "Light" : "Dark"}
           </button>
@@ -297,18 +333,16 @@ function Codex() {
 
       <nav className="nav" aria-label="Sections" ref={navRef}>
         {/*
-         * Two navigations, one shown at a time by a media query in the
-         * stylesheet. The hidden one is display:none, so it is out of the
-         * accessibility tree rather than a duplicate set of tabs.
-         *
-         * A phone keeps the group pill, because eight tabs do not fit and
-         * choosing a half of the app first is what makes that bearable. From
-         * 820px up all eight measure 722px and fit on one line, at which point
-         * the grouping only costs: a second band of chrome, an extra click to
-         * reach a tab in another group, and one word stretched across 284px.
+         * One row of all eight tabs at every width. It used to be two bands on
+         * a phone (a group pill over that group's tabs) to fit eight labels in
+         * 343px, which spent about 55px of a small screen on chrome and cost
+         * an extra tap to cross from Reference to Mine. The row scrolls
+         * sideways instead, fades at the edge while there is more, and brings
+         * the selected tab into view. A hairline still marks where one half
+         * of the app ends and the next begins.
          */}
         <div
-          className="flat-tabs"
+          className="flat-tabs tabs"
           role="tablist"
           aria-label="Sections"
           onKeyDown={(e) => {
@@ -341,86 +375,6 @@ function Codex() {
             </Fragment>
           ))}
         </div>
-
-        <div className="grouped-nav">
-          {/*
-            * The selected group is painted by one sliding element rather than by
-            * each button's own background, so switching moves the indicator
-            * instead of cross-fading it out of one button and into another —
-            * which at this size read as the pill teleporting.
-            */}
-          <div
-            className="groups"
-            role="tablist"
-            aria-label="Section groups"
-            onKeyDown={(e) => {
-              const i = nextIndexByKey(
-                GROUPS.map((g) => g.id),
-                group.id,
-                e.key
-              );
-              if (i === null) return;
-              e.preventDefault();
-              setTab(GROUPS[i].tabs[0].id);
-              focusTab(e.currentTarget, i);
-            }}
-            style={
-              {
-                "--group-count": GROUPS.length,
-                "--group-index": Math.max(
-                  0,
-                  GROUPS.findIndex((g) => g.id === group.id)
-                ),
-              } as React.CSSProperties
-            }
-            data-ready={mounted}
-          >
-            {GROUPS.map((g) => (
-              <button
-                key={g.id}
-                className="group"
-                role="tab"
-                aria-selected={mounted && group.id === g.id}
-                /* Roving tabindex: a tablist is one tab stop, and the arrow keys
-                 * move within it. Three separate stops is what it was before. */
-                tabIndex={mounted && group.id === g.id ? 0 : -1}
-                title={g.hint}
-                onClick={() => setTab(g.tabs[0].id)}
-              >
-                {g.label}
-              </button>
-            ))}
-          </div>
-
-          {group.tabs.length > 1 && (
-            <div
-              className="tabs"
-              role="tablist"
-              aria-label={group.label}
-              onKeyDown={(e) => {
-                const ids = group.tabs.map((t) => t.id);
-                const i = nextIndexByKey(ids, tab, e.key);
-                if (i === null) return;
-                e.preventDefault();
-                setTab(ids[i]);
-                focusTab(e.currentTarget, i);
-              }}
-            >
-              {group.tabs.map((t) => (
-                <button
-                  key={t.id}
-                  className="tab"
-                  role="tab"
-                  aria-selected={mounted && tab === t.id}
-                  tabIndex={mounted && tab === t.id ? 0 : -1}
-                  onClick={() => setTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
       </nav>
 
       {!mounted ? (
@@ -429,10 +383,12 @@ function Codex() {
         /* Keyed on the tab so every switch mounts a fresh element, which is
          * what gives the CSS something to animate in. */
         <div className="panel" key={tab}>
+          {group.id === "mine" && <MineNote />}
           {tab === "characters" && <Characters />}
           {tab === "weapons" && <Weapons />}
           {tab === "echoes" && <Echoes />}
-          {tab === "builds" && <Plan />}
+          {tab === "now" && <Now onGo={setTab} />}
+          {tab === "builds" && <Plan onGo={setTab} />}
           {tab === "glossary" && <Glossary />}
           {tab === "quests" && <Quests />}
           {tab === "routine" && <Routine />}

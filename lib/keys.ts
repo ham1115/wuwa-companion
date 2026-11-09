@@ -14,7 +14,7 @@ export const STORAGE_GROUPS = {
   plan: ["plan", "build-steps", "plan-notes"],
   glossary: ["learned", "revealed", "notes"],
   story: ["acts", "priority-now"],
-  routine: ["routine", "routine-day"],
+  routine: ["routine", "routine-day", "routine-week", "routine-server"],
   display: [
     "tab",
     "theme",

@@ -1,39 +1,36 @@
 "use client";
 
-import { ROUTINE } from "@/data/progress";
-import { useIdSet, usePersistentState } from "@/lib/storage";
-import { useEffect } from "react";
-
-function today() {
-  return new Date().toISOString().slice(0, 10);
-}
+import ConfirmButton from "./ConfirmButton";
+import { SERVERS, type ServerId } from "@/lib/resetClock";
+import { useRoutine } from "@/lib/routine";
 
 export default function Routine() {
-  const checks = useIdSet("routine");
-  const [stamp, setStamp] = usePersistentState<string>("routine-day", today());
-
-  // Daily items clear themselves when the calendar date changes.
-  useEffect(() => {
-    const now = today();
-    if (stamp !== now) {
-      ROUTINE.filter((r) => r.cadence === "daily").forEach((r) => {
-        if (checks.has(r.id)) checks.toggle(r.id);
-      });
-      setStamp(now);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stamp, checks.hydrated]);
-
-  const daily = ROUTINE.filter((r) => r.cadence === "daily");
-  const weekly = ROUTINE.filter((r) => r.cadence === "weekly");
-  const dailyDone = daily.filter((r) => checks.has(r.id)).length;
+  const { checks, daily, weekly, dailyDone, server, setServer } = useRoutine();
 
   return (
-    <section>
-      <p className="panel-intro">
-        {dailyDone} of {daily.length} daily items done. Daily checks clear
-        themselves when the date changes.
+    <section className="routine">
+      <p className="panel-intro routine-intro">
+        <strong>
+          {dailyDone} of {daily.length} daily items done.
+        </strong>{" "}
+        Daily checks clear at 04:00, weekly ones on Monday at 04:00. Not your
+        server? Change the reset clock below.
       </p>
+
+      <label className="mine-field">
+        <span className="target-label">Reset clock</span>
+        <select
+          className="picker"
+          value={server}
+          onChange={(e) => setServer(e.target.value as ServerId)}
+        >
+          {SERVERS.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.label}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <h2 className="section">Daily</h2>
       {daily.map((r) => (
@@ -68,7 +65,7 @@ export default function Routine() {
       ))}
 
       <div className="callout" style={{ marginTop: 20 }}>
-        <strong>Combat keys</strong>
+        <strong>Combat keys on PC</strong>
         <ul>
           <li>Basic Attack / Parry: left click</li>
           <li>Dodge: right click (left shift also works)</li>
@@ -78,9 +75,9 @@ export default function Routine() {
       </div>
 
       <p className="footnote">
-        <button className="mini" onClick={checks.clear}>
+        <ConfirmButton className="mini" onConfirm={checks.clear}>
           Reset every check
-        </button>
+        </ConfirmButton>
       </p>
     </section>
   );

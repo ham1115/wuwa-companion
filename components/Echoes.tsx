@@ -5,6 +5,9 @@ import { CHARACTERS } from "@/data/characters";
 import { ECHOES, SONATA_SETS, type Echo, type SonataSet } from "@/data/echoes";
 import { useOwned } from "@/lib/owned";
 import Modal from "./Modal";
+import EmptyPane from "./EmptyPane";
+import { useMediaQuery } from "@/lib/media";
+import StatText from "./StatText";
 
 /** Sonata name -> characters whose build lists it. */
 const RUN_BY = (() => {
@@ -102,6 +105,7 @@ function SetsView() {
   const [open, setOpen] = useState<string | null>(null);
   const [mineOnly, setMineOnly] = useState(false);
   const owned = useOwned();
+  const wide = useMediaQuery("(min-width: 900px)");
 
   /* Found in the whole list rather than the filtered one, so typing in the
    * search box does not close the sheet that is already open. */
@@ -123,13 +127,8 @@ function SetsView() {
     });
   }, [query, mineOnly, owned.owned]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
+  const controls = (
     <>
-      <p className="panel-intro">
-        Showing {results.length} sets. Six of them are <strong>3-piece</strong>,
-        not 5. Check the badge before you commit five Echoes.
-      </p>
-
       <div className="search-row">
         <input
           className="search"
@@ -152,7 +151,78 @@ function SetsView() {
         </button>
       </div>
 
-      {results.length === 0 && <p className="empty">No set matches that.</p>}
+    </>
+  );
+
+  const noMatch = results.length === 0 ? <p className="empty">No set matches that.</p> : null;
+
+  const body = current ? <SetBody s={current} isOwned={owned.has} /> : null;
+
+  if (wide) {
+    return (
+      <>
+      <p className="panel-intro">
+        Showing {results.length} sets. Six of them are <strong>3-piece</strong>,
+        not 5. Check the badge before you commit five Echoes.
+      </p>
+
+        <div className="char-split">
+          <div className="char-list">
+            <div className="sticky-controls">{controls}</div>
+            {noMatch}
+            {results.map((s) => {
+              const run = RUN_BY.get(s.name) ?? [];
+              const mine = run.filter((c) => owned.has(c.id));
+              const rolled = ROLLED_BY.get(s.name) ?? [];
+              return (
+                <button
+                  key={s.name}
+                  className="char-pick"
+                  data-sel={open === s.name}
+                  onClick={() => setOpen(s.name)}
+                >
+                  <span className="char-name">{s.name}</span>
+                  {mine.length > 0 && <span className="owned-dot">{mine.length}</span>}
+                  <span className="pieces" data-p={s.pieces}>
+                    {s.pieces}-pc
+                  </span>
+                  <span className="term-cat">{rolled.length}</span>
+                </button>
+              );
+            })}
+          </div>
+          <aside className="char-detail">
+            {current ? (
+              <>
+                <header className="char-detail-head">
+                  <h2>{current.name}</h2>
+                  <span className="pieces" data-p={current.pieces}>
+                    {current.pieces}-pc
+                  </span>
+                </header>
+                {body}
+              </>
+            ) : (
+              <EmptyPane title="Pick a set">
+                {results.length} on the list beside this. The number on the right
+                is how many Echoes roll it.
+              </EmptyPane>
+            )}
+          </aside>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <p className="panel-intro">
+        Showing {results.length} sets. Six of them are <strong>3-piece</strong>,
+        not 5. Check the badge before you commit five Echoes.
+      </p>
+
+      {controls}
+      {noMatch}
 
       {results.map((s) => (
         <SetRow
@@ -163,6 +233,7 @@ function SetsView() {
           isOwned={owned.has}
         />
       ))}
+
 
       {/* One sheet for the whole list rather than a body per row: a set's
         * bonuses are a paragraph, and 20 of them unfolding in place pushed
@@ -180,7 +251,7 @@ function SetsView() {
                 {current.pieces}-pc
               </span>
             </header>
-            <SetBody s={current} isOwned={owned.has} />
+            {body}
           </>
         )}
       </Modal>
@@ -207,7 +278,7 @@ function SetRow({
     <article className="char-row" data-sel={isOpen}>
       <button className="char-toggle" onClick={onToggle} aria-haspopup="dialog">
         <span className="char-name">{s.name}</span>
-        {mine.length > 0 && <span className="owned-dot">{mine.length} of mine</span>}
+        {mine.length > 0 && <span className="owned-dot">{mine.length} mine</span>}
         <span className="pieces" data-p={s.pieces}>
           {s.pieces}-pc
         </span>
@@ -284,6 +355,7 @@ function EchoesView() {
   const [mineOnly, setMineOnly] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
   const owned = useOwned();
+  const wide = useMediaQuery("(min-width: 900px)");
 
   /* Found in the whole list rather than the filtered one, so typing in the
    * search box does not close the sheet that is already open. */
@@ -305,14 +377,8 @@ function EchoesView() {
     });
   }, [query, cost, mainOnly, mineOnly, owned.owned]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
+  const controls = (
     <>
-      <p className="panel-intro">
-        Showing {results.length} Echoes. Search matches set names too, so typing
-        a Sonata lists every Echo that rolls it. Only {MAIN_FOR.size} are picked
-        for anyone&apos;s main slot, which is the filter below.
-      </p>
-
       <div className="search-row">
         <input
           className="search"
@@ -356,7 +422,94 @@ function EchoesView() {
         </button>
       </div>
 
-      {results.length === 0 && <p className="empty">No Echo matches that.</p>}
+    </>
+  );
+
+  const noMatch = results.length === 0 ? <p className="empty">No Echo matches that.</p> : null;
+
+  if (wide) {
+    return (
+      <>
+      <p className="panel-intro">
+        Showing {results.length} Echoes. Search matches set names too, so typing
+        a Sonata lists every Echo that rolls it. Only {MAIN_FOR.size} are picked
+        for anyone&apos;s main slot, which is the filter below.
+      </p>
+
+        <div className="char-split">
+          <div className="char-list">
+            <div className="sticky-controls">{controls}</div>
+            {noMatch}
+            {results.map((e) => {
+              const mine = (MAIN_FOR.get(e.name) ?? []).filter((c) => owned.has(c.id));
+              return (
+                <button
+                  key={e.name}
+                  className="char-pick"
+                  data-sel={open === e.name}
+                  onClick={() => setOpen(e.name)}
+                >
+                  <span className="char-name">{e.name}</span>
+                  {mine.length > 0 && <span className="owned-dot">{mine.length}</span>}
+                  <span className="cost" data-cost={e.cost}>
+                    {e.cost} cost
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          <aside className="char-detail">
+            {current ? (
+              <>
+                <header className="char-detail-head">
+                  <h2>{current.name}</h2>
+                  <span className="cost" data-cost={current.cost}>
+                    {current.cost} cost
+                  </span>
+                  <span className="term-cat">{current.echoClass}</span>
+                </header>
+                <div className="char-body">
+              {current.skill && (
+                <>
+                  <h2 className="section">Echo skill</h2>
+                  <p className="term-def">{current.skill}</p>
+                </>
+              )}
+
+              <EchoWants e={current} isOwned={owned.has} />
+
+              <h2 className="section">Rolls these sets</h2>
+              <div className="related">
+                {current.sets.map((s) => (
+                  <span key={s} className="wanted-pill">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+              </>
+            ) : (
+              <EmptyPane title="Pick an Echo">
+                {results.length} on the list beside this. Search takes the skill
+                text and the Sonata names too.
+              </EmptyPane>
+            )}
+          </aside>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <p className="panel-intro">
+        Showing {results.length} Echoes. Search matches set names too, so typing
+        a Sonata lists every Echo that rolls it. Only {MAIN_FOR.size} are picked
+        for anyone&apos;s main slot, which is the filter below.
+      </p>
+
+      {controls}
+      {noMatch}
 
       {results.map((e) => {
         const mine = (MAIN_FOR.get(e.name) ?? []).filter((c) =>
@@ -371,7 +524,7 @@ function EchoesView() {
             >
               <span className="char-name">{e.name}</span>
               {mine.length > 0 && (
-                <span className="owned-dot">{mine.length} of mine</span>
+                <span className="owned-dot">{mine.length} mine</span>
               )}
               <span className="cost" data-cost={e.cost}>
                 {e.cost} cost
@@ -382,6 +535,7 @@ function EchoesView() {
           </article>
         );
       })}
+
 
       {/* 187 rows, and an Echo is a sentence and a few pills. Unfolding one in
         * place moved everything under it for very little; a sheet moves
@@ -472,7 +626,7 @@ function EchoWants({ e, isOwned }: { e: Echo; isOwned: (id: string) => boolean }
           <div className="echo-want" key={c.id} data-mine={isOwned(c.id)}>
             <span className="echo-want-who">{c.name}</span>
             <span className="echo-want-stat">
-              {c.stat ?? "no main stat recorded"}
+              {c.stat ? <StatText text={c.stat} /> : "no main stat recorded"}
             </span>
             {c.set && <span className="echo-want-set">{c.set}</span>}
           </div>

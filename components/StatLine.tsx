@@ -1,3 +1,5 @@
+import StatText from "./StatText";
+
 /**
  * One "4 cost: CRIT Rate > ATK%" row. Cost slots get the same colour as the
  * cost pills in the Echoes tab, so "4 cost" means the same thing everywhere.
@@ -15,7 +17,9 @@ export default function StatLine({ text }: { text: string }) {
       ) : (
         <span className="stat-slot">{slot}</span>
       )}
-      <span>{rest.join(": ")}</span>
+      <span>
+        <StatText text={rest.join(": ")} />
+      </span>
     </div>
   );
 }

@@ -19,7 +19,7 @@ import { holdInPlace } from "@/lib/anchor";
 
 const BY_ID = new Map(CHARACTERS.map((c) => [c.id, c]));
 
-export default function Plan() {
+export default function Plan({ onGo }: { onGo?: (tab: "characters") => void }) {
   const [plan, setPlan] = usePersistentState<string[]>("plan", DEFAULT_PLAN);
   const steps = useIdSet("build-steps");
   const notes = useNotes("plan-notes");
@@ -85,28 +85,40 @@ export default function Plan() {
   ];
 
   return (
-    <section>
-      <p className="panel-intro">
-        {entries.length} in the queue, worked top to bottom. Add characters from
-        the Characters tab; their builds are read straight from the database.
-      </p>
+    <section className="plan">
+      {entries.length > 0 && (
+        <p className="panel-intro">
+          {entries.length} in the queue, worked top to bottom. Add more from the
+          Characters tab.
+        </p>
+      )}
 
       {/* Listed in page order, so the bar reads as a map of what is below it
         * rather than as a menu of unrelated places. The queue leads: it is
         * the plan this tab is named after, and the shopping list is derived
         * from it, so reading the list first was reading a total before
         * knowing what it was a total of. */}
-      <PlanNav sections={sections} />
+      {entries.length > 0 && <PlanNav sections={sections} />}
 
-      {entries.length === 0 && (
-        <p className="empty">
-          Queue is empty. Open the Characters tab and hit “Queue” on anyone.
-        </p>
+      {entries.length === 0 ? (
+        <div className="card">
+          <p className="term-def">
+            Nothing queued yet. Pick a Resonator on the Characters tab and hit
+            “+ Queue”; their steps, materials and targets show up here.
+          </p>
+          {onGo && (
+            <div className="term-actions now-actions">
+              <button className="mini" onClick={() => onGo("characters")}>
+                Browse Characters
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <h2 className="section" id="plan-queue">
+          The queue: {entries.length} character{entries.length === 1 ? "" : "s"}
+        </h2>
       )}
-
-      <h2 className="section" id="plan-queue">
-        The queue: {entries.length} character{entries.length === 1 ? "" : "s"}
-      </h2>
 
       {/* Above the cards rather than inside them: only one card is open at a
         * time, so a note per card would be invisible for the rest. */}
@@ -123,7 +135,7 @@ export default function Plan() {
         const isOpen = openId === c.id;
 
         return (
-          <div key={c.id} className="card" data-open={isOpen}>
+          <div key={c.id} className="card" data-el={c.element} data-open={isOpen}>
             {/* The head keeps everything you need to read the queue without
               * opening anything: the position, the name, how far along the
               * checklist is, the element and the role. */}

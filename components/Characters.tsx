@@ -12,6 +12,7 @@ import {
 import { DEFAULT_PLAN } from "@/data/plan";
 import { useOwned } from "@/lib/owned";
 import Filters from "./Filters";
+import NoMatches from "./NoMatches";
 import Modal from "./Modal";
 import CharacterBody from "./CharacterBody";
 import EmptyPane from "./EmptyPane";
@@ -109,7 +110,7 @@ export default function Characters() {
               data-on={ownedOnly}
               onClick={() => setOwnedOnly(!ownedOnly)}
             >
-              {ownedOnly ? "★ Mine only" : "Mine only"}
+              {ownedOnly ? "★ For my characters" : "For my characters"}
             </button>
             <button className="chip" data-on={rarity === 5} onClick={() => setRarity(rarity === 5 ? "all" : 5)}>
               5★
@@ -152,16 +153,36 @@ export default function Characters() {
     </>
   );
 
+  const noMatches =
+    results.length === 0 ? (
+      <NoMatches
+        parts={[
+          query.trim() && `"${query.trim()}"`,
+          ownedOnly && "For my characters",
+          rarity !== "all" && `${rarity}★`,
+          el !== "all" && el,
+          role !== "all" && role,
+        ].filter((p): p is string => typeof p === "string" && p !== "")}
+        onClear={() => {
+          setQuery("");
+          setOwnedOnly(false);
+          setRarity("all");
+          setEl("all");
+          setRole("all");
+        }}
+      />
+    ) : null;
+
   return (
     <section>
       <p className="panel-intro">
-        {CHARACTERS.length} Resonators. Showing {results.length}.{" "}
-        {built.ids.length} marked as built.
+        {CHARACTERS.length} Resonators. Showing {results.length}.
+        {built.ids.length > 0 && ` ${built.ids.length} marked as built.`}
       </p>
 
       {!wide && controls}
 
-      {results.length === 0 && <p className="empty">Nothing matches those filters.</p>}
+      {!wide && noMatches}
 
       {/*
         * Two layouts over one piece of state, and neither of them moves the
@@ -174,10 +195,12 @@ export default function Characters() {
         <div className="char-split">
           <div className="char-list">
             {controls}
+            {wide && noMatches}
             {results.map((c) => (
               <button
                 key={c.id}
                 className="char-pick"
+                data-el={c.element}
                 data-sel={current?.id === c.id}
                 data-built={built.has(c.id)}
                 onClick={() => setSelected(c.id)}
@@ -194,7 +217,7 @@ export default function Characters() {
             ))}
           </div>
 
-          <aside className="char-detail">
+          <aside className="char-detail" data-el={current?.element}>
             {current ? (
               <>
                 <header className="char-detail-head">
@@ -211,13 +234,14 @@ export default function Characters() {
                 <CharacterBody {...bodyProps(current)} />
               </>
             ) : (
-              <EmptyPane title="Pick a Resonator">
-                {results.length} on the list
+              <EmptyPane title={results.length === 0 ? "Nobody to pick" : "Pick a Resonator"}>
+                {results.length === 0 && "Clear the filters on the left to bring the list back."}
+                {results.length > 0 && <>{results.length} on the list
                 {results.length === 1 ? "" : " beside this"}
                 {built.ids.length > 0
                   ? `, ${built.ids.length} of them marked as built`
                   : ""}
-                . The search box takes weapon, echo and sonata names too.
+                . The search box takes weapon, echo and sonata names too.</>}
               </EmptyPane>
             )}
           </aside>
@@ -286,7 +310,7 @@ function CharacterRow({
   isBuilt: boolean;
 }) {
   return (
-    <article className="char-row" data-built={isBuilt} data-sel={isSelected}>
+    <article className="char-row" data-el={c.element} data-built={isBuilt} data-sel={isSelected}>
       <button className="char-toggle" onClick={onOpen} aria-haspopup="dialog">
         <span className="char-name">{c.name}</span>
         {isOwned && <span className="owned-dot">mine</span>}

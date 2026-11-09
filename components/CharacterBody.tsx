@@ -9,6 +9,7 @@ import Targets from "./Targets";
 import Teams from "./Teams";
 import SkillPriority from "./SkillPriority";
 import NotMine from "./NotMine";
+import StatText from "./StatText";
 
 /**
  * Everything the list shows about one character.
@@ -83,42 +84,48 @@ export default function CharacterBody({
       ) : (
         <>
           <div className="char-quick">
-            <section className="char-blk">
-              <h2 className="section">Weapons: best first</h2>
-              <RankedWeapons key={c.id} entries={c.weapons} />
-            </section>
+            <div className="char-group">
+              <section className="char-blk">
+                <h2 className="section">Weapons: best first</h2>
+                <RankedWeapons key={c.id} entries={c.weapons} />
+              </section>
 
-            <section className="char-blk">
-              <h2 className="section">Sonata sets</h2>
-              <ol className="ranked">
-                {c.sets.map((s) => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ol>
-            </section>
+              <section className="char-blk">
+                <h2 className="section">Sonata sets</h2>
+                <ol className="ranked">
+                  {c.sets.map((s) => (
+                    <li key={s}>{s}</li>
+                  ))}
+                </ol>
+              </section>
 
-            <section className="char-blk">
-              <h2 className="section">Main echo options</h2>
-              <ol className="ranked">
-                {c.echoes.map((e) => (
-                  <li key={e}>{e}</li>
-                ))}
-              </ol>
-            </section>
+              <section className="char-blk">
+                <h2 className="section">Main echo options</h2>
+                <ol className="ranked">
+                  {c.echoes.map((e) => (
+                    <li key={e}>{e}</li>
+                  ))}
+                </ol>
+              </section>
+            </div>
 
-            <section className="char-blk">
-              <h2 className="section">Main stats</h2>
-              <div className="stat-grid">
-                {c.stats.map((s, i) => (
-                  <StatLine key={i} text={s} />
-                ))}
-              </div>
-            </section>
+            <div className="char-group">
+              <section className="char-blk">
+                <h2 className="section">Main stats</h2>
+                <div className="stat-grid">
+                  {c.stats.map((s, i) => (
+                    <StatLine key={i} text={s} />
+                  ))}
+                </div>
+              </section>
 
-            <section className="char-blk">
-              <h2 className="section">Substat priority</h2>
-              <p className="term-def">{c.substats}</p>
-            </section>
+              <section className="char-blk">
+                <h2 className="section">Substat priority</h2>
+                <p className="term-def">
+                  <StatText text={c.substats} />
+                </p>
+              </section>
+            </div>
           </div>
 
           <SkillPriority id={c.id} />
@@ -197,7 +204,6 @@ function RankedWeapons({ entries }: { entries: string[] }) {
 
       {budgetHidden && (
         <p className="budget-hint">
-          <span className="ranked-tag">cheapest that works</span>{" "}
           <span className="star" data-r={ranked[budgetAt].rarity}>
             {ranked[budgetAt].rarity}★
           </span>{" "}
@@ -207,7 +213,8 @@ function RankedWeapons({ entries }: { entries: string[] }) {
               &nbsp;({ranked[budgetAt].refine})
             </span>
           )}
-          <span className="ranked-refine"> — ranked #{budgetAt + 1}</span>
+          <span className="ranked-tag">cheapest that works</span>
+          <span className="ranked-refine"> ranked #{budgetAt + 1}</span>
         </p>
       )}
 

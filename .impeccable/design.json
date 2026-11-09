@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-06T00:00:00Z",
+  "title": "Design System: Resonance Codex",
+  "extensions": {
+    "colorMeta": {
+      "resonance-rose": { "role": "primary", "displayName": "Resonance Rose", "canonical": "#c43f7a", "tonalRamp": ["#3d1027", "#6a1d44", "#8e2a56", "#c43f7a", "#e0709f", "#f2a3c3", "#ffd9e8", "#fff0f6"] },
+      "rose-ink": { "role": "primary", "displayName": "Rose Ink", "canonical": "#8e2a56", "tonalRamp": ["#3d1027", "#5a1a39", "#8e2a56", "#a8416d", "#c46c91", "#dca0ba", "#f2d0de", "#fbe9f0"] },
+      "lemon-flash": { "role": "secondary", "displayName": "Lemon Flash", "canonical": "#f6c744", "tonalRamp": ["#3d2f02", "#6b5204", "#8a6a07", "#c39a14", "#f6c744", "#f9d97c", "#fff2c2", "#fff9e0"] },
+      "petal-page": { "role": "neutral", "displayName": "Petal Page", "canonical": "#fff6fa", "tonalRamp": ["#1c1118", "#271a22", "#3b2630", "#573a47", "#efb3cc", "#f8d7e4", "#fdecf3", "#fff6fa"] }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Masthead", "purpose": "App title in Rose Ink." },
+      "label": { "displayName": "Section label", "purpose": "Uppercase accent section headings (h2.section)." },
+      "body": { "displayName": "Body", "purpose": "Prose and panel intros in dim text." }
+    },
+    "shadows": [
+      { "name": "glass-card", "value": "inset 0 1px 0 var(--glass-sheen), 0 8px 24px -12px color-mix(in srgb, var(--shadow) 28%, transparent), 0 2px 6px -3px color-mix(in srgb, var(--shadow) 18%, transparent)", "purpose": "Cards and callouts." },
+      { "name": "nav", "value": "inset 0 1px 0 var(--glass-sheen), 0 6px 18px -14px color-mix(in srgb, var(--shadow) 50%, transparent)", "purpose": "Sticky glass nav." },
+      { "name": "glow-soft", "value": "color-mix(in srgb, var(--accent) 22%, transparent)", "purpose": "Accent bloom; 26% in dark mode where black shadows disappear." }
+    ],
+    "motion": [
+      { "name": "ease", "value": "cubic-bezier(0.22, 0.61, 0.36, 1)", "purpose": "The single easing curve." },
+      { "name": "fast", "value": "140ms", "purpose": "State that flips under the cursor." },
+      { "name": "med", "value": "240ms", "purpose": "Size changes, appearing content, group indicator." }
+    ],
+    "breakpoints": [
+      { "name": "phone", "value": "430px" },
+      { "name": "narrow", "value": "600px" },
+      { "name": "split", "value": "900px" },
+      { "name": "wide", "value": "1100px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Tab",
+      "kind": "nav",
+      "refersTo": "tab",
+      "description": "Pill tab in the nav row; selected state uses the soft accent.",
+      "html": "<div style=\"display:flex;gap:5px\"><button class=\"ds-tab\">Characters</button><button class=\"ds-tab\" aria-selected=\"true\">Weapons</button></div>",
+      "css": ".ds-tab{background:transparent;border:1px solid transparent;border-radius:999px;color:var(--text-dim,#6b5560);padding:8px 16px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit}.ds-tab:hover{background:var(--bg-sunken,#fdecf3);color:var(--text,#171318)}.ds-tab[aria-selected=true]{background:var(--accent-soft,#ffd9e8);border-color:var(--accent,#c43f7a);color:var(--accent-ink,#8e2a56)}.ds-tab:focus-visible{outline:2px solid var(--accent,#c43f7a);outline-offset:2px}"
+    },
+    {
+      "name": "Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filter chip, pill shaped; on state fills with the soft accent.",
+      "html": "<div style=\"display:flex;gap:6px\"><button class=\"ds-chip\">Spectro</button><button class=\"ds-chip\" data-on=\"true\">Mine only</button></div>",
+      "css": ".ds-chip{background:var(--bg-raised,#fff);border:1px solid var(--border,#f8d7e4);border-radius:999px;color:var(--text-dim,#6b5560);padding:5px 13px;font-size:.8rem;cursor:pointer;font-family:inherit}.ds-chip:hover{border-color:var(--border-strong,#efb3cc);color:var(--text,#171318)}.ds-chip[data-on=true]{background:var(--accent-soft,#ffd9e8);border-color:var(--accent,#c43f7a);color:var(--accent-ink,#8e2a56);font-weight:600}.ds-chip:focus-visible{outline:2px solid var(--accent,#c43f7a);outline-offset:2px}"
+    },
+    {
+      "name": "Search",
+      "kind": "input",
+      "refersTo": "search",
+      "description": "Pill search field; the border turns accent on focus.",
+      "html": "<input class=\"ds-search\" placeholder=\"Search name, weapon, echo or set\" />",
+      "css": ".ds-search{width:100%;box-sizing:border-box;background:var(--bg-raised,#fff);border:1.5px solid var(--border,#f8d7e4);border-radius:999px;color:var(--text,#171318);padding:11px 18px;font-size:1rem;font-family:inherit}.ds-search:focus{outline:none;border-color:var(--accent,#c43f7a)}.ds-search::placeholder{color:var(--text-faint,#7d6a74)}"
+    },
+    {
+      "name": "Glass Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Translucent panel with a lit top edge and the diagonal chamfer.",
+      "html": "<div class=\"ds-card\"><h2 class=\"ds-section\">Skill upgrade order</h2><p style=\"margin:0;font-size:.9rem;color:var(--text-dim,#6b5560)\">Basic, then Forte Circuit.</p></div>",
+      "css": ".ds-card{background:color-mix(in srgb,var(--bg-raised,#fff) 72%,transparent);border:1px solid var(--glass-edge,#efb3cc);border-radius:14px;border-top-left-radius:18px;border-bottom-right-radius:18px;corner-top-left-shape:bevel;corner-bottom-right-shape:bevel;padding:15px 17px;backdrop-filter:blur(14px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 24px -12px rgba(142,42,86,.28),0 2px 6px -3px rgba(142,42,86,.18)}.ds-section{font-size:.72rem;text-transform:uppercase;letter-spacing:.09em;color:var(--accent,#c43f7a);margin:0 0 9px;font-weight:700}"
+    },
+    {
+      "name": "Callout",
+      "kind": "card",
+      "refersTo": "callout",
+      "description": "Lemon note panel for warnings and tips.",
+      "html": "<div class=\"ds-callout\"><strong>Check the set first.</strong>Six Sonata sets need only three pieces.</div>",
+      "css": ".ds-callout{background:var(--lemon-soft,#fff2c2);border:1px solid var(--lemon,#f6c744);border-radius:14px;border-top-left-radius:18px;border-bottom-right-radius:18px;corner-top-left-shape:bevel;corner-bottom-right-shape:bevel;padding:12px 15px;font-size:.875rem;color:var(--text-dim,#6b5560)}.ds-callout strong{display:block;margin-bottom:3px;color:var(--text,#171318)}"
+    },
+    {
+      "name": "Character Row",
+      "kind": "custom",
+      "refersTo": "char-row",
+      "description": "Long-list row: near-square, one small cut, leading blade that brightens on hover and when built.",
+      "html": "<div class=\"ds-row\"><button class=\"ds-row-toggle\"><strong>Camellya</strong><span class=\"ds-star\">5★</span><span class=\"ds-cost\">4 cost</span></button></div>",
+      "css": ".ds-row{position:relative;overflow:hidden;border:1px solid var(--glass-edge,#efb3cc);background:var(--bg-raised,#fff);border-radius:5px;border-top-left-radius:13px;corner-top-left-shape:bevel;transition:transform 140ms cubic-bezier(.22,.61,.36,1)}.ds-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:color-mix(in srgb,var(--accent,#c43f7a) 30%,var(--border-strong,#efb3cc))}.ds-row:hover::before{background:var(--accent,#c43f7a)}.ds-row-toggle{width:100%;display:flex;align-items:center;gap:9px;background:transparent;border:none;padding:12px 15px;color:var(--text,#171318);font-family:inherit;text-align:left;cursor:pointer}.ds-star,.ds-cost{font-size:.72rem;font-weight:700;border:1px solid;border-radius:999px;padding:2px 8px}.ds-star{color:var(--r5-ink,#85620a);background:var(--r5-bg,#fff2c2);border-color:var(--r5-line,#f0c040)}.ds-cost{color:var(--c4-ink,#8c4b17);background:var(--c4-bg,#ffe3cd);border-color:var(--c4-line,#efae79)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Resonance Panel",
+    "overview": "A calm in-game menu rendered in pastel. Surfaces are frosted glass with a lit top edge, panels are cut on one diagonal the way Wuthering Waves cuts its own, and controls are soft pills. Everything is quiet: small uppercase accent headings, pale tinted fills, thin borders, generous padding. It is a lookup tool used beside a running game, so the page recedes and the facts carry the colour.",
+    "keyCharacteristics": [
+      "Frosted glass for the nav, cards and callouts only. Long lists get the lit edge and shadow without the blur.",
+      "Chamfered panels (two opposite corners cut) and pill-shaped controls.",
+      "Small, uppercase, letter-spaced accent headings instead of large black ones.",
+      "Colour is data: rarity, Echo cost and Sonata piece count each have a fixed scale reused everywhere.",
+      "Light by default, with a true dark counterpart; palette-agnostic by construction."
+    ],
+    "rules": [
+      { "name": "The Palette Is Not Ours Rule", "body": "Never write a hex in a component. Derive shades with color-mix(in srgb, var(--accent) 30%, transparent). The five palettes and the player's custom colours are the source of truth.", "section": "colors" },
+      { "name": "The Ink On Tint Rule", "body": "On an --accent-soft or --lemon-soft background, text is --accent-ink or --lemon-ink, never the raw accent.", "section": "colors" },
+      { "name": "The Three Scales Rule", "body": "Rarity, Echo cost and piece count are different numbers with different colour scales. Do not reuse one scale for another.", "section": "colors" },
+      { "name": "The Quiet Heading Rule", "body": "Headings are small, uppercase, letter-spaced and accent-coloured, not large and black.", "section": "typography" },
+      { "name": "The 4.5 Rule", "body": "Every text colour clears 4.5:1 on the surface it sits on, at 12px, in all palettes and both modes.", "section": "typography" },
+      { "name": "The Only Eleven Rule", "body": "Blur is for the nav, cards and callouts. Never the 61, 114 or 187 row lists; no tab blurs more than eleven elements.", "section": "elevation" },
+      { "name": "The No Glass Without Fallback Rule", "body": "Browsers without backdrop-filter, and players with prefers-reduced-transparency, get the opaque surfaces back.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do write every colour as a token and derive tints with color-mix (Palette Is Not Ours Rule).",
+      "Do test any new screen on Forest & cream and Amber & slate, in dark mode, and at 375px.",
+      "Do put small facts in pill badges with a tinted background, a matching 1px border and bold ink text.",
+      "Do keep copy short and specific, with no em dashes: \"17 builds want this\", not \"popular choice\".",
+      "Do declare color-scheme per theme so dialogs, scrollbars and form controls follow dark mode.",
+      "Do keep motion on one scale (--fast 140ms, --med 240ms, --ease cubic-bezier(.22,.61,.36,1)) and let prefers-reduced-motion zero the durations rather than delete the rules."
+    ],
+    "donts": [
+      "Don't hardcode a hex in a component, or add Tailwind, shadcn or a utility-class layer.",
+      "Don't blur the long lists, or put overflow-x: auto on a block whose glow must show without padding it back out.",
+      "Don't cut all four corners of a panel.",
+      "Don't use --text-faint below 13px or --accent as text on an accent tint.",
+      "Don't make headings large and black, or anything loud.",
+      "Don't put a transform on an ancestor of a background-attachment: fixed element."
+    ]
+  }
+}

@@ -1,9 +1,11 @@
 "use client";
 
+import StatText from "./StatText";
 import { useMemo, useState, type CSSProperties } from "react";
 import { CHARACTERS, WEAPON_TYPES, type WeaponType } from "@/data/characters";
 import { WEAPONS, baseWeaponName, type Weapon } from "@/data/weapons";
 import Filters from "./Filters";
+import NoMatches from "./NoMatches";
 import EmptyPane from "./EmptyPane";
 import Modal from "./Modal";
 import { useOwned } from "@/lib/owned";
@@ -113,6 +115,24 @@ export default function Weapons() {
     </>
   );
 
+  const noMatches =
+    results.length === 0 ? (
+      <NoMatches
+        parts={[
+          query.trim() && `"${query.trim()}"`,
+          mineOnly && "For my characters",
+          rarity !== "all" && `${rarity}★`,
+          type !== "all" && type,
+        ].filter((p): p is string => typeof p === "string" && p !== "")}
+        onClear={() => {
+          setQuery("");
+          setMineOnly(false);
+          setRarity("all");
+          setType("all");
+        }}
+      />
+    ) : null;
+
   return (
     <section>
       <p className="panel-intro">
@@ -122,7 +142,7 @@ export default function Weapons() {
 
       {!wide && controls}
 
-      {results.length === 0 && <p className="empty">Nothing matches those filters.</p>}
+      {!wide && noMatches}
 
       {/* The same split the Characters tab makes, for the same reason: 114
         * rows is a long way to push down the page to read one effect. */}
@@ -130,6 +150,7 @@ export default function Weapons() {
         <div className="char-split">
           <div className="char-list">
             {controls}
+            {wide && noMatches}
             {results.map((w) => {
               const mine = (WANTED_BY.get(w.name) ?? []).filter((c) =>
                 owned.has(c.id)
@@ -138,6 +159,7 @@ export default function Weapons() {
                 <button
                   key={w.name}
                   className="char-pick"
+                  data-r={w.rarity}
                   data-sel={current?.name === w.name}
                   onClick={() => setOpen(w.name)}
                 >
@@ -153,7 +175,7 @@ export default function Weapons() {
             })}
           </div>
 
-          <aside className="char-detail">
+          <aside className="char-detail" data-r={current?.rarity}>
             {current ? (
               <>
                 <header className="char-detail-head">
@@ -161,14 +183,15 @@ export default function Weapons() {
                   <span className="star" data-r={current.rarity}>
                     {current.rarity}★
                   </span>
-                  <span className="term-cat">{current.type}</span>
+                  <span className="term-cat wtype" data-wt={current.type}>{current.type}</span>
                 </header>
                 <WeaponBody w={current} isOwned={owned.has} />
               </>
             ) : (
-              <EmptyPane title="Pick a weapon">
-                {results.length} on the list beside this. Search takes the
-                effect text too, so a mechanic finds the weapons that have it.
+              <EmptyPane title={results.length === 0 ? "No weapons to pick" : "Pick a weapon"}>
+                {results.length === 0
+                  ? "Clear the filters on the left to bring the list back."
+                  : `${results.length} on the list beside this. Search takes the effect text too, so a mechanic finds the weapons that have it.`}
               </EmptyPane>
             )}
           </aside>
@@ -197,7 +220,7 @@ export default function Weapons() {
                   <span className="star" data-r={current.rarity}>
                     {current.rarity}★
                   </span>
-                  <span className="term-cat">{current.type}</span>
+                  <span className="term-cat wtype" data-wt={current.type}>{current.type}</span>
                 </header>
                 <WeaponBody w={current} isOwned={owned.has} />
               </>
@@ -232,14 +255,14 @@ function WeaponRow({
   const mine = (WANTED_BY.get(w.name) ?? []).filter((c) => isOwned(c.id));
 
   return (
-    <article className="char-row" data-sel={isSelected}>
+    <article className="char-row" data-r={w.rarity} data-sel={isSelected}>
       <button className="char-toggle" onClick={onOpen} aria-haspopup="dialog">
         <span className="char-name">{w.name}</span>
-        {mine.length > 0 && <span className="owned-dot">{mine.length} of mine</span>}
+        {mine.length > 0 && <span className="owned-dot">{mine.length} mine</span>}
         <span className="star" data-r={w.rarity}>
           {w.rarity}★
         </span>
-        <span className="term-cat">{w.type}</span>
+        <span className="term-cat wtype" data-wt={w.type}>{w.type}</span>
         <span className="term-cat">▸</span>
       </button>
     </article>
@@ -282,11 +305,15 @@ function WeaponBody({
       <div className="stat-grid">
         <div className="stat-line">
           <span className="stat-slot">ATK</span>
-          <span>{w.atk} at Lv.90</span>
+          <span>
+            <strong className="num">{w.atk}</strong> at Lv.90
+          </span>
         </div>
         <div className="stat-line">
           <span className="stat-slot">Substat</span>
-          <span>{w.substat}</span>
+          <span>
+            <StatText text={w.substat} />
+          </span>
         </div>
       </div>
 

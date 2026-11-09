@@ -1,5 +1,6 @@
 "use client";
 
+import ConfirmButton from "./ConfirmButton";
 import { useState } from "react";
 import { CHARACTERS } from "@/data/characters";
 import { PALETTES } from "@/data/palettes";
@@ -111,9 +112,9 @@ export default function Settings() {
       </div>
 
       <div className="chips">
-        <button className="chip" onClick={owned.clear} disabled={owned.owned.length === 0}>
+        <ConfirmButton className="chip" onConfirm={owned.clear} disabled={owned.owned.length === 0}>
           Select none
-        </button>
+        </ConfirmButton>
       </div>
 
       <div className="owned-grid">
