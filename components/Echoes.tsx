@@ -383,7 +383,7 @@ function EchoesView() {
         <input
           className="search"
           type="search"
-          placeholder="Search Echo name, set or skill…"
+          placeholder="Search Echo name, set, or skill…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Search echoes"

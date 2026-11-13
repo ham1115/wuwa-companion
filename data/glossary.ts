@@ -27,7 +27,7 @@ export const CATEGORIES: { id: Category; label: string; blurb: string }[] = [
   { id: "sound", label: "Sound Tech", blurb: "Everything here is sound. Start with this." },
   { id: "factions", label: "Factions", blurb: "Who wants what, and who to distrust." },
   { id: "combat", label: "Combat", blurb: "The jargon on your skill bar." },
-  { id: "resources", label: "Resources", blurb: "Currencies, caps and bottlenecks." },
+  { id: "resources", label: "Resources", blurb: "Currencies, caps, and bottlenecks." },
   { id: "endgame", label: "Modes", blurb: "Where you spend Waveplate and time." },
   { id: "items", label: "Items & Entities", blurb: "Things you pick up or punch." },
 ];
@@ -177,7 +177,7 @@ export const TERMS: Term[] = [
     term: "Sonance Casket",
     category: "sound",
     definition:
-      "The treasure chests. Contain Astrite, upgrade materials and occasional lore entries.",
+      "The treasure chests. Contain Astrite, upgrade materials, and occasional lore entries.",
     related: ["astrite"],
   },
 
@@ -324,7 +324,7 @@ export const TERMS: Term[] = [
     term: "Parry",
     category: "combat",
     definition:
-      "When an enemy attack flashes orange or yellow, hit it with Basic Attack (left click) or your Skill to stagger them. Dodging a flash wastes it.",
+      "When an enemy attack flashes orange or yellow, hit it with Basic Attack (left click on PC) or your Skill to stagger them. Dodging a flash wastes it.",
     related: ["dodge-counter"],
   },
   {
@@ -332,7 +332,7 @@ export const TERMS: Term[] = [
     term: "Dodge Counter",
     category: "combat",
     definition:
-      "Dodge (right click) through an attack at the last moment. The screen distorts, then Basic Attack immediately for a free counterattack.",
+      "Dodge (right click on PC) through an attack at the last moment. The screen distorts, then Basic Attack immediately for a free counterattack.",
     related: ["parry"],
   },
   {
@@ -374,7 +374,7 @@ export const TERMS: Term[] = [
     term: "Waveplate",
     category: "resources",
     definition:
-      "Stamina. Spent on Tacet Fields, Forgery Challenges and boss drops. Regenerates over time and caps out, so spend before it overflows.",
+      "Stamina. Spent on Tacet Fields, Forgery Challenges, and boss drops. Regenerates over time and caps out, so spend before it overflows.",
     related: ["tacet-field", "tacet-core"],
   },
   {
@@ -382,7 +382,7 @@ export const TERMS: Term[] = [
     term: "Astrite",
     category: "resources",
     definition:
-      "Premium currency, converted into pulls. Earned from quests, exploration and events.",
+      "Premium currency, converted into pulls. Earned from quests, exploration, and events.",
     related: ["sonance-casket"],
   },
   {
@@ -390,7 +390,7 @@ export const TERMS: Term[] = [
     term: "Shell Credits",
     category: "resources",
     definition:
-      "Money. Needed for every level-up, weapon and Echo. The real bottleneck in almost every account.",
+      "Money. Needed for every level-up, weapon, and Echo. The real bottleneck in almost every account.",
     related: ["simulation-training"],
   },
   {

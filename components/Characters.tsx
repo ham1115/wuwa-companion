@@ -96,7 +96,7 @@ export default function Characters() {
             <input
               className="search"
               type="search"
-              placeholder="Search name, weapon, echo or set…"
+              placeholder="Search name, weapon, echo, or set…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               aria-label="Search characters"
@@ -241,7 +241,7 @@ export default function Characters() {
                 {built.ids.length > 0
                   ? `, ${built.ids.length} of them marked as built`
                   : ""}
-                . The search box takes weapon, echo and sonata names too.</>}
+                . The search box takes weapon, echo, and sonata names too.</>}
               </EmptyPane>
             )}
           </aside>
@@ -256,6 +256,8 @@ export default function Characters() {
               onOpen={() => setSelected(c.id)}
               isOwned={owned.has(c.id)}
               isBuilt={built.has(c.id)}
+              isQueued={plan.includes(c.id)}
+              onQueue={() => toggleQueue(c.id)}
             />
           ))}
 
@@ -302,12 +304,16 @@ function CharacterRow({
   onOpen,
   isOwned,
   isBuilt,
+  isQueued,
+  onQueue,
 }: {
   c: Character;
   isSelected: boolean;
   onOpen: () => void;
   isOwned: boolean;
   isBuilt: boolean;
+  isQueued: boolean;
+  onQueue: () => void;
 }) {
   return (
     <article className="char-row" data-el={c.element} data-built={isBuilt} data-sel={isSelected}>
@@ -322,6 +328,15 @@ function CharacterRow({
         </span>
         <span className="term-cat">{c.role ?? "no build"}</span>
         <span className="term-cat">▸</span>
+      </button>
+      <button
+        className="mini char-queue"
+        data-on={isQueued}
+        aria-pressed={isQueued}
+        aria-label={`${isQueued ? "Remove" : "Queue"} ${c.name}`}
+        onClick={onQueue}
+      >
+        {isQueued ? "✓ In plan" : "+ Queue"}
       </button>
     </article>
   );

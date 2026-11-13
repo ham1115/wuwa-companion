@@ -233,9 +233,9 @@ body {
 
 .theme-toggle {
   flex: none;
-  background: var(--lemon-soft);
-  color: var(--lemon-ink);
-  border: 1px solid var(--lemon);
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border-strong);
   border-radius: 999px;
   padding: 7px 14px;
   font-size: 0.8rem;
@@ -245,13 +245,15 @@ body {
 }
 
 .theme-toggle:hover {
-  filter: brightness(0.97);
+  background: var(--bg-sunken);
+  color: var(--text);
 }
 
 /* ---------- tabs ---------- */
 /*
  * The nav sticks to the top so switching section never means scrolling back
- * up. Groups above, that group's tabs below.
+ * up. One row of plain text tabs; see "the nav row" below for how it differs
+ * from the pills used everywhere else.
  */
 .nav {
   position: sticky;
@@ -262,78 +264,6 @@ body {
   padding: 8px 0 6px;
   margin-bottom: 14px;
   border-bottom: 1px solid var(--border);
-}
-
-.groups {
-  --group-gap: 4px;
-  --group-pad: 3px;
-  position: relative;
-  display: flex;
-  gap: var(--group-gap);
-  background: var(--bg-sunken);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: var(--group-pad);
-  margin-bottom: 8px;
-}
-
-/*
- * One indicator that moves, instead of three backgrounds that cross-fade.
- * Fading the old pill out while fading the new one in reads as the pill
- * blinking from one place to another, because nothing ever travels between
- * them — which is what made switching groups look wrong.
- *
- * Its width is a third of the track minus the gaps, and it steps by its own
- * width plus one gap, so the arithmetic holds for any number of groups.
- */
-.groups::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: var(--group-pad);
-  bottom: var(--group-pad);
-  left: var(--group-pad);
-  width: calc(
-    (100% - 2 * var(--group-pad) - (var(--group-count) - 1) * var(--group-gap)) /
-      var(--group-count)
-  );
-  border-radius: 999px;
-  background: var(--bg-raised);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
-  transform: translateX(
-    calc(var(--group-index) * (100% + var(--group-gap)))
-  );
-  transition: transform var(--med) var(--ease);
-}
-
-/* Before hydration the index is whatever the server guessed, so the indicator
- * must not slide from it once the real one arrives. */
-.groups[data-ready="false"]::before {
-  transition: none;
-}
-
-.group {
-  position: relative;
-  z-index: 1;
-  flex: 1;
-  background: transparent;
-  border: none;
-  border-radius: 999px;
-  color: var(--text-dim);
-  padding: 7px 10px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-  white-space: nowrap;
-}
-
-.group:hover {
-  color: var(--text);
-}
-
-.group[aria-selected="true"] {
-  color: var(--accent-ink);
 }
 
 .tabs {
@@ -551,10 +481,10 @@ h2.section {
   border: 1px solid var(--border-strong);
   background: var(--bg-raised);
   color: var(--accent);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--shadow) 12%, transparent);
   font-family: inherit;
 }
 
@@ -753,7 +683,7 @@ h2.section {
   margin-top: 10px;
   background: var(--bg-sunken);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 9px;
   color: var(--text);
   padding: 9px 11px;
   font-size: 0.85rem;
@@ -835,7 +765,7 @@ h2.section {
   width: 19px;
   height: 19px;
   border: 1.5px solid var(--border-strong);
-  border-radius: 7px;
+  border-radius: 9px;
   margin-top: 2px;
   display: grid;
   place-items: center;
@@ -908,7 +838,7 @@ h2.section {
   display: grid;
   grid-template-columns: minmax(92px, 160px) 1fr;
   gap: 5px 14px;
-  font-size: 0.86rem;
+  font-size: 0.85rem;
   margin: 10px 0;
 }
 
@@ -933,7 +863,7 @@ details.more {
 
 details.more summary {
   cursor: pointer;
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   color: var(--accent);
   list-style: none;
   font-weight: 600;
@@ -966,7 +896,7 @@ details.more li {
   border-radius: 999px;
   padding: 2px 10px;
   color: #2d1a24;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid color-mix(in srgb, #000 10%, transparent);
 }
 
 .el[data-el="Aero"] { background: #a8e6d0; }
@@ -1165,7 +1095,7 @@ details.more li {
   gap: 1px;
   background: var(--bg-sunken);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 9px;
   padding: 7px 11px;
 }
 
@@ -1268,7 +1198,7 @@ details.more li {
 .compare-input {
   background: var(--bg-raised);
   border: 1px solid var(--border-strong);
-  border-radius: 7px;
+  border-radius: 9px;
   color: var(--text);
   padding: 5px 8px;
   font-size: 0.85rem;
@@ -1369,7 +1299,7 @@ details.more li {
   padding: 0;
   list-style: none;
   counter-reset: rank;
-  font-size: 0.86rem;
+  font-size: 0.85rem;
   color: var(--text-dim);
 }
 
@@ -1544,10 +1474,10 @@ details.more li {
   gap: 9px;
   background: var(--bg-raised);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 9px;
   color: var(--text-dim);
   padding: 9px 11px;
-  font-size: 0.86rem;
+  font-size: 0.85rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -1734,7 +1664,7 @@ details.more li {
   align-content: flex-start;
   background: var(--bg-raised);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 9px;
   padding: 5px 6px;
 }
 
@@ -1785,7 +1715,6 @@ details.more li {
  * gets animated by accident.
  */
 
-.group,
 .tab,
 .mini,
 .check,
@@ -2308,7 +2237,6 @@ button,
 .char-toggle:active,
 .chip:active,
 .tab:active,
-.group:active,
 .mini:active,
 .check:active,
 .theme-toggle:active,
@@ -2322,38 +2250,96 @@ button,
  * own, and it is the only indicator a keyboard has.
  */
 
-/* ---------- flat nav: one row of tabs once they fit ---------- */
+/* ---------- the nav row ---------- */
 /*
- * Measured at 900px of content: the eight tab labels come to 722px, the group
- * pill was giving one word 284px, and the tab row underneath it was using 363
- * of 900. Two bands and an extra click bought nothing a single row does not.
+ * Primary navigation is text with an underline, not pills. Pills are what this
+ * app uses for things you set (filters, chips, toggles), so a row of pill tabs
+ * above a row of pill chips read as one stack of the same control. Text tabs
+ * on a rule say "where you are", and the chips below say "what you are
+ * filtering".
  *
- * The switch is at 860px. Measured: the row itself is 762px, so it fits on
- * one line from 794px of viewport up, and the extra 66px is slack for a
- * browser that renders the labels wider than this one does. Below it the
- * grouped nav takes over, because eight tabs genuinely do not fit on a phone.
- * flex-wrap is the safety net above it, and costs a second line rather than
- * an overflow if a future label is longer than anything in this data.
+ * Six tabs, no grouping marks: the four reference tabs live inside Browse.
  */
-.flat-tabs {
-  align-items: center;
+.nav {
+  padding-block: 2px 4px;
 }
 
-@media (min-width: 860px) {
-  .flat-tabs {
-    flex-wrap: wrap;
+/*
+ * The row starts 14px left of the page's own edge so the first label sits on
+ * it, which is where the eye expects "Now" to be. The tab's hover fill is
+ * therefore inside the nav, clear of its rounded bottom corners, rather than
+ * running out to them.
+ */
+.nav .tabs {
+  gap: 0;
+  align-items: stretch;
+  padding-block: 0;
+  margin-block: 0;
+  margin-inline: -14px;
+  padding-inline: 0;
+}
+
+.nav .tab {
+  position: relative;
+  border: none;
+  border-radius: 9px;
+  padding: 10px 14px;
+  box-shadow: none;
+}
+
+/* The underline is its own short bar, as wide as the label and rounded at
+ * both ends, so it never runs square into the nav's curved corner. */
+.nav .tab::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 2px;
+  height: 2px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background-color var(--fast) var(--ease);
+}
+
+.nav .tab:hover {
+  background: var(--bg-sunken);
+  color: var(--text);
+}
+
+.nav .tab:hover::after {
+  background: var(--border-strong);
+}
+
+.nav .tab[aria-selected="true"] {
+  background: transparent;
+  color: var(--accent-ink);
+  box-shadow: none;
+}
+
+.nav .tab[aria-selected="true"]::after {
+  background: var(--accent);
+}
+
+/* Six labels do not quite fit in 371px at the desktop padding, so a phone
+ * trades 4px a side for showing five whole tabs and the start of the sixth. */
+@media (max-width: 600px) {
+  .nav .tabs {
+    margin-inline: -12px;
+  }
+  .nav .tab {
+    padding-inline: 12px;
+  }
+  .nav .tab::after {
+    left: 12px;
+    right: 12px;
   }
 }
 
-/* All that survives of the grouping, which the tabs' own order already
- * carries: a hairline where one half of the app ends and the next starts. */
-.tab-sep {
-  flex: none;
-  align-self: stretch;
-  width: 1px;
-  margin: 4px 7px;
-  background: var(--border-strong);
-  opacity: 0.55;
+.browse-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
 }
 
 /* ---------- the controls stay with the list ---------- */
@@ -2496,12 +2482,6 @@ button,
   box-shadow: 0 2px 11px -3px var(--glow-lemon);
 }
 
-.groups::before {
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.07),
-    0 0 16px -5px var(--glow-mid);
-}
-
 /*
  * Two stops, not one. A single 22px blur pulled in by a 7px negative spread
  * concentrates almost all of its alpha into a narrow band, which traces the
@@ -2586,7 +2566,43 @@ button,
 .footnote,
 .term-def,
 .empty {
-  max-width: 78ch;
+  max-width: 64ch;
+}
+
+/*
+ * Line breaking. Prose avoids leaving a single word alone on its last line,
+ * headings and callout titles balance their lines instead of filling one and
+ * dropping a stub onto the next, and small controls and pills never break
+ * inside their own label. A parenthetical after a label stays with it.
+ */
+p,
+li,
+dd,
+.check-detail,
+.callout,
+.now-tick-label,
+.now-start-text,
+.now-step,
+.now-detail {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+h4,
+.callout > strong,
+.build-name {
+  text-wrap: balance;
+}
+
+.mini,
+.chip,
+.star,
+.el,
+.owned-dot,
+.now-start-text .check-detail {
+  white-space: nowrap;
 }
 
 /* The routine intro carries a status and the rule that resets it, and the
@@ -2595,7 +2611,7 @@ button,
 .routine-intro {
   max-width: none;
   text-wrap: balance;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .routine-intro strong {
@@ -2968,7 +2984,7 @@ button,
 
 .sheet-head h2 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   color: var(--accent-ink);
   letter-spacing: -0.015em;
 }
@@ -3170,6 +3186,19 @@ button,
   color: var(--accent-ink);
 }
 
+/* Where a jump landed, for the times the page could not move to show it. */
+@keyframes jump-flash {
+  from {
+    box-shadow: 0 0 0 3px var(--glow-mid), 0 0 24px -4px var(--glow-mid);
+  }
+  to {
+    box-shadow: 0 0 0 3px transparent, 0 0 24px -4px transparent;
+  }
+}
+.jump-flash {
+  animation: jump-flash 1.2s var(--ease) both;
+}
+
 /* Headings the bar jumps to need to clear the chrome above them when the
  * browser scrolls there by itself — a hash link, or find-in-page. */
 #plan-materials,
@@ -3200,9 +3229,9 @@ button,
   align-items: baseline;
   gap: 4px 12px;
   padding: 7px 12px;
-  border-radius: 8px;
+  border-radius: 9px;
   border: 1px solid transparent;
-  font-size: 0.83rem;
+  font-size: 0.8125rem;
   overflow: hidden;
 }
 
@@ -3214,7 +3243,7 @@ button,
   inset: 0 auto 0 0;
   width: var(--fill);
   background: color-mix(in srgb, var(--accent) 11%, transparent);
-  border-radius: 8px 0 0 8px;
+  border-radius: 9px 0 0 9px;
 }
 
 .peer > * {
@@ -3419,7 +3448,7 @@ button,
  */
 .budget-hint {
   margin: 7px 0 0;
-  font-size: 0.86rem;
+  font-size: 0.85rem;
   color: var(--text-dim);
   line-height: 1.75;
 }
@@ -3540,7 +3569,7 @@ button,
 /* The rank chip takes the panels' cut corner, so a list reads as the same
  * material as the pane beside it. */
 .ranked li::before {
-  border-radius: 7px 3px 3px 3px;
+  border-radius: 9px 2px 2px 2px;
   corner-top-left-shape: bevel;
 }
 
@@ -3904,12 +3933,12 @@ h2.section::before {
   padding: 10px 13px 11px;
 }
 .target-value {
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   line-height: 1.15;
   letter-spacing: 0;
 }
 .compare-target {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--text-dim);
   font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
@@ -4067,7 +4096,7 @@ h2.section::before {
   display: grid;
   place-items: center;
   border: 1.5px solid var(--border-strong);
-  border-radius: 6px;
+  border-radius: 5px;
   background: var(--bg-raised);
   font-size: 0.8rem;
   line-height: 1;
@@ -4126,4 +4155,89 @@ h2.section::before {
 }
 .char-detail .char-body > .section:first-child {
   margin-top: 0;
+}
+
+/* ---------- onboarding: one primary, quiet links, a folded Today ---------- */
+/* accent-ink, not accent: it is the token each palette tunes to be read
+ * against the page, so the label clears 4.5:1 in all of them. */
+.mini[data-primary="true"] {
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+  color: var(--bg);
+}
+.mini[data-primary="true"]:hover {
+  color: var(--bg);
+  filter: brightness(1.06);
+}
+.now-start li[data-primary="true"] {
+  background: var(--accent-soft);
+}
+/* Faint text on the sunken step rows measured 4.37:1; dim clears it. */
+.now-start li .check-detail {
+  color: var(--text-dim);
+}
+.now-link {
+  flex: none;
+  background: none;
+  border: none;
+  padding: 4px 2px;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.now-link:hover {
+  color: var(--text);
+}
+@media (pointer: coarse), (max-width: 600px) {
+  .now-link {
+    min-height: 40px;
+  }
+}
+.now-fold-summary {
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  padding: 4px 0;
+  list-style-position: inside;
+}
+.now-fold[open] > .now-fold-summary {
+  margin-bottom: 8px;
+}
+
+/* A queue button at the end of a Resonator row, so one tap from the list. */
+.char-row {
+  display: flex;
+  align-items: stretch;
+}
+.char-row > .char-toggle {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+}
+.char-queue {
+  flex: none;
+  align-self: center;
+  margin: 0 10px 0 2px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Remove sits apart from Up and Down: it is the one that takes something away,
+ * and a thumb aimed at a reorder button should not be able to land on it. */
+.queue-remove {
+  margin-left: auto;
+}
+.undo-line {
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  color: var(--text-dim);
 }

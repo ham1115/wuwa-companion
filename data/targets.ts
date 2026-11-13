@@ -369,7 +369,7 @@ export const TARGETS: Record<string, StatTarget[]> = {
     {
       label: "Energy Regen",
       value: "125%",
-      detail: "Suitable for Mornye, Shorekeeper and Verina team variants. With Mornye, Lucy can get away with 121%, but Lucy will be short on Energy if some attacks miss.",
+      detail: "Suitable for Mornye, Shorekeeper, and Verina team variants. With Mornye, Lucy can get away with 121%, but Lucy will be short on Energy if some attacks miss.",
     },
     { label: "Spectro DMG Bonus", value: "40-70%+" },
   ],
@@ -557,7 +557,7 @@ export const TARGETS: Record<string, StatTarget[]> = {
     {
       label: "Energy Regen",
       value: "140%+",
-      detail: "This requirement applies across Phrolova+Cantarella, Danjin+Shorekeeper and Roccia+Shorekeeper.",
+      detail: "This requirement applies across Phrolova+Cantarella, Danjin+Shorekeeper, and Roccia+Shorekeeper.",
     },
     { label: "Havoc DMG Bonus", value: "40-70%+" },
   ],

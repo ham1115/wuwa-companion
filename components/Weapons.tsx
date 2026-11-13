@@ -71,7 +71,7 @@ export default function Weapons() {
             <input
               className="search"
               type="search"
-              placeholder="Search name, stat or effect…"
+              placeholder="Search name, stat, or effect…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               aria-label="Search weapons"

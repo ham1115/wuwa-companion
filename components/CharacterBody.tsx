@@ -226,7 +226,7 @@ function RankedWeapons({ entries }: { entries: string[] }) {
 
       {allFive && (
         <p className="check-detail">
-          Every weapon prydwen ranks for them is 5★ — there is no cheaper
+          Every weapon prydwen ranks for them is 5★, so there is no cheaper
           option to fall back on.
         </p>
       )}

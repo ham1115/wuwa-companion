@@ -126,6 +126,22 @@ export default function PlanNav({ sections }: { sections: PlanSection[] }) {
      */
     setActive(id);
     pinnedUntil.current = performance.now() + 500;
+
+    /*
+     * Near the end of the page the scroll above may not move at all, or may
+     * land in the same place as the previous jump: Claim costs and Rules both
+     * stop at the bottom of a desktop window, so the click changed the chip
+     * and nothing else. A short glow on the section's first card says where
+     * the click landed when the page cannot say it by moving. Two of the
+     * targets are the card itself, the other two are the heading above it.
+     */
+    const card = el.classList.contains("callout") ? el : el.nextElementSibling;
+    if (card instanceof HTMLElement) {
+      card.classList.remove("jump-flash");
+      void card.offsetWidth;
+      card.classList.add("jump-flash");
+      window.setTimeout(() => card.classList.remove("jump-flash"), 1300);
+    }
   };
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CHARACTERS } from "@/data/characters";
 import { BUILD_RULES, DEFAULT_PLAN, PLAN_STEPS } from "@/data/plan";
 import { resolveRanked } from "@/data/weapons";
@@ -32,6 +32,13 @@ export default function Plan({ onGo }: { onGo?: (tab: "characters") => void }) {
    */
   const [maxed, setMaxed] = useState<string | null>(null);
   const loadout = useLoadout();
+  /** The last character taken out, and where it sat, so Remove can be undone. */
+  const [removed, setRemoved] = useState<{ id: string; index: number } | null>(null);
+  useEffect(() => {
+    if (!removed) return;
+    const t = setTimeout(() => setRemoved(null), 10000);
+    return () => clearTimeout(t);
+  }, [removed]);
 
   /*
    * Which queued character is expanded.
@@ -63,7 +70,20 @@ export default function Plan({ onGo }: { onGo?: (tab: "characters") => void }) {
     });
   }
 
+  function restore() {
+    if (!removed) return;
+    const { id, index } = removed;
+    setPlan((prev) => {
+      if (prev.includes(id)) return prev;
+      const next = [...prev];
+      next.splice(Math.min(index, next.length), 0, id);
+      return next;
+    });
+    setRemoved(null);
+  }
+
   function remove(id: string) {
+    setRemoved({ id, index: Math.max(0, plan.indexOf(id)) });
     setPlan((prev) => prev.filter((x) => x !== id));
     setMaxed((m) => (m === id ? null : m));
     // Hand the open card back to whoever is first in the queue now, rather
@@ -88,8 +108,7 @@ export default function Plan({ onGo }: { onGo?: (tab: "characters") => void }) {
     <section className="plan">
       {entries.length > 0 && (
         <p className="panel-intro">
-          {entries.length} in the queue, worked top to bottom. Add more from the
-          Characters tab.
+          Worked top to bottom. Add more from Browse.
         </p>
       )}
 
@@ -100,11 +119,20 @@ export default function Plan({ onGo }: { onGo?: (tab: "characters") => void }) {
         * knowing what it was a total of. */}
       {entries.length > 0 && <PlanNav sections={sections} />}
 
+      {removed && (
+        <p className="undo-line" role="status">
+          Removed {BY_ID.get(removed.id)?.name ?? "that Resonator"} from the queue.{" "}
+          <button className="mini" onClick={restore}>
+            Undo
+          </button>
+        </p>
+      )}
+
       {entries.length === 0 ? (
         <div className="card">
           <p className="term-def">
-            Nothing queued yet. Pick a Resonator on the Characters tab and hit
-            “+ Queue”; their steps, materials and targets show up here.
+            Nothing queued yet. Pick a Resonator in Browse and hit
+            “+ Queue”; their steps, materials, and targets show up here.
           </p>
           {onGo && (
             <div className="term-actions now-actions">
@@ -173,7 +201,7 @@ export default function Plan({ onGo }: { onGo?: (tab: "characters") => void }) {
                 >
                   ↓ Down
                 </button>
-                <button className="mini" onClick={() => remove(c.id)}>
+                <button className="mini queue-remove" onClick={() => remove(c.id)}>
                   Remove
                 </button>
               </div>
@@ -184,11 +212,11 @@ export default function Plan({ onGo }: { onGo?: (tab: "characters") => void }) {
                   <PlanWeapon entries={c.weapons} />
                 </dd>
                 <dt>Sonata</dt>
-                <dd>{c.sets.join(" / ") || "—"}</dd>
+                <dd>{c.sets.join(" / ") || "None"}</dd>
                 <dt>Main echo</dt>
-                <dd>{c.echoes[0] ?? "—"}</dd>
+                <dd>{c.echoes[0] ?? "None"}</dd>
                 <dt>Substats</dt>
-                <dd>{c.substats || "—"}</dd>
+                <dd>{c.substats || "None"}</dd>
                 {c.materials.length > 0 && (
                   <>
                     <dt>Materials</dt>
@@ -217,7 +245,7 @@ export default function Plan({ onGo }: { onGo?: (tab: "characters") => void }) {
                 <div className="card maxed-card">
                   <strong>{c.name} is Lv.90. Finished with them?</strong>
                   <p className="check-detail">
-                    Levelling is done, but the build may not be: echoes, weapon
+                    Levelling is done, but the build may not be: echoes, weapon,
                     and skills all carry on past 90. Taking them off the queue
                     keeps everything you have filled in here.
                   </p>
@@ -307,7 +335,7 @@ export default function Plan({ onGo }: { onGo?: (tab: "characters") => void }) {
  */
 function PlanWeapon({ entries }: { entries: string[] }) {
   const ranked = resolveRanked(entries);
-  if (ranked.length === 0) return <>&mdash;</>;
+  if (ranked.length === 0) return <>None</>;
 
   const top = ranked[0];
   const at = ranked.findIndex((w) => w.budget);
@@ -328,7 +356,7 @@ function PlanWeapon({ entries }: { entries: string[] }) {
           </span>{" "}
           {alt.name}
           {alt.refine && <span className="ranked-refine">&nbsp;({alt.refine})</span>}
-          <span className="ranked-refine"> &mdash; ranked #{at + 1}</span>
+          <span className="ranked-refine">, ranked #{at + 1}</span>
         </span>
       )}
     </>

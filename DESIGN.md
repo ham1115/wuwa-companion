@@ -65,6 +65,36 @@ typography:
     fontSize: "0.9rem"
     fontWeight: 400
     lineHeight: 1.55
+  lead:
+    fontFamily: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+    fontSize: "1.05rem"
+    fontWeight: 600
+    lineHeight: 1.4
+  small:
+    fontFamily: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+    fontSize: "0.85rem"
+    fontWeight: 400
+    lineHeight: 1.5
+  caption:
+    fontFamily: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+    fontSize: "0.8125rem"
+    fontWeight: 400
+    lineHeight: 1.5
+  chip:
+    fontFamily: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+    fontSize: "0.8rem"
+    fontWeight: 600
+    lineHeight: 1.4
+  stat:
+    fontFamily: "Chakra Petch, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1.25rem"
+    fontWeight: 700
+    lineHeight: 1.2
+  hero:
+    fontFamily: "Chakra Petch, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1.65rem"
+    fontWeight: 600
+    lineHeight: 1.2
   label:
     fontFamily: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
     fontSize: "0.75rem"
@@ -75,6 +105,8 @@ rounded:
   panel: "14px"
   chamfer: "18px"
   row: "5px"
+  control: "9px"
+  hairline: "2px"
   pill: "999px"
 spacing:
   shell-pad: "16px"
@@ -199,7 +231,7 @@ Colour that says what a thing is, not what you can do with it. These are fixed, 
 
 ## Layout
 
-One centred shell, max 1240px, 16px side padding. The masthead holds the logo, title, a sync badge and the theme and sign-in buttons. A sticky glass nav sits under it: one row of all eight tabs at every width, with a hairline between Reference, Mine and Setup. On a phone the row scrolls sideways, fades at the edge while there is more, and brings the selected tab into view. Lists are rows, not card grids. On wide screens (about 900px and up) an opened row's detail shows in a side pane (Characters, Weapons, Sonata sets and Echoes); on phones it opens as a modal sheet. Now sits in two columns from 900px (Next to build, Today with its tickable daily items); Routine and My plan are capped at 860px and 1000px so a row never runs the full shell. Nothing pushes the list down the page.
+One centred shell, max 1240px, 16px side padding. The masthead holds the logo, title, a sync badge and the theme and sign-in buttons. A sticky glass nav sits under it: one row of six tabs, about 50px tall: Now, My plan, Routine, Browse, Story, Settings. Browse folds the four reference tabs (Characters, Weapons, Echoes, Glossary) into one; inside it a chip row switches between them, and Browse opens wherever you last were. Every reference tab keeps its own URL (#weapons), and Browse is lit while any of them is open. On a narrow phone the row scrolls sideways and fades at the edge. Lists are rows, not card grids. On wide screens (about 900px and up) an opened row's detail shows in a side pane (Characters, Weapons, Sonata sets and Echoes); on phones it opens as a modal sheet. Now sits in two columns from 900px (Next to build, Today with its tickable daily items); Routine and My plan are capped at 860px and 1000px so a row never runs the full shell. Nothing pushes the list down the page.
 
 Spacing is tight and uniform: 6px between chips, 7px between rows, 11px between cards, 15 to 17px card padding. The layout must work at 375px; three-column rows need an explicit stacking breakpoint. Breakpoints observed: 430, 460, 560, 600, 860, 900, 1000 and 1100px. On phones every tappable control is at least 40px tall (tabs 44px). Under 600px the masthead drops its tagline and tightens its padding.
 
@@ -223,7 +255,7 @@ Pills for anything you press (tabs, chips, search, toggles, badges: 999px). Pane
 ## Components
 
 ### Tabs
-Pill tabs, dim text, transparent, in one scrolling row. Hover fills Blush Sunken. Selected: Rose Mist fill, Resonance Rose border, Rose Ink text. The grouped pill switcher that two-banded the phone nav is gone.
+The one exception to "pills for anything you press": primary navigation is plain text tabs on the nav's bottom rule, so a row of tabs does not read as the same control as the pill chips under it. Dim text, no fill; hover fills Blush Sunken and shows a Rose Line Strong underline; selected is Rose Ink with a 2px Resonance Rose underline and no glow.
 
 ### Chips
 Pill, 1px border, dim text, 0.8rem. On: Rose Mist fill, Resonance Rose border, Rose Ink, weight 600. A lemon tone swaps in Lemon Mist, Lemon Flash and Lemon Ink.
@@ -253,7 +285,7 @@ A diamond dot and label in the masthead: gray On this device, pulsing lemon Sync
 A filtered list with no matches names what is filtering and offers Clear filters.
 
 ### First steps
-With an empty queue, Now shows three numbered steps (mark what you own, queue the one you are building, tick today's routine), each with a button and a checkmark once done, and My plan shows one card with Browse Characters instead of its jump bar and queue heading.
+A browser with no stored tab (a first visit) opens on Now. With an empty queue, Now says in one line what it will show once a Resonator is queued, then lists three numbered steps (queue the one you are building, tick today's routine, mark what you own, which is marked optional), each with a button and a checkmark once done. Owned is last because nothing waits on it. My plan shows one card with Browse Characters instead of its jump bar and queue heading.
 
 ## Do's and Don'ts
 

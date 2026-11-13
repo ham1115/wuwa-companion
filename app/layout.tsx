@@ -19,7 +19,7 @@ const display = Chakra_Petch({
 export const metadata: Metadata = {
   title: "Resonance Codex",
   description:
-    "A Wuthering Waves companion: glossary, build tracker, story progress and a daily routine.",
+    "A Wuthering Waves companion: glossary, build tracker, story progress, and a daily routine.",
 };
 
 export const viewport: Viewport = {

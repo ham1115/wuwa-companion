@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Fragment,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -38,22 +37,12 @@ const useBeforePaint =
   typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 /**
- * Eight flat tabs mixed reference data with personal tracking. Grouping them
+ * Nine flat tabs mixed reference data with personal tracking. Grouping them
  * means at most four tabs are on screen at once, and it is obvious which half
- * of the app you are in.
+ * of the app you are in. Mine leads: it is where a returning player comes to
+ * work, and its first tab, Now, is where the app opens.
  */
 const GROUPS = [
-  {
-    id: "reference",
-    label: "Reference",
-    hint: "Game data, the same for everyone",
-    tabs: [
-      { id: "characters", label: "Characters" },
-      { id: "weapons", label: "Weapons" },
-      { id: "echoes", label: "Echoes" },
-      { id: "glossary", label: "Glossary" },
-    ],
-  },
   {
     id: "mine",
     label: "Mine",
@@ -63,6 +52,17 @@ const GROUPS = [
       { id: "builds", label: "My plan" },
       { id: "quests", label: "Story" },
       { id: "routine", label: "Routine" },
+    ],
+  },
+  {
+    id: "reference",
+    label: "Reference",
+    hint: "Game data, the same for everyone",
+    tabs: [
+      { id: "characters", label: "Characters" },
+      { id: "weapons", label: "Weapons" },
+      { id: "echoes", label: "Echoes" },
+      { id: "glossary", label: "Glossary" },
     ],
   },
   {
@@ -84,6 +84,19 @@ function tabFromUrl(): TabId | null {
   if (typeof window === "undefined") return null;
   const id = decodeURIComponent(window.location.hash.replace(/^#/, ""));
   return GROUP_OF.has(id) ? (id as TabId) : null;
+}
+
+/**
+ * True when there is nothing to come back to: no stored tab, so this browser
+ * has never been used. Such a visitor starts on Now, whose first-steps card
+ * says what the app is for, rather than on a bare 61-row list.
+ */
+function isFirstVisit(): boolean {
+  try {
+    return window.localStorage.getItem(`${PREFIX}tab`) === null;
+  } catch {
+    return false;
+  }
 }
 
 /** True once the player has a build queued or a routine tick to come back to. */
@@ -140,15 +153,22 @@ const GROUP_OF = new Map<string, string>(
   GROUPS.flatMap((g) => g.tabs.map((t) => [t.id, g.id] as [string, string]))
 );
 
+const REFERENCE_TABS = GROUPS[1].tabs.map((t) => t.id as TabId);
+
 /**
- * Every tab in reading order, for the flat nav and its arrow keys. Widened off
- * the `as const` tuples deliberately: flatMap over a union of three differently
- * shaped readonly tuples infers nothing useful, and this list only ever needs
- * the id and the label.
+ * What the nav row shows. Nine tabs were more choices than a first-time player
+ * can sort, so the four reference tabs are folded into one, Browse, with the
+ * four of them as a switcher inside it. Each id and URL is unchanged: #weapons
+ * still opens Weapons, and Browse is simply lit while any of them is open.
  */
-const ALL_TABS: { id: TabId; label: string }[] = GROUPS.flatMap((g) =>
-  g.tabs.map((t) => ({ id: t.id as TabId, label: t.label as string }))
-);
+const NAV: { id: string; label: string; tabs: readonly TabId[] }[] = [
+  { id: "now", label: "Now", tabs: ["now"] },
+  { id: "builds", label: "My plan", tabs: ["builds"] },
+  { id: "routine", label: "Routine", tabs: ["routine"] },
+  { id: "browse", label: "Browse", tabs: REFERENCE_TABS },
+  { id: "quests", label: "Story", tabs: ["quests"] },
+  { id: "settings", label: "Settings", tabs: ["settings"] },
+];
 
 export default function Page() {
   return (
@@ -177,8 +197,9 @@ function Codex() {
     if (fromUrl) setStoredTab(fromUrl);
     else {
       // Opened with no tab in the address: someone with a queue or a routine
-      // started wants to know what is next, not where they last browsed.
-      const start: TabId = hasProgress() ? "now" : tab;
+      // started wants to know what is next, not where they last browsed. A
+      // first-ever visit also lands there: Now explains what to do first.
+      const start: TabId = hasProgress() || isFirstVisit() ? "now" : tab;
       setStoredTab(start);
       window.history.replaceState(null, "", `#${start}`);
     }
@@ -269,14 +290,15 @@ function Codex() {
    */
   const navRef = useRef<HTMLElement>(null);
 
-  // On a phone the tab row scrolls sideways, and arriving on a tab by link or
-  // by a group switch left it half off the right edge. Bring it into view
-  // along the row only: block "nearest" never scrolls the page itself.
+  // On a phone the tab row scrolls sideways, and arriving on a tab by link
+  // left it half off the right edge. Bring it into view along the row only,
+  // and only as far as needed: centring it pushed Now off the left edge the
+  // moment you opened My plan. block "nearest" never scrolls the page itself.
   useEffect(() => {
     if (!mounted) return;
     navRef.current
       ?.querySelector<HTMLElement>('.tabs [aria-selected="true"]')
-      ?.scrollIntoView({ inline: "center", block: "nearest" });
+      ?.scrollIntoView({ inline: "nearest", block: "nearest" });
   }, [tab, mounted]);
 
   useEffect(() => {
@@ -298,6 +320,13 @@ function Codex() {
     () => GROUPS.find((g) => g.id === GROUP_OF.get(tab)) ?? GROUPS[0],
     [tab]
   );
+
+  // Browse opens wherever you last were inside it, not always on Characters.
+  const lastBrowse = useRef<TabId>("characters");
+  if (REFERENCE_TABS.includes(tab)) lastBrowse.current = tab;
+  const navId = NAV.find((n) => n.tabs.includes(tab))?.id ?? "now";
+  const openNav = (n: (typeof NAV)[number]) =>
+    setTab(n.id === "browse" ? lastBrowse.current : n.tabs[0]);
 
   return (
     <main className="shell">
@@ -333,46 +362,34 @@ function Codex() {
 
       <nav className="nav" aria-label="Sections" ref={navRef}>
         {/*
-         * One row of all eight tabs at every width. It used to be two bands on
-         * a phone (a group pill over that group's tabs) to fit eight labels in
-         * 343px, which spent about 55px of a small screen on chrome and cost
-         * an extra tap to cross from Reference to Mine. The row scrolls
-         * sideways instead, fades at the edge while there is more, and brings
-         * the selected tab into view. A hairline still marks where one half
-         * of the app ends and the next begins.
-         */}
+          * One row, six tabs. The row scrolls sideways if a narrow phone needs
+          * it, fades at the edge while there is more, and brings the selected
+          * tab into view.
+          */}
         <div
-          className="flat-tabs tabs"
+          className="tabs"
           role="tablist"
           aria-label="Sections"
           onKeyDown={(e) => {
-            const ids = ALL_TABS.map((t) => t.id);
-            const i = nextIndexByKey(ids, tab, e.key);
+            const ids = NAV.map((n) => n.id);
+            const i = nextIndexByKey(ids, navId, e.key);
             if (i === null) return;
             e.preventDefault();
-            setTab(ids[i]);
+            openNav(NAV[i]);
             focusTab(e.currentTarget, i);
           }}
         >
-          {GROUPS.map((g, gi) => (
-            <Fragment key={g.id}>
-              {/* The groups survive as a hairline, so the three halves of the
-               * app are still legible without costing a click. */}
-              {gi > 0 && <span className="tab-sep" role="presentation" />}
-              {g.tabs.map((t) => (
-                <button
-                  key={t.id}
-                  className="tab"
-                  role="tab"
-                  aria-selected={mounted && tab === t.id}
-                  tabIndex={mounted && tab === t.id ? 0 : -1}
-                  title={g.hint}
-                  onClick={() => setTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </Fragment>
+          {NAV.map((n) => (
+            <button
+              key={n.id}
+              className="tab"
+              role="tab"
+              aria-selected={mounted && navId === n.id}
+              tabIndex={mounted && navId === n.id ? 0 : -1}
+              onClick={() => openNav(n)}
+            >
+              {n.label}
+            </button>
           ))}
         </div>
       </nav>
@@ -383,11 +400,46 @@ function Codex() {
         /* Keyed on the tab so every switch mounts a fresh element, which is
          * what gives the CSS something to animate in. */
         <div className="panel" key={tab}>
-          {group.id === "mine" && <MineNote />}
+          {/* On Now the first-run steps come first and the storage note after
+           * them: the steps are the invitation, the note is the fine print. */}
+          {group.id === "mine" && tab !== "now" && <MineNote />}
+          {group.id === "reference" && (
+            <div
+              className="browse-switch"
+              role="tablist"
+              aria-label="Browse"
+              onKeyDown={(e) => {
+                const i = nextIndexByKey(REFERENCE_TABS, tab, e.key);
+                if (i === null) return;
+                e.preventDefault();
+                setTab(REFERENCE_TABS[i]);
+                focusTab(e.currentTarget, i);
+              }}
+            >
+              {group.tabs.map((t) => (
+                <button
+                  key={t.id}
+                  className="chip"
+                  role="tab"
+                  data-on={tab === t.id}
+                  aria-selected={tab === t.id}
+                  tabIndex={tab === t.id ? 0 : -1}
+                  onClick={() => setTab(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
           {tab === "characters" && <Characters />}
           {tab === "weapons" && <Weapons />}
           {tab === "echoes" && <Echoes />}
-          {tab === "now" && <Now onGo={setTab} />}
+          {tab === "now" && (
+            <>
+              <Now onGo={setTab} />
+              <MineNote afterQueue />
+            </>
+          )}
           {tab === "builds" && <Plan onGo={setTab} />}
           {tab === "glossary" && <Glossary />}
           {tab === "quests" && <Quests />}

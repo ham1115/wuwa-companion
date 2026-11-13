@@ -2,6 +2,7 @@
 
 import { useSync } from "@/lib/sync";
 import { exportAll, usePersistentState } from "@/lib/storage";
+import { DEFAULT_PLAN } from "@/data/plan";
 
 /** Hands the whole save to the browser as a file, without leaving the tab. */
 function downloadBackup() {
@@ -21,11 +22,16 @@ function downloadBackup() {
  * note; once dismissed, and for as long as nothing is synced, it stays as one
  * quiet line with the backup button in it, because "Got it" is not a backup.
  * Dismissal stays on this device.
+ *
+ * `afterQueue` holds the note back on a first visit, until there is a queued
+ * Resonator to lose: a warning about data nobody has entered is noise.
  */
-export default function MineNote() {
+export default function MineNote({ afterQueue = false }: { afterQueue?: boolean }) {
   const [seen, setSeen, hydrated] = usePersistentState<boolean>("mine-note-seen", false);
+  const [plan] = usePersistentState<string[]>("plan", DEFAULT_PLAN);
   const { state } = useSync();
   if (!hydrated) return null;
+  if (afterQueue && plan.length === 0) return null;
 
   if (seen) {
     if (state !== "off") return null;
@@ -44,13 +50,13 @@ export default function MineNote() {
       <p>
         {state === "off" ? (
           <>
-            <strong>Your plan, ticks and notes are saved in this browser.</strong>{" "}
+            <strong>Your plan, ticks, and notes are saved in this browser.</strong>{" "}
             Clearing site data or switching device loses them. Export a backup
-            below, or sign in, at the top right, to keep them with your account.
+            here, or sign in, at the top right, to keep them with your account.
           </>
         ) : (
           <>
-            <strong>Your plan, ticks and notes are saved to your account.</strong>{" "}
+            <strong>Your plan, ticks, and notes are saved to your account.</strong>{" "}
             They follow you to any device you sign in on. The badge at the top
             shows when a save is still in flight.
           </>

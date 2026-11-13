@@ -41,8 +41,8 @@ const BASE_LEMON: Record<"light" | "dark", string> = {
 
 const GROUP_LABELS: { id: StorageGroup; label: string; detail: string }[] = [
   { id: "characters", label: "Characters", detail: "Built marks, per-character notes, and your owned list" },
-  { id: "plan", label: "My plan", detail: "The queue, its checklists and notes" },
-  { id: "glossary", label: "Glossary", detail: "Learned marks, revealed spoilers and term notes" },
+  { id: "plan", label: "My plan", detail: "The queue, its checklists, and notes" },
+  { id: "glossary", label: "Glossary", detail: "Learned marks, revealed spoilers, and term notes" },
   { id: "story", label: "Story", detail: "Chapter and act ticks" },
   { id: "routine", label: "Routine", detail: "Daily and weekly checks" },
   { id: "display", label: "Display", detail: "Theme and last open tab" },
@@ -135,7 +135,7 @@ export default function Settings() {
       <h2 className="section">Colours</h2>
       <p className="panel-intro">
         A preset changes the accent and the background tint. Underneath it you
-        can set the accent, the background and the text colour yourself, and
+        can set the accent, the background, and the text colour yourself, and
         each one layers over whichever preset is picked.
       </p>
 
@@ -271,7 +271,7 @@ export default function Settings() {
         <div className="callout">
           <strong>That background was pulled back</strong>
           Its hue is yours, but {theme.mode} mode was kept {theme.mode}. Every
-          pill, tint and soft accent in this mode is built to sit on a{" "}
+          pill, tint, and soft accent in this mode is built to sit on a{" "}
           {theme.mode === "light" ? "pale" : "dark"} page, and they are not
           re-derived from your pick, so a{" "}
           {theme.mode === "light" ? "dark" : "pale"} background here would make

@@ -34,7 +34,7 @@ export default function Now({ onGo }: { onGo: (tab: "builds" | "routine" | "char
   return (
     <section className="now-grid">
       <div>
-      <h2 className="section">Next to build</h2>
+      <h2 className="section">{next ? "Next to build" : "Get started"}</h2>
       {next ? (
         <div className="card" data-el={next.element}>
           <div className="build-head">
@@ -78,24 +78,30 @@ export default function Now({ onGo }: { onGo: (tab: "builds" | "routine" | "char
         </div>
       ) : (
         <div className="card">
-          <p className="term-def">Nothing queued yet. Three steps to get going:</p>
+          <p className="term-def">
+            Pick a Resonator to build and this page shows what is left to do for
+            it, measured against published targets. Browse has every
+            Resonator, weapon, Echo, and glossary term. Three steps to get going:
+          </p>
           <ol className="now-start">
-            <li data-done={owned.owned.length > 0}>
-              <span className="now-start-text">Mark the Resonators you own</span>
-              <button className="mini" onClick={() => onGo("settings")}>
-                Open Settings
-              </button>
-            </li>
-            <li data-done={false}>
+            <li data-done={false} data-primary="true">
               <span className="now-start-text">Queue the one you are building</span>
-              <button className="mini" onClick={() => onGo("characters")}>
-                Browse Characters
+              <button className="mini" data-primary="true" onClick={() => onGo("characters")}>
+                Choose a Resonator
               </button>
             </li>
             <li data-done={routine.dailyDone > 0}>
               <span className="now-start-text">Tick off today&apos;s routine</span>
-              <button className="mini" onClick={() => onGo("routine")}>
+              <button className="now-link" onClick={() => onGo("routine")}>
                 Open routine
+              </button>
+            </li>
+            <li data-done={owned.owned.length > 0}>
+              <span className="now-start-text">
+                Mark the Resonators you own <span className="check-detail">(optional)</span>
+              </span>
+              <button className="now-link" onClick={() => onGo("settings")}>
+                Open Settings
               </button>
             </li>
           </ol>
@@ -112,6 +118,12 @@ export default function Now({ onGo }: { onGo: (tab: "builds" | "routine" | "char
               ? "Daily list done."
               : `${dailyLeft} of ${routine.daily.length} daily items left.`}
           </p>
+          {/* Until something is queued the first-steps card is the one job on
+              this page; the daily list waits behind a summary. */}
+          <details className="now-fold" open={!!next} key={next ? "open" : "first-run"}>
+            <summary className="now-fold-summary">
+              {next ? "Daily items" : "Show daily items"}
+            </summary>
           <div className="now-ticks">
             {routine.daily.map((r) => {
               const on = routine.checks.has(r.id);
@@ -131,10 +143,13 @@ export default function Now({ onGo }: { onGo: (tab: "builds" | "routine" | "char
               );
             })}
           </div>
+          </details>
           <div className="term-actions now-actions">
-            <button className="mini" onClick={() => onGo("routine")}>
-              Open routine
-            </button>
+            {next && (
+              <button className="mini" onClick={() => onGo("routine")}>
+                Open routine
+              </button>
+            )}
             {weeklyLeft > 0 && (
               <span className="check-detail">
                 {weeklyLeft} of {routine.weekly.length} weekly items left

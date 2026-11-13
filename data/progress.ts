@@ -10,7 +10,7 @@ export type Act = {
   parts?: string[];
   note?: string;
   /**
-   * Segues, interludes and side stories sit beside the main line rather than
+   * Segues, interludes, and side stories sit beside the main line rather than
    * gating it, so they tick on their own instead of filling in sequence.
    */
   optional?: boolean;
@@ -277,7 +277,7 @@ export const CHAPTERS: Chapter[] = [
 ];
 
 export const CHAPTER_DISCLAIMER =
-  "Chapter and act titles come from the Wuthering Waves Wiki's Main Quest list, checked 30 October 2026. Segues, interludes and side stories tick on their own; numbered acts fill in order, because the game gates each behind the one before it.";
+  "Chapter and act titles come from the Wuthering Waves Wiki's Main Quest list, checked 30 October 2026. Segues, interludes, and side stories tick on their own; numbered acts fill in order, because the game gates each behind the one before it.";
 
 export type Routine = {
   id: string;

@@ -14,7 +14,9 @@ import { useOwned } from "@/lib/owned";
  * Those answers would then be wrong with nothing on screen to explain it.
  *
  * So it tells you instead, where you will see it, and offers the one-tap
- * version of what you probably meant.
+ * version of what you probably meant. It is one quiet line, not an alert:
+ * queueing someone you do not own is a normal thing to do, and the queue is
+ * what this tab is for.
  */
 export default function NotMine({
   entries,
@@ -26,26 +28,20 @@ export default function NotMine({
   if (missing.length === 0) return null;
 
   return (
-    <div className="callout" data-tone="warn">
-      <strong>
+    <p className="mine-line">
+      <span>
         {missing.length === 1
-          ? `${missing[0].name} is not one of your characters`
-          : `${missing.length} of these are not your characters`}
-      </strong>
-      You can still plan {missing.length === 1 ? "the build" : "their builds"}.
-      The materials are counted either way. But any filter that shows only
-      your characters will skip them.
-      <div className="term-actions">
-        {missing.map((m) => (
-          <button
-            key={m.id}
-            className="mini"
-            onClick={() => owned.toggle(m.id)}
-          >
-            {missing.length === 1 ? "Mark as mine" : `Mark ${m.name} as mine`}
-          </button>
-        ))}
-      </div>
-    </div>
+          ? `${missing[0].name} is not marked as yours.`
+          : `${missing.length} of these are not marked as yours.`}{" "}
+        Their builds and materials still count, but “For my characters”
+        filters skip them.
+      </span>
+      <button
+        className="mini"
+        onClick={() => missing.forEach((m) => owned.toggle(m.id))}
+      >
+        {missing.length === 1 ? "Mark as mine" : "Mark all as mine"}
+      </button>
+    </p>
   );
 }
